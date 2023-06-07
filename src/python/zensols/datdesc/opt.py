@@ -56,6 +56,11 @@ class HyperparamResult(Dictable):
 
     @classmethod
     def from_file(cls: Type, path: Path) -> HyperparamResult:
+        """Restore a result from a file name.
+
+        :param path: the path from which to restore
+
+        """
         with open(path) as f:
             data: Dict[str, Any] = json.load(f)
         model_name: str = data['hyp']['name']
