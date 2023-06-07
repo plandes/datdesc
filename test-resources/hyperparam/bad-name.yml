@@ -1,0 +1,6 @@
+svm:
+  params:
+    kernel():
+      type: choice
+      choices: [radial, linear]
+      doc: 'maps the observations into some feature space'

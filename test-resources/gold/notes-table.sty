@@ -1,0 +1,20 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{notes-table}[{{DATE}} Tables]
+
+\usepackage{zentable}
+
+\newcommand{\notestab}[2]{%
+\begin{zzvarcoltable}[\columnwidth]{#1}{notestab}{Annotated medical notes by category and their distribution in the annotation set.}%
+{#2}{|X|l|l|}
+\hline
+ \textbf{Category}   & \textbf{Count}   & \textbf{Proportion}   \\
+\hline
+ Discharge summary   & 1,254            & 62.64\%               \\
+ Physician           & 288              & 14.39\%               \\
+ Radiology           & 205              & 10.24\%               \\
+ Echo                & 198              & 9.89\%                \\
+ Consult             & 57               & 2.85\%                \\
+\hline  
+ Total               & 2,002            & 100\%                 \\
+\hline
+\end{zzvarcoltable}}

@@ -1,0 +1,22 @@
+# A: A1
+# P: A2
+# S: A3
+intercodertab:
+  path: test-resources/csv/section-id.csv
+  caption: >-
+    Krippendorff’s $\alpha$ coefficient of inter-annotator agreement between the
+    annotators and the regular expressions.  \textbf{A1} is the \primaryanon\
+    annotator, \textbf{A2} is the \secondaryanon\ annotator and \textbf{A3} is
+    the \residentanon\ annotator, and \textbf{R} represents the regular
+    expressions.
+  size: VAR
+  placement: VAR
+  single_column: true
+  uses: zentable
+  read_kwargs:
+    index_col: 0
+  write_kwargs:
+    disable_numparse: true
+  replace_nan: ' '
+  blank_columns: [0]
+  bold_cells: [[0, 0], [1, 0], [2, 0], [3, 0]]

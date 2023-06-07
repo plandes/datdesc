@@ -1,0 +1,70 @@
+models:
+  k_means:
+    desc: k-means
+    doc: k-means clustering
+    name: k_means
+    params:
+      copy_x:
+        choices: null
+        doc: When pre-computing distances it is more numerically accurate to center
+          the data first
+        interval: null
+        name: copy_x
+        type: bool
+        value: true
+      kwargs:
+        choices: null
+        doc: Model keyword arguments (made up for test cases).
+        interval: null
+        name: kwargs
+        type: dict
+        value:
+          epochs: 3
+          learning_rate: 0.01
+      n_clusters:
+        choices: null
+        doc: number of clusters
+        interval: null
+        name: n_clusters
+        type: int
+        value: null
+      strata:
+        choices: null
+        doc: An array of stratified hyperparameters (made up for test cases).
+        interval: null
+        name: strata
+        type: list
+        value:
+        - 1
+        - 2
+  svm:
+    desc: svm
+    doc: support vector machine
+    name: svm
+    params:
+      C:
+        choices: null
+        doc: regularization parameter
+        interval: null
+        name: C
+        type: float
+        value: null
+      kernel:
+        choices:
+        - radial
+        - linear
+        doc: maps the observations into some feature space
+        interval: null
+        name: kernel
+        type: choice
+        value: null
+      max_iter:
+        choices: null
+        doc: number of iterations
+        interval:
+        - 1
+        - 30
+        name: max_iter
+        type: int
+        value: 20
+name: svm

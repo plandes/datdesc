@@ -1,0 +1,8 @@
+anontab:
+  path: test-resources/csv/annotation-section-id-combined.csv
+  caption: The top \anontabtopn\ most frequently annotated sections.
+  placement: VAR
+  size: small
+  single_column: false
+  df_code: 'df.head(30)'
+  percent_column_names: ['Spans', 'Tokens']

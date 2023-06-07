@@ -1,0 +1,40 @@
+svm:
+  doc: 'support vector machine'
+  table:
+    size: small
+    caption: Some caption
+  params:
+    kernel:
+      type: choice
+      choices: [radial, linear]
+      doc: 'maps the observations into some feature space'
+    C:
+      type: float
+      doc: 'regularization parameter'
+    max_iter:
+      type: int
+      doc: 'number of iterations'
+      value: 20
+      interval: [1, 30]
+
+k_means:
+  desc: k-means
+  doc: 'k-means clustering'
+  params:
+    n_clusters:
+      type: int
+      doc: 'number of clusters'
+    copy_x:
+      type: bool
+      value: True
+      doc: 'When pre-computing distances it is more numerically accurate to center the data first'
+    strata:
+      type: list
+      doc: 'An array of stratified hyperparameters (made up for test cases).'
+      value: [1, 2]
+    kwargs:
+      type: dict
+      doc: 'Model keyword arguments (made up for test cases).'
+      value:
+        learning_rate: 0.01
+        epochs: 3

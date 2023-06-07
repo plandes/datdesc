@@ -1,0 +1,12 @@
+metricssummarytab:
+  caption: Summarization of performance metrics where mF1 is the micro F1, mP is the
+    micro precision, mR is the micro recall, MF1 is the macro F1, MP is the macro
+    precision, MR is the macro recall.
+  path: test-resources/csv/metrics-summary.csv
+  placement: VAR
+  index_col_name: Id
+  single_column: false
+  size: VAR
+  bold_cells: [[8, 2], [7, 5]]
+  write_kwargs:
+    disable_numparse: false

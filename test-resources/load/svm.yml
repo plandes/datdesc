@@ -1,0 +1,21 @@
+svm:
+  doc: 'support vector machine'
+  table:
+    size: small
+    caption: Some caption
+  params:
+    kernel:
+      type: choice
+      choices: [radial, linear]
+      doc: 'maps the observations into some feature space'
+      value: radial
+    C:
+      type: float
+      doc: 'regularization parameter'
+      value: 50.
+      interval: [0, 50]
+    max_iter:
+      type: int
+      doc: 'number of iterations'
+      value: 20
+      interval: [1, 30]

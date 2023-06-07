@@ -1,0 +1,29 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{svm-hyperparam}[{{DATE}} Tables]
+
+\usepackage{zentable}
+
+\newcommand{\svmtab}{%
+\begin{zztable}[h!]{svmtab}%
+{Some caption}{\small}{|l|l|l|l|}
+\hline
+ \textbf{name}   & \textbf{data type}   & \textbf{documentation}                        & \textbf{settings}   \\
+\hline
+ kernel          & str <radial|linear>  & maps the observations into some feature space &                     \\
+ C               & float                & regularization parameter                      &                     \\
+ max_iter        & int                  & number of iterations                          & 20.0                \\
+\hline
+\end{zztable}}
+
+\newcommand{\kmeanstab}{%
+\begin{zztable}[h!]{kmeanstab}%
+{k-means clustering}{\normalsize}{|l|l|l|l|}
+\hline
+ \textbf{name}   & \textbf{data type}   & \textbf{documentation}                                                                & \textbf{settings}                    \\
+\hline
+ n_clusters      & int                  & number of clusters                                                                    &                                      \\
+ copy_x          & bool                 & When pre-computing distances it is more numerically accurate to center the data first & True                                 \\
+ strata          & list                 & An array of stratified hyperparameters (made up for test cases).                      & [1, 2]                               \\
+ kwargs          & dict                 & Model keyword arguments (made up for test cases).                                     & {'learning_rate': 0.01, 'epochs': 3} \\
+\hline
+\end{zztable}}

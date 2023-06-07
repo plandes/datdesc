@@ -1,0 +1,6 @@
+svm:
+  params:
+    kernel:
+      type: str
+      value: 3
+      doc: 'maps the observations into some feature space'

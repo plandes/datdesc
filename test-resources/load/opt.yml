@@ -1,0 +1,14 @@
+optimizer:
+  class_name: test_opt.TestHyperparameterOptimizer
+  name: test1
+  model: "call({'param': {'path': 'svm'}}): svm_hyperparam"
+  hyperparam_names:
+    - kernel
+    - C
+  max_evals: 100
+  intermediate_dir: 'path: target'
+  show_progressbar: false
+
+svm_hyperparam:
+  class_name: zensols.datdesc.hyperparam.HyperparamSetLoader
+  data: 'path: test-resources/load/svm.yml'
