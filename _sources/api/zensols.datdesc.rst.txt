@@ -1,0 +1,103 @@
+zensols.datdesc package
+=======================
+
+Submodules
+----------
+
+zensols.datdesc.app
+-------------------
+.. inheritance-diagram:: zensols.datdesc.app
+   :parts: 1
+
+.. automodule:: zensols.datdesc.app
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.cli
+-------------------
+.. inheritance-diagram:: zensols.datdesc.cli
+   :parts: 1
+
+.. automodule:: zensols.datdesc.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.desc
+--------------------
+.. inheritance-diagram:: zensols.datdesc.desc
+   :parts: 1
+
+.. automodule:: zensols.datdesc.desc
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.domain
+----------------------
+.. inheritance-diagram:: zensols.datdesc.domain
+   :parts: 1
+
+.. automodule:: zensols.datdesc.domain
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.hyperparam
+--------------------------
+.. inheritance-diagram:: zensols.datdesc.hyperparam
+   :parts: 1
+
+.. automodule:: zensols.datdesc.hyperparam
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.mng
+-------------------
+.. inheritance-diagram:: zensols.datdesc.mng
+   :parts: 1
+
+.. automodule:: zensols.datdesc.mng
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.opt
+-------------------
+.. inheritance-diagram:: zensols.datdesc.opt
+   :parts: 1
+
+.. automodule:: zensols.datdesc.opt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.optscore
+------------------------
+.. inheritance-diagram:: zensols.datdesc.optscore
+   :parts: 1
+
+.. automodule:: zensols.datdesc.optscore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.table
+---------------------
+.. inheritance-diagram:: zensols.datdesc.table
+   :parts: 1
+
+.. automodule:: zensols.datdesc.table
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: zensols.datdesc
+   :members:
+   :undoc-members:
+   :show-inheritance:

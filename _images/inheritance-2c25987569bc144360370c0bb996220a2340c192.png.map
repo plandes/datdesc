@@ -1,0 +1,6 @@
+<map id="inheritanceb18bcb0bb1" name="inheritanceb18bcb0bb1">
+<area shape="rect" id="node1" title="Helper class that provides a standard way to create an ABC using" alt="" coords="51,5,123,36"/>
+<area shape="rect" id="node3" title="An interface for classes that have multi&#45;line debuging capability." alt="" coords="42,84,133,115"/>
+<area shape="rect" id="node2" href="#zensols.datdesc.mng.CsvToLatexTable" target="_top" title="Generate a Latex table from a CSV file." alt="" coords="5,163,169,193"/>
+<area shape="rect" id="node4" href="#zensols.datdesc.mng.TableFileManager" target="_top" title="Reads the table definitions file and writes a Latex .sty file of the" alt="" coords="411,5,582,36"/>
+</map>

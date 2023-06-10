@@ -1,0 +1,9 @@
+<map id="inheritance49ec759f48" name="inheritance49ec759f48">
+<area shape="rect" id="node1" title="Helper class that provides a standard way to create an ABC using" alt="" coords="149,5,221,36"/>
+<area shape="rect" id="node6" title="All subclasses have the ability to deallocate any resources. &#160;This is" alt="" coords="42,84,177,115"/>
+<area shape="rect" id="node7" title="An interface for classes that have multi&#45;line debuging capability." alt="" coords="216,84,307,115"/>
+<area shape="rect" id="node2" href="#zensols.datdesc.desc.DataDescriber" target="_top" title="Container class for :class:`.DataFrameDescriber` instances. &#160;It also" alt="" coords="19,241,160,272"/>
+<area shape="rect" id="node3" title="Classes can extend this that want to persist :class:`.PersistedWork`" alt="" coords="5,163,200,193"/>
+<area shape="rect" id="node5" href="#zensols.datdesc.desc.DataFrameDescriber" target="_top" title="A class that contains a Pandas dataframe, a description of the data, and" alt="" coords="184,241,379,272"/>
+<area shape="rect" id="node4" title="A class that that generates a dictionary recursively from data classes and" alt="" coords="225,163,314,193"/>
+</map>

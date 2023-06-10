@@ -1,0 +1,922 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>zensols.datdesc.opt - Describe and optimize data 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../top.html"><div class="brand">Describe and optimize data 0.0.2 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../top.html">
+  
+  
+  <span class="sidebar-brand-text">Describe and optimize data 0.0.2 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/zensols.datdesc.html">zensols.datdesc package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING.html">Contributing</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for zensols.datdesc.opt</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains container and utility classes for hyperparameter optimization.</span>
+<span class="sd">These classes find optimial hyperparamters for a model and save the results as</span>
+<span class="sd">JSON files.  This module is meant to be used by command line applications</span>
+<span class="sd">configured as Zensols `Resource libraries`_.</span>
+
+<span class="sd">:see: `Resource libraries &lt;https://plandes.github.io/util/doc/config.html#resource-libraries&gt;`_</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Paul Landes&#39;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">ABCMeta</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">JSONDecodeError</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">TextIOBase</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">hyperopt</span> <span class="k">as</span> <span class="nn">ho</span>
+<span class="kn">from</span> <span class="nn">hyperopt</span> <span class="kn">import</span> <span class="n">hp</span>
+<span class="kn">from</span> <span class="nn">zensols.persist</span> <span class="kn">import</span> <span class="n">persisted</span><span class="p">,</span> <span class="n">PersistedWork</span>
+<span class="kn">from</span> <span class="nn">zensols.config</span> <span class="kn">import</span> <span class="n">ConfigFactory</span><span class="p">,</span> <span class="n">Dictable</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">HyperparamModel</span><span class="p">,</span> <span class="n">HyperparamSet</span><span class="p">,</span> <span class="n">HyperparamSetLoader</span>
+<span class="kn">from</span> <span class="nn">.hyperparam</span> <span class="kn">import</span> <span class="n">HyperparamError</span><span class="p">,</span> <span class="n">Hyperparam</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="HyperparamResult"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparamResult">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">HyperparamResult</span><span class="p">(</span><span class="n">Dictable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Results of an optimization and optionally the best fit.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_DICTABLE_WRITABLE_DESCENDANTS</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the of :class:`.HyperparameterOptimizer`, which is the</span>
+<span class="sd">    directory name.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hyp</span><span class="p">:</span> <span class="n">HyperparamModel</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The updated hyperparameters.&quot;&quot;&quot;</span>
+
+    <span class="n">scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The last score results computed during the optimization.&quot;&quot;&quot;</span>
+
+    <span class="n">loss</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The last loss.&quot;&quot;&quot;</span>
+
+    <span class="n">eval_ix</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The index of the optimiation.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="HyperparamResult.from_file"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparamResult.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore a result from a file name.</span>
+
+<span class="sd">        :param path: the path from which to restore</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;hyp&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">hyp_set</span><span class="p">:</span> <span class="n">HyperparamSet</span> <span class="o">=</span> <span class="n">HyperparamSetLoader</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">model_name</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;hyp&#39;</span><span class="p">]})</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="n">hyp_model</span><span class="p">:</span> <span class="n">HyperparamModel</span> <span class="o">=</span> <span class="n">hyp_set</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
+            <span class="n">hyp</span><span class="o">=</span><span class="n">hyp_model</span><span class="p">,</span>
+            <span class="n">scores</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;scores&#39;</span><span class="p">])),</span>
+            <span class="n">loss</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">],</span>
+            <span class="n">eval_ix</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;eval_ix&#39;</span><span class="p">])</span></div>
+
+    <span class="k">def</span> <span class="nf">_from_dictable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">dct</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_from_dictable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;scores&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dct</span>
+
+<div class="viewcode-block" id="HyperparamResult.write"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparamResult.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">TextIOBase</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
+        <span class="n">dct</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asdict</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;scores&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;hyp&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="s1">&#39;hyp:&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hyp</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="s1">&#39;scores:&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">option_context</span><span class="p">(</span><span class="s1">&#39;display.max_colwidth&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">WRITABLE_MAX_COL</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_block</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="HyperparamRun"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparamRun">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">HyperparamRun</span><span class="p">(</span><span class="n">Dictable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for the entire optimization run.  The best run contains the</span>
+<span class="sd">    best fit (:obj:`.HyperparamResult`) as predicted by the hyperparameter</span>
+<span class="sd">    optimization algorithm.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_DICTABLE_WRITABLE_DESCENDANTS</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">_DICTABLE_ATTRIBUTES</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;initial_loss&#39;</span><span class="p">,</span> <span class="s1">&#39;loss_stats&#39;</span><span class="p">,</span> <span class="s1">&#39;best&#39;</span><span class="p">]</span>
+
+    <span class="n">runs</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">HyperparamResult</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The results from previous runs.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">final_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The path of the final run.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">final</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The results of the final run, which as the best fit (see class</span>
+<span class="sd">        docs).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initial_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The loss from the first run.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loss</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">losses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The loss value for all runs&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">loss_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The loss statistics (min, max, ave, etc).&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">losses</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+        <span class="c1"># skip initial row</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">best_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The result that had the lowest loss.&quot;&quot;&quot;</span>
+        <span class="n">runs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">HyperparamRun</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">runs</span><span class="p">))</span>
+        <span class="n">runs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">loss</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">runs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<div class="viewcode-block" id="HyperparamRun.from_dir"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparamRun.from_dir">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamRun</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an instance with the runs stored in directory ``path``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">read_result</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">HyperparamResult</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HyperparamError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not parse </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">iterdir</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">runs</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">read_result</span><span class="p">(</span><span class="n">p</span><span class="p">)),</span> <span class="n">files</span><span class="p">)))</span></div></div>
+
+
+<div class="viewcode-block" id="CompareResult"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.CompareResult">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CompareResult</span><span class="p">(</span><span class="n">Dictable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Contains the loss and scores of an initial run and a run found on the</span>
+<span class="sd">    optimal hyperparameters.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">initial_param</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The initial hyperparameters.&quot;&quot;&quot;</span>
+
+    <span class="n">initial_loss</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The initial loss.&quot;&quot;&quot;</span>
+
+    <span class="n">initial_scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The initial scores.&quot;&quot;&quot;</span>
+
+    <span class="n">best_eval_ix</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The optimized hyperparameters.&quot;&quot;&quot;</span>
+
+    <span class="n">best_param</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The optimized hyperparameters.&quot;&quot;&quot;</span>
+
+    <span class="n">best_loss</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The optimized loss.&quot;&quot;&quot;</span>
+
+    <span class="n">best_scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">field</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The optimized scores.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CompareResult.write"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.CompareResult.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">TextIOBase</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="s1">&#39;initial:&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="s1">&#39;parameters:&#39;</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_param</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;loss: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_loss</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="s1">&#39;scores:&#39;</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_scores</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_block</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="s1">&#39;best:&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;eval_ix: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_eval_ix</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="s1">&#39;parameters:&#39;</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_param</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;loss: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">best_loss</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_line</span><span class="p">(</span><span class="s1">&#39;scores:&#39;</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_scores</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_block</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="HyperparameterOptimizer"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">HyperparameterOptimizer</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates the files used to score optimizer output.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the optimization experiment set.  This has a bearing on where</span>
+<span class="sd">    files are stored (see :obj:`opt_intermediate_dir`).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hyperparam_names</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">())</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the hyperparameters to use to create the space.</span>
+
+<span class="sd">    :see: :meth:`_create_space`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">max_evals</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The maximum number of evaluations of the hyperparmater optimization</span>
+<span class="sd">    algorithm to execute.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">show_progressbar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether or not to show the progress bar while running the optimization.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">intermediate_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;opthyper&#39;</span><span class="p">))</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The directory where the intermediate results are saved while the</span>
+<span class="sd">    algorithm works.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">baseline_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A JSON file with hyperparameter settings to set on start.  This file</span>
+<span class="sd">    contains the output portion of the ``final.json`` results, (which are the</span>
+<span class="sd">    results parsed and set in :obj:`HyperparamResult`).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_result</span><span class="p">:</span> <span class="n">HyperparamResult</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eval_ix</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_factory</span> <span class="o">=</span> <span class="n">PersistedWork</span><span class="p">(</span>
+            <span class="s1">&#39;_config_factory&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">cache_global</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_create_config_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConfigFactory</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the harness for the Zensols application.&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_get_hyperparams</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the hyperparameter instance for the application.&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The objective implementation used by this class.</span>
+
+<span class="sd">        :return: a tuple of the (``loss``, ``scores``), where the scores are any</span>
+<span class="sd">                 dataframe of the scores of the evaulation</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_create_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the hyperparamter spacy used by the :mod:`hyperopt` optimizer.</span>
+
+<span class="sd">        :see: :obj:`hyperparam_names`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hyperparam_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">HyperparamError</span><span class="p">(</span>
+                <span class="s1">&#39;No given hyperparamter names to optimizer create space&#39;</span><span class="p">)</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">HyperparamModel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparams</span>
+        <span class="n">space</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparam_names</span><span class="p">:</span>
+            <span class="n">param</span><span class="p">:</span> <span class="n">Hyperparam</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;float&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">HyperparamError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No interval for parameter </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">space</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">param</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">HyperparamError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No interval for parameter </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">space</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">uniformint</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">param</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;choice&#39;</span><span class="p">:</span>
+                <span class="n">space</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HyperparamError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Unsupported parameter type: </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">space</span>
+
+    <span class="k">def</span> <span class="nf">_compare</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Like :meth:`_objective` but used when comparing the initial</span>
+<span class="sd">        hyperparameters with the optimized.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objective</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_score_iterations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of scored items (times to call :meth:`_optimize`)</span>
+<span class="sd">        called by :meth:`get_score_dataframe`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_get_result_file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a file name based ``name`` used for storing results.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval_ix</span><span class="si">}</span><span class="s1">.json&#39;</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.json&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.json&#39;</span>
+        <span class="k">return</span> <span class="n">name</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@persisted</span><span class="p">(</span><span class="s1">&#39;_config_factory&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">config_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConfigFactory</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The app config factory.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_config_factory</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hyperparams</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The model hyperparameters to be updated by the optimizer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_hyperparams</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">results_intermediate_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The directory that has all intermediate results by subdirectory</span>
+<span class="sd">        name.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intermediate_dir</span> <span class="o">/</span> <span class="s1">&#39;tmp&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">opt_intermediate_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The optimization result directory for the config/parser.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_intermediate_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.remove_result"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.remove_result">[docs]</a>    <span class="k">def</span> <span class="nf">remove_result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an entire run&#39;s previous optimization results.&quot;&quot;&quot;</span>
+        <span class="n">to_del</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_intermediate_dir</span>
+        <span class="k">if</span> <span class="n">to_del</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;deleting: </span><span class="si">{</span><span class="n">to_del</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">to_del</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_persist_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the last result to the file system in JSON format.&quot;&quot;&quot;</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_result_file_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">res_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_intermediate_dir</span> <span class="o">/</span> <span class="n">name</span>
+        <span class="n">res_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_result</span><span class="o">.</span><span class="n">asjson</span><span class="p">(</span><span class="n">writer</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_run_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">hp</span><span class="p">:</span> <span class="n">HyperparamModel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparams</span>
+        <span class="k">if</span> <span class="n">space</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">hp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">space</span><span class="p">)</span>
+        <span class="n">loss</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="n">scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+        <span class="n">loss</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objective</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_result</span> <span class="o">=</span> <span class="n">HyperparamResult</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">hyp</span><span class="o">=</span><span class="n">hp</span><span class="p">,</span>
+            <span class="n">scores</span><span class="o">=</span><span class="n">scores</span><span class="p">,</span>
+            <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span>
+            <span class="n">eval_ix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval_ix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_persist_result</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eval_ix</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="k">def</span> <span class="nf">_create_uniform_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                              <span class="n">integer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a uniform space used by the optimizer.</span>
+
+<span class="sd">        :param params: a tuple of tuples with the form</span>
+<span class="sd">                       ``(&lt;param name&gt;, &lt;start range&gt;, &lt;end range&gt;)``</span>
+
+<span class="sd">        :param integer: whether the uniform range are of type integer</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">map_param</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">integer</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">hp</span><span class="o">.</span><span class="n">uniformint</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">hp</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">map_param</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">),</span> <span class="n">params</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_create_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a choice space.</span>
+
+<span class="sd">        :param params: a tuple of tuples with the form</span>
+<span class="sd">                       ``(&lt;param name&gt;, (&lt;choice 1&gt;, &lt;choice 2&gt;...))``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">map_param</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">choices</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">hp</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">choices</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">map_param</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">),</span> <span class="n">params</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_minimize_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the hyperparameter optimization process and return the results as</span>
+<span class="sd">        a dict of the optimized parameters.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">search_space</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_space</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;starting hyperparameter minimization objective&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ho</span><span class="o">.</span><span class="n">fmin</span><span class="p">(</span>
+            <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_objective</span><span class="p">,</span>
+            <span class="n">show_progressbar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_progressbar</span><span class="p">,</span>
+            <span class="n">space</span><span class="o">=</span><span class="n">search_space</span><span class="p">,</span>
+            <span class="n">algo</span><span class="o">=</span><span class="n">ho</span><span class="o">.</span><span class="n">tpe</span><span class="o">.</span><span class="n">suggest</span><span class="p">,</span>
+            <span class="n">max_evals</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_evals</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_finish_optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called by :meth:`optimize` when complete.  Command line programs will</span>
+<span class="sd">        probably want to report the hyperparameters and last score values</span>
+<span class="sd">        computed during the hyperparameter optimization using</span>
+<span class="sd">        :meth:`write_best_result`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.optimize"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.optimize">[docs]</a>    <span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the optimization algorithm.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_result</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_objective</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;initial loss: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_result</span><span class="o">.</span><span class="n">loss</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">best</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minimize_objective</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finish_optimize</span><span class="p">(</span><span class="n">best</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.get_run"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.get_run">[docs]</a>    <span class="k">def</span> <span class="nf">get_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamRun</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the best run from the file system.</span>
+
+<span class="sd">        :param result_dir: the result directory, which defaults to</span>
+<span class="sd">                           :obj:`opt_intermediate_dir`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">result_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_intermediate_dir</span>
+        <span class="k">return</span> <span class="n">HyperparamRun</span><span class="o">.</span><span class="n">from_dir</span><span class="p">(</span><span class="n">result_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.get_best_result"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.get_best_result">[docs]</a>    <span class="k">def</span> <span class="nf">get_best_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamResult</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run</span><span class="p">()</span><span class="o">.</span><span class="n">best_result</span></div>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.get_best_results"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.get_best_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_best_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HyperparamResult</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the best results across all hyperparameter optimization runs</span>
+<span class="sd">        with keys as run names.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res_dirs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_intermediate_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span>
+        <span class="n">res_dirs</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">(),</span> <span class="n">res_dirs</span><span class="p">)</span>
+        <span class="n">best_results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HyperparamResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">res_dir</span><span class="p">:</span> <span class="n">Path</span>
+        <span class="k">for</span> <span class="n">res_dir</span> <span class="ow">in</span> <span class="n">res_dirs</span><span class="p">:</span>
+            <span class="n">run</span><span class="p">:</span> <span class="n">HyperparamRun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">res_dir</span><span class="p">)</span>
+            <span class="n">res</span><span class="p">:</span> <span class="n">HyperparamResult</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">best_result</span>
+            <span class="n">best_results</span><span class="p">[</span><span class="n">res_dir</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="k">return</span> <span class="n">best_results</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_hyp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the baseline hyperparamters from a file if specified in</span>
+<span class="sd">        :obj:`baseline_path` if set, otherwise get it from the file system.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span><span class="p">:</span> <span class="n">HyperparamResult</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseline_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;restoring from best run&#39;</span><span class="p">)</span>
+            <span class="n">res</span><span class="p">:</span> <span class="n">HyperparamResult</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_run</span><span class="p">()</span><span class="o">.</span><span class="n">best_result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;restoring from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">baseline_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseline_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="c1"># assume a previous run when a directorty</span>
+                <span class="n">run</span> <span class="o">=</span> <span class="n">HyperparamRun</span><span class="o">.</span><span class="n">from_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">baseline_path</span><span class="p">)</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">best_result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">HyperparamResult</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">baseline_path</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="c1"># when a flat parameter file, there will be no `hyp` key</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;baseline file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">baseline_path</span><span class="si">}</span><span class="s1"> does not &#39;</span> <span class="o">+</span>
+                        <span class="s1">&#39;look like previous results--trying as parameter file&#39;</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">baseline_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                        <span class="n">hyp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparams</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                        <span class="n">hyp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                        <span class="c1"># return a bogus result, which is alright since used</span>
+                        <span class="c1"># only to copy parameters</span>
+                        <span class="n">res</span> <span class="o">=</span> <span class="n">HyperparamResult</span><span class="p">(</span>
+                            <span class="n">hyp</span><span class="o">=</span><span class="n">hyp</span><span class="p">,</span>
+                            <span class="n">scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">loss</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">eval_ix</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">set_hyp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hyperparams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">hyp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.get_comparison"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.get_comparison">[docs]</a>    <span class="k">def</span> <span class="nf">get_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompareResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compare the scores of the default parameters with those predicted by</span>
+<span class="sd">        the optimizer of the best run.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hyp</span><span class="p">:</span> <span class="n">HyperparamModel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparams</span>
+        <span class="n">prev</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">hyp</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">cmp_res</span><span class="p">:</span> <span class="n">CompareResult</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">initial_loss</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="n">initial_scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+            <span class="n">initial_loss</span><span class="p">,</span> <span class="n">initial_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">()</span>
+            <span class="n">best_res</span><span class="p">:</span> <span class="n">HyperparamResult</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_baseline</span><span class="p">()</span>
+            <span class="n">best</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_res</span><span class="o">.</span><span class="n">hyp</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">best_loss</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="n">best_scores</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+            <span class="n">hyp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">best</span><span class="p">)</span>
+            <span class="n">best_loss</span><span class="p">,</span> <span class="n">best_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare</span><span class="p">()</span>
+            <span class="n">cmp_res</span> <span class="o">=</span> <span class="n">CompareResult</span><span class="p">(</span>
+                <span class="n">initial_param</span><span class="o">=</span><span class="n">prev</span><span class="p">,</span>
+                <span class="n">initial_loss</span><span class="o">=</span><span class="n">initial_loss</span><span class="p">,</span>
+                <span class="n">initial_scores</span><span class="o">=</span><span class="n">initial_scores</span><span class="p">,</span>
+                <span class="n">best_eval_ix</span><span class="o">=</span><span class="n">best_res</span><span class="o">.</span><span class="n">eval_ix</span><span class="p">,</span>
+                <span class="n">best_param</span><span class="o">=</span><span class="n">best</span><span class="p">,</span>
+                <span class="n">best_loss</span><span class="o">=</span><span class="n">best_loss</span><span class="p">,</span>
+                <span class="n">best_scores</span><span class="o">=</span><span class="n">best_scores</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">hyp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prev</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmp_res</span></div>
+
+    <span class="k">def</span> <span class="nf">_write_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">HyperparamResult</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">TextIOBase</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">writer</span><span class="o">=</span><span class="n">writer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.write_best_result"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.write_best_result">[docs]</a>    <span class="k">def</span> <span class="nf">write_best_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">TextIOBase</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
+                          <span class="n">include_param_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the results from the best run.</span>
+
+<span class="sd">        :param include_param_json: whether to output the JSON formatted</span>
+<span class="sd">                                   hyperparameters</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">best_res</span><span class="p">:</span> <span class="n">HyperparamResult</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_best_result</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_result</span><span class="p">(</span><span class="n">best_res</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">include_param_json</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;parameters:&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">best_res</span><span class="o">.</span><span class="n">hyp</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.write_compare"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.write_compare">[docs]</a>    <span class="k">def</span> <span class="nf">write_compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">TextIOBase</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the results of a compare of the initial hyperparameters against</span>
+<span class="sd">        the optimized.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cmp_res</span><span class="p">:</span> <span class="n">CompareResult</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_comparison</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cmp_res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;no results or error&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmp_res</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">writer</span><span class="o">=</span><span class="n">writer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.get_score_dataframe"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.get_score_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">get_score_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a dataframe from the results scored from the best</span>
+<span class="sd">        hyperparameters.</span>
+
+<span class="sd">        :param iterations: the number times the objective is called to produce</span>
+<span class="sd">                           the results (the objective space is not altered)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hyp</span><span class="p">:</span> <span class="n">HyperparamModel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparams</span>
+        <span class="n">prev</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">hyp</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">dfs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">iterations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_score_iterations</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;scoring </span><span class="si">{</span><span class="n">iterations</span><span class="si">}</span><span class="s1"> iterations using best settings&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_baseline</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_objective</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_result</span><span class="o">.</span><span class="n">scores</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;iteration&#39;</span><span class="p">,</span>
+                          <span class="nb">tuple</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))))</span>
+                <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">hyp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prev</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.write_score"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.write_score">[docs]</a>    <span class="k">def</span> <span class="nf">write_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">TextIOBase</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HyperparamResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore the hyperparameter state, score the data and print the</span>
+<span class="sd">        results.  Use the :obj:`baseline` parameters if available, otherwise use</span>
+<span class="sd">        the parameters from the best best run.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hyp</span><span class="p">:</span> <span class="n">HyperparamModel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparams</span>
+        <span class="n">prev</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">hyp</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_baseline</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;using hyperparameters:&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hyperparams</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_objective</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_result</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_result</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">hyp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prev</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.write_scores"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.write_scores">[docs]</a>    <span class="k">def</span> <span class="nf">write_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a file of the results scored from the best hyperparameters.</span>
+
+<span class="sd">        :param output_file: where to write the CSV file; defaults to a file in</span>
+<span class="sd">                            :obj:`opt_intermediate_dir`</span>
+
+<span class="sd">        :param iterations: the number times the objective is called to produce</span>
+<span class="sd">                           the results (the objective space is not altered)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">output_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intermediate_dir</span> <span class="o">/</span> <span class="s1">&#39;scores&#39;</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.csv&#39;</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_score_dataframe</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
+        <span class="n">output_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_file</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;wrote scores to </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">aggregate_score_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The output directory containing runs with the best parameters of the</span>
+<span class="sd">        top N results (see :meth:`aggregate_scores`).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intermediate_dir</span> <span class="o">/</span> <span class="s1">&#39;agg&#39;</span>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.aggregate_scores"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.aggregate_scores">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Aggregate best score results as a separate CSV file for each data</span>
+<span class="sd">        point with :meth:`get_score_dataframe`.  This is saved as a separate</span>
+<span class="sd">        file for each optmiziation run since this method can take a long time as</span>
+<span class="sd">        it will re-score the dataset.  These results are then &quot;stiched&quot; together</span>
+<span class="sd">        with :meth:`gather_aggregate_scores`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HyperparamResult</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_best_results</span><span class="p">()</span>
+        <span class="n">res_tups</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HyperparamResult</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loss</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;scoring top best results&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aggregate_score_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">best</span><span class="p">:</span> <span class="n">HyperparamResult</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">best</span> <span class="ow">in</span> <span class="n">res_tups</span><span class="p">:</span>
+            <span class="n">output_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate_score_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.csv&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;scoring </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">match_sample_size</span><span class="si">}</span><span class="s1"> &#39;</span> <span class="o">+</span>
+                        <span class="sa">f</span><span class="s1">&#39;samples with loss </span><span class="si">{</span><span class="n">best</span><span class="o">.</span><span class="n">loss</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_score_dataframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;wrote: </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HyperparameterOptimizer.gather_aggregate_scores"><a class="viewcode-back" href="../../../api/zensols.datdesc.html#zensols.datdesc.opt.HyperparameterOptimizer.gather_aggregate_scores">[docs]</a>    <span class="k">def</span> <span class="nf">gather_aggregate_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dataframe of all the aggregate scores written by</span>
+<span class="sd">        :meth:`aggregate_scores`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dfs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">agg_score_file</span><span class="p">:</span> <span class="n">Path</span>
+        <span class="k">for</span> <span class="n">agg_score_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate_score_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+            <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">agg_score_file</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span></div></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, Paul Landes
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    </body>
+</html>
