@@ -23,7 +23,7 @@ class Table(PersistableContainer, Dictable):
     """
     _VARIABLE: ClassVar[str] = 'VAR'
     _VARIABLE_ATTRIBUTES: ClassVar[Tuple[VariableParam]] = (
-        VariableParam('placement'),
+        VariableParam('placement', value_format='{val}'),
         VariableParam('size'))
 
     path: str = field()
