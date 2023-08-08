@@ -3,10 +3,13 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Dict, List, Sequence, Tuple, Any, ClassVar, Optional
+from typing import (
+    Dict, List, Sequence, Tuple, Any, ClassVar, Optional, Callable
+)
 from dataclasses import dataclass, field
 import sys
 import re
+import string
 from io import TextIOWrapper, StringIO
 from tabulate import tabulate
 import itertools as it
@@ -137,6 +140,11 @@ class Table(PersistableContainer, Dictable):
     bold_max_columns: List[str] = field(default_factory=list)
     """A list of column names that will have its max value bolded."""
 
+    capitalize_columns: Dict[str, bool] = field(default_factory=dict)
+    """Capitalize either sentences (``False`` values) or every word (``True``
+    values).  The keys are column names.
+
+    """
     index_col_name: str = field(default=None)
     """If set, add an index column with the given name."""
 
@@ -356,6 +364,12 @@ class Table(PersistableContainer, Dictable):
             df.iloc[r, c] = fmt
         return df
 
+    def _apply_df_capitalize(self, df: pd.DataFrame):
+        for col, capwords in self.capitalize_columns.items():
+            fn: Callable = string.capwords if capwords else str.capitalize
+            df[col] = df[col].apply(fn)
+        return df
+
     def _get_bold_columns(self, df: pd.DataFrame) -> Tuple[Tuple[int, int]]:
         if len(self.bold_max_columns) > 0:
             cixs: List[str] = self.bold_max_columns
@@ -390,6 +404,7 @@ class Table(PersistableContainer, Dictable):
         df = self._apply_df_number_format(df)
         df = self._apply_df_eval_post(df)
         df = self._apply_df_bold_cells(df, bold_cols)
+        df = self._apply_df_capitalize(df)
         df = self._apply_df_add_indexes(df)
         df = self._apply_df_column_modifies(df)
         df = self._apply_df_font_format(df)
