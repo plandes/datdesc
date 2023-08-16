@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [0.1.0] - 2023-08-16
-Functional and downstream moderate risk update release.
+Downstream moderate risk update release.
 
 ### Changes
 - Capitalize columns
