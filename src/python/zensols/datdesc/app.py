@@ -129,7 +129,7 @@ class Application(object):
             raise ApplicationError(f'No such file for directory: {input_path}')
         return paths
 
-    def generate_tables(self, input_path: Path, output_path: Path = None):
+    def generate_tables(self, input_path: Path, output_path: Path):
         """Create LaTeX tables.
 
         :param input_path: definitions YAML path location or directory
@@ -147,7 +147,7 @@ class Application(object):
             else:
                 self._process_file(input_path, output_path, file_type)
 
-    def generate_hyperparam(self, input_path: Path, output_path: Path = None,
+    def generate_hyperparam(self, input_path: Path, output_path: Path,
                             output_format: _OutputFormat = _OutputFormat.short):
         """Write hyperparameter formatted data
 
