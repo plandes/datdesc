@@ -29,7 +29,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     descriptions of all the columns in that dataframe.
 
     """
-    _PERSITABLE_PROPERTIES: ClassVar[Set[str]] = {'_metadata_val'}
+    _PERSITABLE_PROPERTIES: ClassVar[Set[str]] = {'_meta_val'}
     _TABLE_FORMAT: ClassVar[str] = '{name}tab'
 
     name: str = field()
@@ -148,6 +148,8 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             if col not in renames:
                 renames[col] = col
         meta = pd.DataFrame(renames.items(), columns='name description'.split())
+        meta.index = meta['name']
+        meta = meta.drop(columns=['name'])
         kws: Dict[str, Any] = dict(filter(filter_kwargs, tab.__dict__.items()))
         if len(kws) == 0:
             kws = None
