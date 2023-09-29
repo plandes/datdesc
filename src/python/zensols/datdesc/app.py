@@ -162,3 +162,17 @@ class Application(object):
         path: Path
         for _, path in filter(lambda x: x[0] == 'h', paths):
             self._process_hyper_file(path, output_path, output_format)
+
+
+@dataclass
+class PrototypeApplication(object):
+    CLI_META = {'is_usage_visible': False}
+
+    app: Application = field()
+
+    def proto(self):
+        """Prototype test."""
+        from . import DataDescriber
+        path = Path('test-resources/config/sections-table.yml')
+        dd = DataDescriber.from_yaml_file(path)
+        dd.write()

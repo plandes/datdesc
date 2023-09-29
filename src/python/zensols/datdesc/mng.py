@@ -73,6 +73,17 @@ class TableFileManager(object):
             raise LatexTableError(f'does not appear to be a YAML file: {fname}')
         return self._PACKAGE_FORMAT.format(**{'name': m.group(1)})
 
+    def _fix_path(self, tab: Table):
+        """When the CSV path in the table doesn't exist, replace it with a
+        relative file from the YAML file if it exists.
+
+        """
+        tab_path = Path(tab.path)
+        if not tab_path.is_file():
+            rel_path = Path(self.table_path.parent, tab_path).resolve()
+            if rel_path.is_file():
+                tab.path = rel_path
+
     @property
     def tables(self) -> List[Table]:
         logger.info(f'reading table definitions file {self.table_path}')
@@ -90,5 +101,6 @@ class TableFileManager(object):
             cls_name = f'zensols.datdesc.{cls_name}'
             td['name'] = name
             inst: Table = ClassImporter(cls_name, reload=False).instance(**td)
+            self._fix_path(inst)
             tables.append(inst)
         return tables

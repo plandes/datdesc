@@ -1,8 +1,8 @@
 """Metadata container classes.
 
 """
+from __future__ import annotations
 __author__ = 'Paul Landes'
-
 from typing import (
     Tuple, Any, Dict, List, Set, ClassVar, Optional, Iterable, Union
 )
@@ -11,13 +11,14 @@ import logging
 import sys
 from frozendict import frozendict
 from collections import OrderedDict
+import parse
 from io import TextIOBase
 from pathlib import Path
 import yaml
 import pandas as pd
 from zensols.config import Dictable
 from zensols.persist import PersistableContainer, persisted, FileTextUtil
-from . import Table
+from . import DataDescriptionError, Table, TableFileManager
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
 
     """
     _PERSITABLE_PROPERTIES: ClassVar[Set[str]] = {'_metadata_val'}
+    _TABLE_FORMAT: ClassVar[str] = '{name}tab'
 
     name: str = field()
     """The description of the data this describer holds."""
@@ -117,7 +119,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         """
         params: Dict[str, Any] = dict(
             path=self.csv_path,
-            name=f'{self.tab_name}tab',
+            name=self._TABLE_FORMAT.format(name=self.tab_name),
             caption=self.desc,
             column_renames=dict(filter(lambda x: x[1] is not None,
                                        self.asdict().items())))
@@ -125,6 +127,36 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         table = Table(**params)
         table.dataframe = self.df
         return table
+
+    @classmethod
+    def from_table(cls, tab: Table) -> DataFrameDescriber:
+        """Create a frame descriptor from a :class:`.Table`."""
+        def filter_kwargs(t: Tuple[str, Any]) -> bool:
+            k, v = t
+            if v is None or k.startswith('_') or k in kw_skips:
+                return False
+            return not isinstance(v, (tuple, list, set, dict)) or len(v) > 0
+
+        kw_skips: Set[str] = {'name', 'df', 'desc', 'meta'}
+        res: parse.Result = parse.parse(cls._TABLE_FORMAT, tab.name)
+        if res is None:
+            raise DataDescriptionError(f"Bad table name: '{tab.name}'")
+        df: pd.DataFrame = tab.dataframe
+        renames: Dict[str, str] = tab.column_renames
+        col: str
+        for col in df.columns:
+            if col not in renames:
+                renames[col] = col
+        meta = pd.DataFrame(renames.items(), columns='name description'.split())
+        kws: Dict[str, Any] = dict(filter(filter_kwargs, tab.__dict__.items()))
+        if len(kws) == 0:
+            kws = None
+        return DataFrameDescriber(
+            name=res['name'],
+            df=df,
+            desc=tab.caption,
+            meta=meta,
+            table_kwargs=kws)
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout,
               df_params: Dict[str, Any] = None):
@@ -301,6 +333,25 @@ class DataDescriber(PersistableContainer, Dictable):
         if include_excel:
             paths.append(self.save_excel())
         return paths
+
+    @classmethod
+    def from_yaml_file(cls, path: Path) -> DataDescriber:
+        """Create a data descriptor from a previously written YAML/CSV files
+        using :meth:`save`.
+
+        :see: :meth:`save`
+
+        :see: :meth:`DataFrameDescriber.from_table`
+
+        """
+        par: Path = path.parent
+        mng = TableFileManager(path)
+        return DataDescriber(
+            describers=tuple(map(DataFrameDescriber.from_table, mng.tables)),
+            name=path.name,
+            output_dir=par / 'results',
+            csv_dir=par / 'csv',
+            yaml_dir=par / 'config')
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout,
               df_params: Dict[str, Any] = None):

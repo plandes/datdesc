@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Added
+- Methods to "re-hydrate" `DataDescriber` and `DataFrameDescriber` instances
+  previously dumped to the file system.
+
+
 ## [0.1.0] - 2023-08-16
 Downstream moderate risk update release.
 

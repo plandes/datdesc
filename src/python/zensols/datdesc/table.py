@@ -4,16 +4,17 @@
 __author__ = 'Paul Landes'
 
 from typing import (
-    Dict, List, Sequence, Tuple, Any, ClassVar, Optional, Callable
+    Dict, List, Sequence, Tuple, Any, ClassVar, Optional, Callable, Union
 )
 from dataclasses import dataclass, field
 import sys
 import re
 import string
-from io import TextIOWrapper, StringIO
-from tabulate import tabulate
 import itertools as it
+from io import TextIOWrapper, StringIO
+from pathlib import Path
 import pandas as pd
+from tabulate import tabulate
 from zensols.persist import persisted, PersistedWork, PersistableContainer
 from zensols.config import Dictable
 from . import VariableParam
@@ -29,7 +30,7 @@ class Table(PersistableContainer, Dictable):
         VariableParam('placement', value_format='{val}'),
         VariableParam('size'))
 
-    path: str = field()
+    path: Union[Path, str] = field()
     """The path to the CSV file to make a latex table."""
 
     name: str = field()
