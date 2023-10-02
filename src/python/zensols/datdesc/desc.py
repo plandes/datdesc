@@ -123,10 +123,6 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             caption=self.desc,
             column_renames=dict(filter(lambda x: x[1] is not None,
                                        self.asdict().items())))
-        if 0:
-            print('adding class table args:')
-            from pprint import pprint
-            pprint(self.table_kwargs)
         params.update(self.table_kwargs)
         params.update(kwargs)
         table = Table(**params)
