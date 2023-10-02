@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Methods to "re-hydrate" `DataDescriber` and `DataFrameDescriber` instances
   previously dumped to the file system.
+- Method (`DataFrameDescriber.format_table`) to format the dataframe's table
+  using `Table`.
 
 
 ## [0.1.0] - 2023-08-16

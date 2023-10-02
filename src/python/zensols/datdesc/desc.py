@@ -123,6 +123,11 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             caption=self.desc,
             column_renames=dict(filter(lambda x: x[1] is not None,
                                        self.asdict().items())))
+        if 0:
+            print('adding class table args:')
+            from pprint import pprint
+            pprint(self.table_kwargs)
+        params.update(self.table_kwargs)
         params.update(kwargs)
         table = Table(**params)
         table.dataframe = self.df
@@ -159,6 +164,14 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             desc=tab.caption,
             meta=meta,
             table_kwargs=kws)
+
+    def format_table(self):
+        """Replace (in place) dataframe :obj:`df` with the formatted table
+        obtained with :obj:`.Table.formatted_dataframe`.  The :class:`.Table` is
+        created by with :meth:`create_table`.
+
+        """
+        self.df = self.create_table().formatted_dataframe
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout,
               df_params: Dict[str, Any] = None):
@@ -354,6 +367,12 @@ class DataDescriber(PersistableContainer, Dictable):
             output_dir=par / 'results',
             csv_dir=par / 'csv',
             yaml_dir=par / 'config')
+
+    def format_tables(self):
+        """See :meth:`.DataFrameDescriber.format_table`."""
+        desc: DataFrameDescriber
+        for desc in self.describers:
+            desc.format_table()
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout,
               df_params: Dict[str, Any] = None):
