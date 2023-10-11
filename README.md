@@ -6,13 +6,20 @@
 [![Build Status][build-badge]][build-link]
 
 This API and command line program describes data in tables with metadata and
-generate Latex tables in a .sty file from CSV files.  The paths to the CSV
+generate LaTeX tables in a `.sty` file from CSV files.  The paths to the CSV
 files to create tables from and their metadata is given as a YAML configuration
 file.  Paraemters are both files or both directories.  When using directories,
-only files that match *-table.yml are considered.
+only files that match `*-table.yml` are considered.  In addition, the described
+data can be hyperparameter metadata, which can be optimized with the
+[hyperparameter module](#hyperparameters).
 
-In addition, the described data can be hyperparameter metadata, which can be
-optimized with the [hyperparameter module](#hyperparameters).
+Features:
+* Associate metadata with each column in a Pandas DataFrame.
+* DataFrame metadata is used to format LaTeX data and exported to Excel as
+  column header notes.
+* Data and metadata is viewable in a nice format with paging in a web browser
+  using the [Render program].
+* Usable as an API during data collection for research projects.
 
 
 ## Documentation
@@ -161,5 +168,6 @@ Copyright (c) 2023 Paul Landes
 [build-link]: https://github.com/plandes/datdesc/actions
 
 [hyperopt]: http://hyperopt.github.io/hyperopt/
+[Render program]: https://github.com/plandes/rend
 
 [Table]: api/zensols.datdesc.html#zensols.datdesc.table.Table
