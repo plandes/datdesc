@@ -6,16 +6,19 @@ only files that match *-table.yml are considered.
 """
 __author__ = 'Paul Landes'
 
-from typing import Tuple, Iterable, Any, Dict
+from typing import Tuple, Iterable, Any, Dict, List
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import logging
 import re
+from itertools import chain
 from pathlib import Path
 from zensols.util import stdout
 from zensols.cli import ApplicationError
 from zensols.config import Settings
-from . import TableFileManager, CsvToLatexTable, Table, DataFrameDescriber
+from . import (
+    TableFileManager, CsvToLatexTable, Table, DataFrameDescriber, DataDescriber
+)
 from .hyperparam import HyperparamModel, HyperparamSet, HyperparamSetLoader
 
 logger = logging.getLogger(__name__)
@@ -162,6 +165,38 @@ class Application(object):
         path: Path
         for _, path in filter(lambda x: x[0] == 'h', paths):
             self._process_hyper_file(path, output_path, output_format)
+
+    def write_excel(self, input_path: Path, output_file: Path = None,
+                    output_latex_format: bool = False):
+        """Create an Excel file from table data.
+
+        :param input_path: definitions YAML path location or directory
+
+        :param output_file: the output file, which defaults to the input prefix
+                            with the approproate extension
+
+        :param output_latex_format: whether to output with LaTeX commands
+
+        """
+        paths: Tuple[Path] = (input_path,)
+        descs: List[DataDescriber] = []
+        name: str = input_path.name
+        if output_file is None:
+            output_file = f'{input_path.stem}.xlsx'
+        if input_path.is_dir():
+            paths = tuple(filter(lambda p: p.suffix == '.yml',
+                                 input_path.iterdir()))
+        descs: Tuple[DataDescriber] = tuple(map(
+            DataDescriber.from_yaml_file, paths))
+        if len(descs) == 1:
+            name = descs[0].name
+        desc = DataDescriber(
+            describers=tuple(chain.from_iterable(
+                map(lambda d: d.describers, descs))),
+            name=name)
+        if output_latex_format:
+            desc.format_tables()
+        desc.save_excel(output_file)
 
 
 @dataclass
