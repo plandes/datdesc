@@ -256,6 +256,8 @@ class DataDescriber(PersistableContainer, Dictable):
         if output_file is None:
             fname: str = FileTextUtil.normalize_text(self.name)
             output_file = self._create_path(f'{fname}.xlsx')
+        elif len(output_file.suffix) == 0:
+            output_file = output_file.parent / f'{output_file.name}.xlsx'
         # create a Pandas Excel writer using XlsxWriter as the engine.
         writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
         for desc in self.describers:
