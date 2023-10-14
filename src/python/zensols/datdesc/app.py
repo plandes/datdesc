@@ -182,7 +182,7 @@ class Application(object):
         descs: List[DataDescriber] = []
         name: str = input_path.name
         if output_file is None:
-            output_file = f'{input_path.stem}.xlsx'
+            output_file = Path(f'{input_path.stem}.xlsx')
         if input_path.is_dir():
             paths = tuple(filter(lambda p: p.suffix == '.yml',
                                  input_path.iterdir()))
