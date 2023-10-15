@@ -91,6 +91,37 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         else:
             self._meta_val = meta
 
+    def derive(self, *,
+               name: str = None,
+               df: pd.DataFrame = None,
+               desc: str = None,
+               meta: Union[pd.DataFrame, Tuple[Tuple[str, str], ...]] = None):
+        """Create a new instance based on this instance and replace any
+        non-``None`` kwargs.
+
+        If ``meta`` is provided, it is merged with the metadata of this
+        instance.  However, any metadata provided must match in both column
+        names and descriptions.
+
+        """
+        name = self.name if name is None else name
+        desc = self.desc if desc is None else desc
+        if meta is None:
+            meta = self.meta.copy()
+        elif not isinstance(meta, pd.DataFrame):
+            meta = self._meta_dict_to_dataframe(meta)
+        if df is not None:
+            meta = pd.concat((self.meta.copy(), meta)).drop_duplicates()
+        cols: Set[str] = set(df.columns)
+        # stability requres filter instead rather than set operations
+        idx = list(filter(lambda n: n in cols, meta.index))
+        meta = meta.loc[idx]
+        return self.__class__(
+            name=name,
+            df=df,
+            desc=desc,
+            meta=meta)
+
     @property
     @persisted('_csv_path', transient=True)
     def csv_path(self) -> Path:
