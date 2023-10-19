@@ -103,6 +103,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         instance.  However, any metadata provided must match in both column
         names and descriptions.
 
+        :raise DataDescriptionError: if multiple metadata columns with differing
+                                     descriptions are found
+
         """
         name = self.name if name is None else name
         desc = self.desc if desc is None else desc
