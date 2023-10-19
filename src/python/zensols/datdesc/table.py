@@ -85,6 +85,13 @@ class Table(PersistableContainer, Dictable):
     column_renames: Dict[str, str] = field(default_factory=dict)
     """Columns to rename, if any."""
 
+    column_value_replaces: Dict[str, Dict[Any, Any]] = \
+        field(default_factory=dict)
+    """Data values to replace in the dataframe.  It is keyed by the column name
+    and values are the replacements.  Each value is a ``dict`` with orignal
+    value keys and the replacements as values.
+
+    """
     column_aligns: str = field(default=None)
     """The alignment/justification (i.e. ``|l|l|`` for two columns).  If not
     provided, they are automatically generated based on the columns of the
@@ -333,6 +340,10 @@ class Table(PersistableContainer, Dictable):
         return df
 
     def _apply_df_column_modifies(self, df: pd.DataFrame) -> pd.DataFrame:
+        col: str
+        repl: Dict[Any, Any]
+        for col, repl in self.column_value_replaces.items():
+            df[col] = df[col].apply(lambda v: repl.get(v, v))
         df = df.drop(columns=self.column_removes)
         if self.column_keeps is not None:
             df = df[self.column_keeps]
