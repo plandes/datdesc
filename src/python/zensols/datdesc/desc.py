@@ -103,6 +103,14 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         instance.  However, any metadata provided must match in both column
         names and descriptions.
 
+        :param name: :obj:`name`
+
+        :param df: :obj:`df`
+
+        :param desc: :obj:`desc`
+
+        :param meta: :obj:`meta`
+
         :raise DataDescriptionError: if multiple metadata columns with differing
                                      descriptions are found
 
