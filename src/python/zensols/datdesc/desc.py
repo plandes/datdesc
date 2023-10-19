@@ -116,6 +116,14 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         # stability requres filter instead rather than set operations
         idx = list(filter(lambda n: n in cols, meta.index))
         meta = meta.loc[idx]
+        dup_cols: List[str] = meta[meta.index.duplicated()].\
+            index.drop_duplicates().to_list()
+        if len(dup_cols) > 0:
+            m: pd.DataFrame = meta.drop_duplicates()
+            s = ', '.join(map(
+                lambda c: f"{c}: [{', '.join(m.loc[c]['description'])}]",
+                dup_cols))
+            raise DataDescriptionError(f'Metadata has duplicate columns: {s}')
         return self.__class__(
             name=name,
             df=df,
