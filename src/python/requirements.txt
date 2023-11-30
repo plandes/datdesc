@@ -2,4 +2,4 @@ xlsxwriter~=3.0.3
 pandas~=1.4.4
 tabulate~=0.8.10
 hyperopt~=0.2.7
-zensols.util~=1.13.0
+zensols.util~=1.13.3
