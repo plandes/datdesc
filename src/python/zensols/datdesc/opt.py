@@ -14,6 +14,7 @@ from abc import abstractmethod, ABCMeta
 import logging
 import sys
 import itertools as it
+from io import StringIO
 import json
 from json import JSONDecodeError
 from pathlib import Path
@@ -70,7 +71,7 @@ class HyperparamResult(Dictable):
         return cls(
             name=model_name,
             hyp=hyp_model,
-            scores=pd.read_json(json.dumps(data['scores'])),
+            scores=pd.read_json(StringIO(json.dumps(data['scores']))),
             loss=data['loss'],
             eval_ix=data['eval_ix'])
 
