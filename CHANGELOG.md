@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [0.2.0] - 2023-12-05
+### Changed
+- Upgrade to [zensols.util] version 1.14.
+
+### Added
+- Support for Python 3.11.
+
+### Removed
+- Support for Python 3.9
+
+
 ## [0.1.1] - 2023-11-30
 Feature release.
 
@@ -43,9 +54,12 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/plandes/datdesc/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/plandes/datdesc/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/plandes/datdesc/compare/v0.0.3...v0.1.0
 [0.0.3]: https://github.com/plandes/datdesc/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/plandes/datdesc/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/plandes/datdesc/compare/v0.0.0...v0.0.1
+
+[zensols.util]: https://github.com/plandes/util
