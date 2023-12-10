@@ -8,9 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changed
+- Bugs and fixes resulting from the [pandas] 2.1 upgrade.
+
+
 ## [0.2.0] - 2023-12-05
 ### Changed
 - Upgrade to [zensols.util] version 1.14.
+- Upgrade to [pandas] 2.1 and `tabulate` 0.9.x.
 
 ### Added
 - Support for Python 3.11.
@@ -63,3 +68,4 @@ Downstream moderate risk update release.
 [0.0.1]: https://github.com/plandes/datdesc/compare/v0.0.0...v0.0.1
 
 [zensols.util]: https://github.com/plandes/util
+[pandas]: https://pandas.pydata.org
