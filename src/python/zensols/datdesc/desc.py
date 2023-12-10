@@ -309,27 +309,26 @@ class DataDescriber(PersistableContainer, Dictable):
         elif len(output_file.suffix) == 0:
             output_file = output_file.parent / f'{output_file.name}.xlsx'
         # create a Pandas Excel writer using XlsxWriter as the engine.
-        writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
-        for desc in self.describers:
-            sheet_name: str = desc.name
-            if self.mangle_sheet_name:
-                sheet_name = FileTextUtil.normalize_text(sheet_name)
-            # convert the dataframe to an XlsxWriter Excel object.
-            desc.df.to_excel(writer, sheet_name=sheet_name, index=False)
-            # set comments of header cells to descriptions
-            worksheet: Worksheet = writer.sheets[sheet_name]
-            cdesc: Dict[str, str] = desc.asdict()
-            col: str
-            for cix, col in enumerate(desc.df.columns):
-                comment: str = cdesc[col]
-                if comment is None:
-                    logger.warning(f'missing column {col} in {desc.name}')
-                    continue
-                worksheet.write_comment(0, cix, comment)
-            # simulate column auto-fit
-            for i, width in enumerate(self._get_col_widths(desc.df)):
-                worksheet.set_column(i, i, width)
-        writer.save()
+        with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
+            for desc in self.describers:
+                sheet_name: str = desc.name
+                if self.mangle_sheet_name:
+                    sheet_name = FileTextUtil.normalize_text(sheet_name)
+                # convert the dataframe to an XlsxWriter Excel object.
+                desc.df.to_excel(writer, sheet_name=sheet_name, index=False)
+                # set comments of header cells to descriptions
+                worksheet: Worksheet = writer.sheets[sheet_name]
+                cdesc: Dict[str, str] = desc.asdict()
+                col: str
+                for cix, col in enumerate(desc.df.columns):
+                    comment: str = cdesc[col]
+                    if comment is None:
+                        logger.warning(f'missing column {col} in {desc.name}')
+                        continue
+                    worksheet.write_comment(0, cix, comment)
+                # simulate column auto-fit
+                for i, width in enumerate(self._get_col_widths(desc.df)):
+                    worksheet.set_column(i, i, width)
         logger.info(f'wrote {output_file}')
         return output_file
 
