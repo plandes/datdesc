@@ -411,6 +411,8 @@ class Table(PersistableContainer, Dictable):
 
         """
         df: pd.DataFrame = self.dataframe
+        # Pandas 2.x dislikes mixed float with string dtypes
+        df = df.astype(object)
         df = self._apply_df_eval_pre(df)
         bold_cols: Tuple[Tuple[int, int]] = self._get_bold_columns(df)
         df = self._apply_df_number_format(df)
