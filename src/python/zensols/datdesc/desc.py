@@ -67,6 +67,11 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     :meth:`create_table`.
 
     """
+    index_meta: Dict[Any, str] = field(default=None)
+    """The index metadata, which maps index values to descriptions of the
+    respective row.
+
+    """
     def __post_init__(self):
         super().__init__()
 
@@ -139,7 +144,32 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             name=name,
             df=df,
             desc=desc,
-            meta=meta)
+            meta=meta,
+            index_meta=self.index_meta)
+
+    def df_with_index_meta(self, index_format: str = None) -> pd.DataFrame:
+        """Create a dataframe with the first column containing index metadata.
+        This uses :obj:`index_meta` to create the column values.
+
+        :param index_format: the new index column format using ``index`` and
+                             ``value``, which defaults to ``{index}``
+
+        :return: the dataframe with a new first column of the index metadata, or
+                 :obj:`df` if :obj:`index_meta` is ``None``
+
+        """
+        df: pd.DataFrame = self.df
+        meta: Dict[Any, str] = self.index_meta
+        if meta is not None:
+            ix: List[Any] = df.columns.to_list()
+            if index_format is None:
+                ix = list(map(lambda i: meta[i], ix))
+            else:
+                ix = list(map(
+                    lambda i: index_format.format(index=i, value=meta[i]), ix))
+            df = df.copy()
+            df.insert(0, str(df.index.name), ix)
+        return df
 
     @property
     @persisted('_csv_path', transient=True)
