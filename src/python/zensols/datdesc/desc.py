@@ -100,7 +100,8 @@ class DataFrameDescriber(PersistableContainer, Dictable):
                name: str = None,
                df: pd.DataFrame = None,
                desc: str = None,
-               meta: Union[pd.DataFrame, Tuple[Tuple[str, str], ...]] = None):
+               meta: Union[pd.DataFrame, Tuple[Tuple[str, str], ...]] = None,
+               index_meta: Dict[Any, str] = None) -> DataFrameDescriber:
         """Create a new instance based on this instance and replace any
         non-``None`` kwargs.
 
@@ -122,6 +123,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         """
         name = self.name if name is None else name
         desc = self.desc if desc is None else desc
+        index_meta = self.index_meta if index_meta is None else index_meta
         if meta is None:
             meta = self.meta.copy()
         elif not isinstance(meta, pd.DataFrame):
@@ -145,7 +147,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             df=df,
             desc=desc,
             meta=meta,
-            index_meta=self.index_meta)
+            index_meta=index_meta)
 
     def df_with_index_meta(self, index_format: str = None) -> pd.DataFrame:
         """Create a dataframe with the first column containing index metadata.
@@ -170,6 +172,19 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             df = df.copy()
             df.insert(0, str(df.index.name), ix)
         return df
+
+    def derive_with_index_meta(self, index_format: str = None) -> \
+            DataFrameDescriber:
+        """Like :meth:`derive`, but the dataframe is generated with
+        :meth:`df_with_index_meta` using ``index_format`` as a parameter.
+
+        :param index_format: see :meth:`df_with_index_meta`
+
+        """
+        dfi: pd.DataFrame = self.df_with_index_meta(index_format)
+        clone: DataFrameDescriber = self.derive(df=dfi.reset_index(drop=True))
+        clone.index_meta = None
+        return clone
 
     @property
     @persisted('_csv_path', transient=True)
