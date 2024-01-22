@@ -16,6 +16,7 @@ from io import TextIOBase
 from pathlib import Path
 import yaml
 import pandas as pd
+from tabulate import tabulate
 from zensols.config import Dictable
 from zensols.persist import PersistableContainer, persisted, FileTextUtil
 from . import DataDescriptionError, Table, TableFileManager
@@ -281,6 +282,29 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         self._write_block(dfs, depth + 1, writer)
         self._write_line('columns:', depth, writer)
         self._write_dict(self.asdict(), depth + 1, writer)
+
+    def write_pretty(self, depth: int = 0, writer: TextIOBase = sys.stdout,
+                     include_metadata: bool = False,
+                     title_format: str = '{name} ({desc})', **tabulate_params):
+        """Like :meth:`write`, but generate a visually appealing table and
+        optionally column metadata.
+
+        """
+        if 'showindex' not in tabulate_params:
+            tabulate_params['showindex'] = False
+        cols: Dict[str, Any] = self.asdict()
+        title_meta: Dict[str, Any] = dict(
+            name=self.name, desc=self.desc, columns=cols)
+        title: str = title_format.format(**title_meta)
+        table: str = tabulate(
+            self.df,
+            headers=self.df.columns,
+            **tabulate_params)
+        self._write_line(title, depth, writer, max_len=True)
+        if include_metadata:
+            self._write_line('columns:', depth, writer)
+            self._write_dict(cols, depth + 1, writer)
+        self._write_block(table, depth, writer)
 
     def _from_dictable(self, *args, **kwargs) -> Dict[str, str]:
         dfm: pd.DataFrame = self.meta
