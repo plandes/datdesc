@@ -4,7 +4,7 @@
 from __future__ import annotations
 __author__ = 'Paul Landes'
 from typing import (
-    Tuple, Any, Dict, List, Set, ClassVar, Optional, Iterable, Union
+    Tuple, Any, Dict, List, Set, Sequence, ClassVar, Optional, Iterable, Union
 )
 from dataclasses import dataclass, field
 import logging
@@ -508,6 +508,9 @@ class DataDescriber(PersistableContainer, Dictable):
 
     def __iter__(self) -> Iterable[DataFrameDescriber]:
         return iter(self.describers)
+
+    def keys(self) -> Sequence[str]:
+        return self.describers_by_name.keys()
 
     def __getitem__(self, name: str) -> DataFrameDescriber:
         return self.describers_by_name[name]
