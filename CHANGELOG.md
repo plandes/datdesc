@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Added
+- A metadata like method in a data describer that describes what data it has.
+
+
 ## [0.2.1] - 2023-12-29
 ### Added
 - Index metadata for the `DataFrameDescriber` class.

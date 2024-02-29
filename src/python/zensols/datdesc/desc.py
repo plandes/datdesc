@@ -356,6 +356,31 @@ class DataDescriber(PersistableContainer, Dictable):
         """Data frame describers keyed by the describer name."""
         return frozendict(dict(map(lambda t: (t.name, t), self.describers)))
 
+    def add_summary(self) -> DataFrameDescriber:
+        """Add a new metadata like :class:`.DataFrameDescriber` as a first entry
+        in :obj:`describers` that describes what data this instance currently
+        has.
+
+        :return: the added metadata :class:`.DataFrameDescriber` instance
+
+        """
+        rows: List[Tuple[Any, ...]] = []
+        dfd: DataFrameDescriber
+        for dfd in self.describers:
+            rows.append((dfd.name, dfd.desc, len(dfd.df), len(dfd.df.columns)))
+        summary = DataFrameDescriber(
+            name='data-summary',
+            desc='Data summary',
+            df=pd.DataFrame(
+                data=rows,
+                columns='name description rows columns'.split()),
+            meta=(('name', 'data descriptor'),
+                  ('description', 'data description'),
+                  ('rows', 'number of rows in the dataset'),
+                  ('columns', 'number of columns in the dataset')))
+        self.describers = (summary, *self.describers)
+        return summary
+
     @staticmethod
     def _get_col_widths(df: pd.DataFrame, min_col: int = 100):
         # we concatenate this to the max of the lengths of column name and
@@ -514,3 +539,10 @@ class DataDescriber(PersistableContainer, Dictable):
 
     def __getitem__(self, name: str) -> DataFrameDescriber:
         return self.describers_by_name[name]
+
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        dfs: str = ', '.join(map(lambda d: d.name, self.describers))
+        return f'{self.name}: describers={dfs}'
