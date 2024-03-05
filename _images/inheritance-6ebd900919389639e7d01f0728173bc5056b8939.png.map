@@ -1,0 +1,6 @@
+<map id="inheritancea880adad34" name="inheritancea880adad34">
+<area shape="rect" id="node1" title="Base exception from which almost all library raised errors extend." alt="" coords="55,5,146,36"/>
+<area shape="rect" id="node2" href="#zensols.datdesc.domain.DataDescriptionError" target="_top" title="Thrown for any application level error." alt="" coords="5,84,196,115"/>
+<area shape="rect" id="node3" href="#zensols.datdesc.domain.LatexTableError" target="_top" title="Thrown for any application level error related to creating tables." alt="" coords="26,163,175,193"/>
+<area shape="rect" id="node4" href="#zensols.datdesc.domain.VariableParam" target="_top" title="Represents a Latex command variable." alt="" coords="438,5,579,36"/>
+</map>
