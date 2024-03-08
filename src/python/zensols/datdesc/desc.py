@@ -417,7 +417,9 @@ class DataDescriber(PersistableContainer, Dictable):
                 for cix, col in enumerate(desc.df.columns):
                     comment: str = cdesc[col]
                     if comment is None:
-                        logger.warning(f'missing column {col} in {desc.name}')
+                        if logger.isEnabledFor(logging.WARNING):
+                            logger.warning(f"missing comment in '{col}' " +
+                                           f"column in '{desc.name}'")
                         continue
                     worksheet.write_comment(0, cix, comment)
                 # simulate column auto-fit
