@@ -11,6 +11,7 @@ import logging
 import sys
 from frozendict import frozendict
 from collections import OrderedDict
+import textwrap as tw
 import parse
 from io import TextIOBase
 from pathlib import Path
@@ -327,6 +328,9 @@ class DataDescriber(PersistableContainer, Dictable):
     saves their instances as CSV data files and YAML configuration files.
 
     """
+    SHEET_NAME_MAXLEN: ClassVar[int] = 31
+    """Maximum allowed characters in an Excel spreadsheet's name."""
+
     describers: Tuple[DataFrameDescriber] = field()
     """The contained dataframe and metadata.
 
@@ -409,6 +413,15 @@ class DataDescriber(PersistableContainer, Dictable):
                 if self.mangle_sheet_name:
                     sheet_name = FileTextUtil.normalize_text(sheet_name)
                 # convert the dataframe to an XlsxWriter Excel object.
+                if len(sheet_name) > self.SHEET_NAME_MAXLEN:
+                    if logger.isEnabledFor(logging.WARNING):
+                        logger.warning(
+                            'truncating sheet name to Excel limit of ' +
+                            f'{self.SHEET_NAME_MAXLEN}: {sheet_name}')
+                    sheet_name = tw.shorten(
+                        text=sheet_name,
+                        width=self.SHEET_NAME_MAXLEN,
+                        placeholder='...')
                 desc.df.to_excel(writer, sheet_name=sheet_name, index=False)
                 # set comments of header cells to descriptions
                 worksheet: Worksheet = writer.sheets[sheet_name]
