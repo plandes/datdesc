@@ -114,6 +114,12 @@ class Table(PersistableContainer, Dictable):
     :meth:`format_thousand`.
 
     """
+    format_scientific_column_names: Dict[str, Optional[int]] = \
+        field(default_factory=dict)
+    """Format a column using LaTeX formatted scientific notation.  Keys are
+    column names and values is the mantissa length or 1 if ``None``.
+
+    """
     column_evals: Dict[str, str] = field(default_factory=dict)
     """Keys are column names with values as functions (i.e. lambda expressions)
     evaluated with a single column value parameter.  The return value replaces
@@ -121,8 +127,8 @@ class Table(PersistableContainer, Dictable):
 
     """
     read_kwargs: Dict[str, str] = field(default_factory=dict)
-    """Keyword arguments used in the :meth:`~pandas.read_csv` call when reading the
-    CSV file.
+    """Keyword arguments used in the :meth:`~pandas.read_csv` call when reading
+    the CSV file.
 
     """
     write_kwargs: Dict[str, str] = field(
@@ -138,8 +144,8 @@ class Table(PersistableContainer, Dictable):
 
     """
     blank_columns: List[int] = field(default_factory=list)
-    """A list of column indexes to set to the empty string (i.e. 0th to fixed the
-    ``Unnamed: 0`` issues).
+    """A list of column indexes to set to the empty string (i.e. 0th to fixed
+    the ``Unnamed: 0`` issues).
 
     """
     bold_cells: List[Tuple[int, int]] = field(default_factory=list)
@@ -278,6 +284,15 @@ class Table(PersistableContainer, Dictable):
             x += 'K'
         return x
 
+    @staticmethod
+    def format_scientific(x: float, sig_digits: int = 1) -> str:
+        nstr: str = f'{{0:.{sig_digits}e}}'.format(x)
+        if 'e' in nstr:
+            base, exponent = nstr.split('e')
+            base = base[:-2] if base.endswith('.0') else base
+            nstr = f'{base} \\times 10^{{{int(exponent)}}}'
+        return f'${nstr}$'
+
     @property
     def header(self) -> str:
         """The Latex environment header.
@@ -315,6 +330,9 @@ class Table(PersistableContainer, Dictable):
         for col, kwargs in self.format_thousands_column_names.items():
             kwargs = {} if kwargs is None else kwargs
             df[col] = df[col].apply(lambda x: self.format_thousand(x, **kwargs))
+        for col, mlen in self.format_scientific_column_names.items():
+            mlen = 1 if mlen is None else mlen
+            df[col] = df[col].apply(lambda x: self.format_scientific(x, mlen))
         for col, rnd in self.make_percent_column_names.items():
             fmt = f'{{v:.{rnd}f}}\\%'
             df[col] = df[col].apply(

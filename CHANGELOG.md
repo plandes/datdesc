@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Added
+- Scientific notation formatting for arbitrary columns when generating Latex
+  tables in the `Table` class.
+
+
 ## [0.2.2] - 2024-03-05
 ### Added
 - A metadata like method in a data describer that describes what data it has.
