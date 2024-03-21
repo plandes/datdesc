@@ -116,8 +116,9 @@ class Table(PersistableContainer, Dictable):
     """
     format_scientific_column_names: Dict[str, Optional[int]] = \
         field(default_factory=dict)
-    """Format a column using LaTeX formatted scientific notation.  Keys are
-    column names and values is the mantissa length or 1 if ``None``.
+    """Format a column using LaTeX formatted scientific notation using
+    :meth:`format_scientific`.  Keys are column names and values is the mantissa
+    length or 1 if ``None``.
 
     """
     column_evals: Dict[str, str] = field(default_factory=dict)
