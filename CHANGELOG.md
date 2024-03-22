@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Scientific notation formatting for arbitrary columns when generating Latex
   tables in the `Table` class.
 
+### Changed
+- Fixed a bug with bolding max values in generated Latex tables.
+
 
 ## [0.2.2] - 2024-03-05
 ### Added

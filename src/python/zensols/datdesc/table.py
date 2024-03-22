@@ -404,7 +404,9 @@ class Table(PersistableContainer, Dictable):
     def _get_bold_columns(self, df: pd.DataFrame) -> Tuple[Tuple[int, int]]:
         if len(self.bold_max_columns) > 0:
             cixs: List[str] = self.bold_max_columns
-            return tuple(zip(df[cixs].idxmax(), cixs))
+            return tuple(zip(
+                map(lambda cix: df.index.get_loc(df[cix].idxmax()), cixs),
+                cixs))
         else:
             return ()
 
