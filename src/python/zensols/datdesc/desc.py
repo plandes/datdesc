@@ -165,7 +165,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         df: pd.DataFrame = self.df
         meta: Dict[Any, str] = self.index_meta
         if meta is not None:
-            ix: List[Any] = df.columns.to_list()
+            ix: List[Any] = df.index.to_list()
             if index_format is None:
                 ix = list(map(lambda i: meta[i], ix))
             else:
@@ -200,6 +200,25 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     def tab_name(self) -> str:
         """The table derived from :obj:`name`."""
         return self.csv_path.stem.replace('-', '')
+
+    def save_csv(self, output_dir: Path = Path('.')) -> Path:
+        """Save as a CSV file using :obj:`csv_path`."""
+        out_file: Path = output_dir / self.csv_path
+        self.df.to_csv(out_file)
+        if logger.isEnabledFor(logging.INFO):
+            logger.info(f'wrote: {out_file}')
+        return out_file
+
+    def save_excel(self, output_dir: Path = Path('.')) -> Path:
+        """Save as an Excel file using :obj:`csv_path`.  The same file naming
+        semantics are used as with :meth:`.DataDescriber.save_excel`.
+
+        :see: :meth:`.DataDescriber.save_excel`
+
+        """
+        out_file: Path = output_dir / self.name
+        dd = DataDescriber((self,), name=self.name)
+        return dd.save_excel(out_file)
 
     def create_table(self, **kwargs) -> Table:
         """Create a table from the metadata using:

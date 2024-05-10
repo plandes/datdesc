@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Scientific notation formatting for arbitrary columns when generating Latex
   tables in the `Table` class.
+- Save CSV and Excel files in `DataFrameDescriber`.   Previously these were
+  only available in the `DataDescriber` class.
 
 ### Changed
 - Fixed a bug with bolding max values in generated Latex tables.
