@@ -197,9 +197,7 @@ class Table(PersistableContainer, Dictable):
 
     @property
     def latex_environment(self) -> str:
-        """Return the latex environment for the table.
-
-        """
+        """Return the latex environment for the table."""
         tab: str
         if self.single_column:
             tab = 'zztable'
@@ -214,9 +212,7 @@ class Table(PersistableContainer, Dictable):
 
     @property
     def columns(self) -> str:
-        """Return the columns field in the Latex environment header.
-
-        """
+        """Return the columns field in the Latex environment header."""
         cols: str = self.column_aligns
         if cols is None:
             df = self.formatted_dataframe
@@ -250,9 +246,7 @@ class Table(PersistableContainer, Dictable):
                          filter(lambda x: x[1] == self._VARIABLE, var)))
 
     def get_params(self, add_brackets: bool) -> Dict[str, str]:
-        """Return the parameters used for creating the table.
-
-        """
+        """Return the parameters used for creating the table."""
         params = {'tabname': self.name,
                   'latex_environment': self.latex_environment,
                   'caption': self.caption,
@@ -454,6 +448,14 @@ class Table(PersistableContainer, Dictable):
         params.update(self.write_kwargs)
         return params
 
+    def _write_header(self, params: Dict[str, Any], writer: TextIOWrapper):
+        writer.write('\\newcommand{\\%(tabname)s}%(cvars)s{%%\n' % params)
+        writer.write(self.header)
+        writer.write('\n')
+
+    def _write_footer(self, writer: TextIOWrapper):
+        writer.write('\\end{%s}}\n' % self.latex_environment)
+
     def write(self, depth: int = 0, writer: TextIOWrapper = sys.stdout):
         df: pd.DataFrame = self.formatted_dataframe
         data = self._get_header_rows(df)
@@ -464,16 +466,15 @@ class Table(PersistableContainer, Dictable):
         n_var_args = len(self.var_args)
         if n_var_args > 0:
             params['cvars'] = f'[{n_var_args}]'
-        writer.write('\n\\newcommand{\\%(tabname)s}%(cvars)s{%%\n' % params)
-        writer.write(self.header)
         writer.write('\n')
+        self._write_header(params, writer)
         for lix, ln in enumerate(lines[1:-1]):
             writer.write(ln + '\n')
             if (lix - 2) in self.hlines:
                 writer.write('\\hline  \n')
             if (lix - 2) in self.double_hlines:
                 writer.write('\\hline \\hline \n')
-        writer.write('\\end{%s}}\n' % self.latex_environment)
+        self._write_footer(writer)
 
     def _from_dictable(self, *args, **kwargs) -> Dict[str, Any]:
         dct = super()._from_dictable(*args, **kwargs)
@@ -563,3 +564,33 @@ class LongTable(SlackTable):
                 hlremove += 1
                 continue
             writer.write(line + '\n')
+
+
+@dataclass
+class BareTable(Table):
+    """A table that only outputs a ``tabular`` environment, which is useful when
+    the a "floating" ``table`` is not permitted in environments such as
+    ``minipage``.
+
+    The output also creates a ``<table name>caption`` command that has the
+    string of the caption.  If :obj:`head` is provided, a the command ``<table
+    name>head`` is also created.
+
+    """
+    def _write_header(self, params: Dict[str, Any], writer: TextIOWrapper):
+        if self.head is not None:
+            # create a new command that has the header string for user access
+            hparams = dict(params)
+            hparams['head'] = self.head
+            writer.write('\\newcommand{\\%(tabname)shead}{%(head)s}\n' %
+                         hparams)
+        # create a new command that has the capture for user access
+        writer.write('\\newcommand{\\%(tabname)scaption}{%(caption)s}\n' %
+                     params)
+        # create a tabular environment; rest of the contents after this is
+        # written are the contents in :meth:`write`
+        writer.write('\\newcommand{\\%(tabname)s}{%%\n' % params)
+        writer.write('\\begin{tabular}{%(columns)s}\n' % params)
+
+    def _write_footer(self, writer: TextIOWrapper):
+        writer.write('\\end{tabular}}\n')

@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   tables in the `Table` class.
 - Save CSV and Excel files in `DataFrameDescriber`.   Previously these were
   only available in the `DataDescriber` class.
+- A table that only outputs a `tabular` environment, which is useful when the a
+  "floating" `table` is not permitted in environments such as `minipage`.
 
 ### Changed
 - Fixed a bug with bolding max values in generated Latex tables.
