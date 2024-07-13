@@ -1,0 +1,4 @@
+<map id="inheritanceccf17cf669" name="inheritanceccf17cf669">
+<area shape="rect" id="node1" href="#zensols.datdesc.app.Application" target="_top" title="Generate LaTeX tables files from CSV files and hyperparameter .sty files." alt="" coords="5,5,116,36"/>
+<area shape="rect" id="node2" href="#zensols.datdesc.app.PrototypeApplication" target="_top" title="PrototypeApplication(app: zensols.datdesc.app.Application)" alt="" coords="270,5,457,36"/>
+</map>

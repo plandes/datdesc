@@ -1,0 +1,9 @@
+<map id="inheritance1839dfa66c" name="inheritance1839dfa66c">
+<area shape="rect" id="node1" title="Helper class that provides a standard way to create an ABC using" alt="" coords="229,5,301,36"/>
+<area shape="rect" id="node4" title="An interface for classes that have multi&#45;line debuging capability." alt="" coords="221,84,309,115"/>
+<area shape="rect" id="node2" href="#zensols.datdesc.opt.CompareResult" target="_top" title="Contains the loss and scores of an initial run and a run found on the" alt="" coords="5,241,153,272"/>
+<area shape="rect" id="node3" title="A class that that generates a dictionary recursively from data classes" alt="" coords="221,163,308,193"/>
+<area shape="rect" id="node5" href="#zensols.datdesc.opt.HyperparamResult" target="_top" title="Results of an optimization and optionally the best fit." alt="" coords="178,241,351,272"/>
+<area shape="rect" id="node6" href="#zensols.datdesc.opt.HyperparamRun" target="_top" title="A container for the entire optimization run. &#160;The best run contains the" alt="" coords="375,241,530,272"/>
+<area shape="rect" id="node7" href="#zensols.datdesc.opt.HyperparameterOptimizer" target="_top" title="Creates the files used to score optimizer output." alt="" coords="470,5,702,36"/>
+</map>
