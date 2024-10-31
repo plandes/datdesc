@@ -98,6 +98,19 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         else:
             self._meta_val = meta
 
+    @property
+    @persisted('_csv_path', transient=True)
+    def csv_path(self) -> Path:
+        """The CVS file that contains the data this instance describes."""
+        fname: str = FileTextUtil.normalize_text(self.name) + '.csv'
+        return Path(fname)
+
+    @property
+    @persisted('_tab_name', transient=True)
+    def tab_name(self) -> str:
+        """The table derived from :obj:`name`."""
+        return self.csv_path.stem.replace('-', '')
+
     def derive(self, *,
                name: str = None,
                df: pd.DataFrame = None,
@@ -131,7 +144,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         elif not isinstance(meta, pd.DataFrame):
             meta = self._meta_dict_to_dataframe(meta)
         if df is not None:
-            meta = pd.concat((self.meta.copy(), meta)).drop_duplicates()
+            # overwrite passed in metadata with this instance's by name
+            df_ovr: pd.DataFrame = self.meta[~self.meta.index.isin(meta.index)]
+            meta = pd.concat((df_ovr.copy(), meta)).drop_duplicates()
         cols: Set[str] = set(df.columns)
         # stability requres filter instead rather than set operations
         idx = list(filter(lambda n: n in cols, meta.index))
@@ -188,18 +203,43 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         clone.index_meta = None
         return clone
 
-    @property
-    @persisted('_csv_path', transient=True)
-    def csv_path(self) -> Path:
-        """The CVS file that contains the data this instance describes."""
-        fname: str = FileTextUtil.normalize_text(self.name) + '.csv'
-        return Path(fname)
+    def transpose(self,
+                  row_names: Tuple[int, str, str] = ((0, 'value', 'Value'),),
+                  name_column: str = 'name', name_description: str = 'Name',
+                  index_column: str = 'description'):
+        """Transpose all data in this descriptor by transposing :obj:`df` and
+        swapping :obj:`meta` with :obj:`index_meta` as a new instance.
 
-    @property
-    @persisted('_tab_name', transient=True)
-    def tab_name(self) -> str:
-        """The table derived from :obj:`name`."""
-        return self.csv_path.stem.replace('-', '')
+        :param row_names: a tuple of (row index in :obj:`df`, the column in the
+                          new :obj:`df` and the metadata description of that
+                          column in the new :obj:`df`; the default takes only
+                          the first row
+
+        :param name_column: the column name this instance's :obj:`df`
+
+        :param description_column: the column description this instance's
+                                   :obj:`df`
+
+        :param index_column: the name of the new index in the returned instance
+
+        :return: a new derived instance of the transposed data
+
+        """
+        df: pd.DataFrame = self.df
+        df = df.iloc[map(lambda t: t[0], row_names)]
+        df = df.T
+        df.columns = list(map(lambda t: t[1], row_names))
+        df.insert(0, name_column, df.index)
+        df.index.name = index_column
+        prev_meta: pd.DataFrame = self.meta.loc[self.df.columns]
+        index_meta: Dict[str, str] = dict(zip(
+            prev_meta.index, prev_meta['description']))
+        meta: List[str] = [(name_column, name_description)]
+        meta.extend(map(lambda t: (t[1], t[2]), row_names))
+        return self.derive(
+            df=df,
+            meta=tuple(meta),
+            index_meta=index_meta)
 
     def save_csv(self, output_dir: Path = Path('.')) -> Path:
         """Save as a CSV file using :obj:`csv_path`."""
@@ -302,6 +342,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         self._write_block(dfs, depth + 1, writer)
         self._write_line('columns:', depth, writer)
         self._write_dict(self.asdict(), depth + 1, writer)
+        if self.index_meta is not None:
+            self._write_line('index:', depth, writer)
+            self._write_dict(self.index_meta, depth + 1, writer)
 
     def write_pretty(self, depth: int = 0, writer: TextIOBase = sys.stdout,
                      include_metadata: bool = False,

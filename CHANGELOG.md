@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Added
+- A method to transpose the data, column and row metadata in
+  `DataFrameDescriber.transpose`.
+
+
 ## [0.2.3] - 2024-07-13
 ### Added
 - Scientific notation formatting for arbitrary columns when generating Latex
