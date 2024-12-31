@@ -1,10 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{sections-table}[{{DATE}} Tables]
 
-\usepackage{zentable}
 
 \newcommand{\anontab}[1]{%
-\begin{zztabletcolplace}[#1]{anontab}%
+\begin{zttabletcolplace}[#1]{anontab}%
 {The top \anontabtopn\ most frequently annotated sections.}{\small}{|l|l|l|l|}
 \hline
  \textbf{Type}                        & \textbf{Tokens}   & \textbf{Spans}   & \textbf{Notes}                        \\
@@ -40,4 +39,4 @@
  communication                        & 1,304 (0\%)       & 199 (1\%)        & Physician                             \\
  patient-test-information             & 13K (1\%)         & 198 (1\%)        & Echo                                  \\
 \hline
-\end{zztabletcolplace}}
+\end{zttabletcolplace}}

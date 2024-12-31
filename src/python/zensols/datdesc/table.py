@@ -61,7 +61,7 @@ class Table(PersistableContainer, Dictable):
       * tiny
 
     """
-    uses: Sequence[str] = field(default=('zentable',))
+    uses: Sequence[str] = field(default=())
     """Comma separated list of packages to use."""
 
     single_column: bool = field(default=True)
@@ -200,12 +200,12 @@ class Table(PersistableContainer, Dictable):
         """Return the latex environment for the table."""
         tab: str
         if self.single_column:
-            tab = 'zztable'
+            tab = 'zttable'
         else:
             if self.placement is None:
-                tab = 'zztabletcol'
+                tab = 'zttabletcol'
             else:
-                tab = 'zztabletcolplace'
+                tab = 'zttabletcolplace'
         if self.head is not None:
             tab += 'head'
         return tab
