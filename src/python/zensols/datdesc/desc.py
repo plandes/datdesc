@@ -21,7 +21,7 @@ from tabulate import tabulate
 from zensols.config import Dictable
 from zensols.persist import PersistableContainer, persisted, FileTextUtil
 from . import DataDescriptionError
-from . import Table
+from . import Table, TableFactory
 #, TableFileManager
 
 logger = logging.getLogger(__name__)
@@ -580,9 +580,10 @@ class DataDescriber(PersistableContainer, Dictable):
 
         """
         par: Path = path.parent
-        mng = TableFileManager(path)
+        fac: TableFactory = TableFactory.default_instance()
+        tables: Table[Table, ...] = tuple(fac.from_file(path))
         return DataDescriber(
-            describers=tuple(map(DataFrameDescriber.from_table, mng.tables)),
+            describers=tuple(map(DataFrameDescriber.from_table, tables)),
             name=path.name,
             output_dir=par / 'results',
             csv_dir=par / 'csv',
