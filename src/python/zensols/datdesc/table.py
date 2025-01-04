@@ -4,9 +4,11 @@
 __author__ = 'Paul Landes'
 
 from typing import (
-    Dict, List, Sequence, Tuple, Any, ClassVar, Optional, Callable, Union
+    Dict, List, Sequence, Tuple, Any, Iterable, Set,
+    ClassVar, Optional, Callable, Union
 )
 from dataclasses import dataclass, field
+import logging
 import sys
 import re
 import string
@@ -17,7 +19,9 @@ import pandas as pd
 from tabulate import tabulate
 from zensols.persist import persisted, PersistedWork, PersistableContainer
 from zensols.config import Dictable
-from . import VariableParam
+from . import LatexTableError
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -25,10 +29,10 @@ class Table(PersistableContainer, Dictable):
     """Generates a Zensols styled Latex table from a CSV file.
 
     """
-    _VARIABLE: ClassVar[str] = 'VAR'
-    _VARIABLE_ATTRIBUTES: ClassVar[Tuple[VariableParam]] = (
-        VariableParam('placement', value_format='{val}'),
-        VariableParam('size'))
+    _DICTABLE_ATTRIBUTES: ClassVar[Set[str]] = {'columns'}
+
+    _FILE_NAME_REGEX: ClassVar[re.Pattern] = re.compile(r'(.+)\.yml')
+    """Used to narrow down to a :obj:`package_name`."""
 
     path: Union[Path, str] = field()
     """The path to the CSV file to make a latex table."""
@@ -36,31 +40,17 @@ class Table(PersistableContainer, Dictable):
     name: str = field()
     """The name of the table, also used as the label."""
 
+    template: str = field()
+    """The table template, which lives in the application configuraiton
+    ``obj.yml``.
+
+    """
     caption: str = field()
     """The human readable string used to the caption in the table."""
 
-    head: str = field(default=None)
-    """The header to use for the table, which is used as the text in the list of
-    tables and made bold in the table."""
+    definition_file: Path = field(default=None)
+    """The YAML file from which this instance was created."""
 
-    placement: str = field(default=None)
-    """The placement of the table."""
-
-    size: str = field(default='normalsize')
-    """The size of the table, and one of:
-
-      * Huge
-      * huge
-      * LARGE
-      * Large
-      * large
-      * normalsize (default)
-      * small
-      * footnotesize
-      * scriptsize
-      * tiny
-
-    """
     uses: Sequence[str] = field(default=())
     """Comma separated list of packages to use."""
 
@@ -163,25 +153,16 @@ class Table(PersistableContainer, Dictable):
     index_col_name: str = field(default=None)
     """If set, add an index column with the given name."""
 
-    df_code: str = field(default=None)
-    """Python code executed that manipulates the table's dataframe.  The code
-    has a local ``df`` variable and the returned value is used as the
-    replacement.  This is usually a one-liner used to subset the data etc.  The
-    code is evaluated with :func:`eval`.
+    code_pre: str = field(default=None)
+    """Python code executed that manipulates the table's dataframe before
+    modifications made by this class.  The code has a local ``df`` variable and
+    the returned value is used as the replacement.  This is usually a one-liner
+    used to subset the data etc.  The code is evaluated with :func:`eval`.
 
     """
-    df_code_pre: str = field(default=None)
-    """Like :obj:`df_code` but right after the source data is read and before
-    any modifications.  The code is evaluated with :func:`eval`.
-
-    """
-    df_code_exec: str = field(default=None)
-    """Like :obj:`df_code` but invoke with :func:`exec` instead of :func:`eval`.
-
-    """
-    df_code_exec_pre: str = field(default=None)
-    """Like :obj:`df_code_pre` but invoke with :func:`exec` instead of
-    :func:`eval`.
+    code_post: str = field(default=None)
+    """Like :obj:`code_pre` but modifies the table after this class's
+    modifications of the table.
 
     """
     def __post_init__(self):
@@ -196,19 +177,13 @@ class Table(PersistableContainer, Dictable):
             '_formatted_dataframe', self, transient=True)
 
     @property
-    def latex_environment(self) -> str:
-        """Return the latex environment for the table."""
-        tab: str
-        if self.single_column:
-            tab = 'zttable'
-        else:
-            if self.placement is None:
-                tab = 'zttabletcol'
-            else:
-                tab = 'zttabletcolplace'
-        if self.head is not None:
-            tab += 'head'
-        return tab
+    def package_name(self) -> str:
+        """Return the package name for the table in ``table_path``."""
+        fname = self.definition_file.name
+        m = self._FILE_NAME_REGEX.match(fname)
+        if m is None:
+            raise LatexTableError(f'does not appear to be a YAML file: {fname}')
+        return m.group(1)
 
     @property
     def columns(self) -> str:
@@ -219,40 +194,6 @@ class Table(PersistableContainer, Dictable):
             cols = 'l' * df.shape[1]
             cols = '|' + '|'.join(cols) + '|'
         return cols
-
-    def get_cmd_args(self, add_brackets: bool) -> Dict[str, str]:
-        args = {}
-        var: VariableParam
-        for i, var in enumerate(self._VARIABLE_ATTRIBUTES):
-            attr: str = var.name
-            val = getattr(self, attr)
-            if val is None:
-                val = ''
-            elif val == self._VARIABLE:
-                val = var.index_format.format(index=(i + 1), val=val, var=var)
-            else:
-                val = var.value_format.format(index=(i + 1), val=val, var=var)
-            if add_brackets and len(val) > 0:
-                val = f'[{val}]'
-            args[attr] = val
-        return args
-
-    @property
-    @persisted('_var_args')
-    def var_args(self) -> Tuple[str]:
-        var = tuple(map(lambda a: (a, getattr(self, a.name)),
-                        self._VARIABLE_ATTRIBUTES))
-        return tuple(map(lambda x: x[0],
-                         filter(lambda x: x[1] == self._VARIABLE, var)))
-
-    def get_params(self, add_brackets: bool) -> Dict[str, str]:
-        """Return the parameters used for creating the table."""
-        params = {'tabname': self.name,
-                  'latex_environment': self.latex_environment,
-                  'caption': self.caption,
-                  'columns': self.columns}
-        params.update(self.get_cmd_args(add_brackets))
-        return params
 
     @staticmethod
     def format_thousand(x: int, apply_k: bool = True,
@@ -288,33 +229,11 @@ class Table(PersistableContainer, Dictable):
             nstr = f'{base} \\times 10^{{{int(exponent)}}}'
         return f'${nstr}$'
 
-    @property
-    def header(self) -> str:
-        """The Latex environment header.
-
-        """
-        head: str = self._get_header()
-        if self.head is not None:
-            head += f'{{{self.head}}}'
-        return head
-
-    def _get_header(self) -> str:
-        """Return the Latex environment header.
-
-        """
-        params = self.get_params(False)
-        if len(params['placement']) == 0:
-            params['placement'] = 'h!'
-        return """\\begin{%(latex_environment)s}[%(placement)s]{%(tabname)s}%%
-{%(caption)s}{%(size)s}{%(columns)s}""" % params
-
     def _apply_df_eval_pre(self, df: pd.DataFrame) -> pd.DataFrame:
-        if self.df_code_exec_pre is not None:
+        if self.code_pre is not None:
             _locs = locals()
-            exec(self.df_code_exec_pre)
+            exec(self.code_pre)
             df = _locs['df']
-        if self.df_code_pre is not None:
-            df = eval(self.df_code_pre)
         return df
 
     def _apply_df_number_format(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -335,13 +254,11 @@ class Table(PersistableContainer, Dictable):
         return df
 
     def _apply_df_eval_post(self, df: pd.DataFrame) -> pd.DataFrame:
-        if self.df_code_exec is not None:
-            exec(self.df_code_exec)
+        if self.code_post is not None:
+            exec(self.code_post)
         for col, code, in self.column_evals.items():
             func = eval(code)
             df[col] = df[col].apply(func)
-        if self.df_code is not None:
-            df = eval(self.df_code)
         return df
 
     def _apply_df_add_indexes(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -439,7 +356,7 @@ class Table(PersistableContainer, Dictable):
         df = self._apply_df_font_format(df)
         return df
 
-    def _get_header_rows(self, df: pd.DataFrame) -> List[List[Any]]:
+    def _get_table_rows(self, df: pd.DataFrame) -> Iterable[List[Any]]:
         cols = [tuple(map(lambda c: f'\\textbf{{{c}}}', df.columns))]
         return it.chain(cols, map(lambda x: x[1].tolist(), df.iterrows()))
 
@@ -448,38 +365,32 @@ class Table(PersistableContainer, Dictable):
         params.update(self.write_kwargs)
         return params
 
-    def _write_header(self, params: Dict[str, Any], writer: TextIOWrapper):
-        writer.write('\\newcommand{\\%(tabname)s}%(cvars)s{%%\n' % params)
-        writer.write(self.header)
-        writer.write('\n')
-
-    def _write_footer(self, writer: TextIOWrapper):
-        writer.write('\\end{%s}}\n' % self.latex_environment)
+    def _write_table(self, depth: int, writer: TextIOWrapper):
+        df: pd.DataFrame = self.formatted_dataframe
+        table_rows: Iterable[List[Any]] = self._get_table_rows(df)
+        params: Dict[str, Any] = self._get_tabulate_params()
+        tab_lines: List[str] = tabulate(table_rows, **params).split('\n')
+        for lix, ln in enumerate(tab_lines[1:-1]):
+            self._write_line(ln.strip(), depth, writer)
+            if (lix - 2) in self.hlines:
+                self._write_line('\\hline', depth, writer)
+            if (lix - 2) in self.double_hlines:
+                self._write_line('\\hline \\hline', depth, writer)
 
     def write(self, depth: int = 0, writer: TextIOWrapper = sys.stdout):
-        df: pd.DataFrame = self.formatted_dataframe
-        data = self._get_header_rows(df)
-        params: Dict[str, Any] = self._get_tabulate_params()
-        lines = tabulate(data, **params).split('\n')
-        params = dict(self.get_params(True))
-        params['cvars'] = ''
-        n_var_args = len(self.var_args)
-        if n_var_args > 0:
-            params['cvars'] = f'[{n_var_args}]'
-        writer.write('\n')
-        self._write_header(params, writer)
-        for lix, ln in enumerate(lines[1:-1]):
-            writer.write(ln + '\n')
-            if (lix - 2) in self.hlines:
-                writer.write('\\hline  \n')
-            if (lix - 2) in self.double_hlines:
-                writer.write('\\hline \\hline \n')
-        self._write_footer(writer)
+        params: Dict[str, Any] = dict(self.asdict())
+        table = StringIO()
+        self._write_table(2, table)
+        params['table'] = table.getvalue().rstrip()
+        self._write_block(self.template % params, depth, writer)
 
-    def _from_dictable(self, *args, **kwargs) -> Dict[str, Any]:
-        dct = super()._from_dictable(*args, **kwargs)
-        dct['type'] = re.sub(r'Table$', '', self.__class__.__name__).lower()
-        def_inst = self.__class__(name=None, path=None, caption=None)
+    def _serialize_dict(self) -> Dict[str, Any]:
+        dct = self.asdict()
+        def_inst = self.__class__(
+            path=None,
+            name=None,
+            template=self.template,
+            caption=None)
         dels: List[str] = []
         for k, v in dct.items():
             if (not hasattr(def_inst, k) or v == getattr(def_inst, k)) or \
@@ -496,101 +407,9 @@ class Table(PersistableContainer, Dictable):
         """
         tab_name: str = self.name
         # using json to recursively convert OrderedDict to dicts
-        tab_def: Dict[str, Any] = self.asflatdict()
+        tab_def: Dict[str, Any] = self._serialize_dict()
         del tab_def['name']
         return {tab_name: tab_def}
 
     def __str__(self):
-        return f'{self.name}: env={self.latex_environment}, size={self.size}'
-
-
-@dataclass
-class SlackTable(Table):
-    """An instance of the table that fills up space based on the widest column.
-
-    """
-    slack_col: int = field(default=0)
-    """Which column elastically grows or shrinks to make the table fit."""
-
-    @property
-    def latex_environment(self):
-        return 'zzvarcoltable' if self.single_column else 'zzvarcoltabletcol'
-
-    def _get_header(self) -> str:
-        params = self.get_params(False)
-        width = '\\columnwidth' if self.single_column else '\\textwidth'
-        params['width'] = width
-        return """\\begin{%(latex_environment)s}[%(width)s]{%(placement)s}{%(tabname)s}{%(caption)s}%%
-{%(size)s}{%(columns)s}""" % params
-
-    @property
-    def columns(self) -> str:
-        cols: str = self.column_aligns
-        if cols is None:
-            df = self.formatted_dataframe
-            i = self.slack_col
-            cols = ('l' * (df.shape[1] - 1))
-            cols = cols[:i] + 'X' + cols[i:]
-            cols = '|' + '|'.join(cols) + '|'
-        return cols
-
-
-@dataclass
-class LongTable(SlackTable):
-    @property
-    def latex_environment(self):
-        return 'zzvarcoltabletcollong'
-
-    def _get_header(self) -> str:
-        df = self.formatted_dataframe
-        hcols = ' & '.join(map(lambda c: f'\\textbf{{{c}}}', df.columns))
-        return f'{super()._get_header()}{{{hcols}}}{{{df.shape[1]}}}'
-
-    def _get_header_rows(self, df: pd.DataFrame) -> List[List[Any]]:
-        return map(lambda x: x[1].tolist(), df.iterrows())
-
-    def _get_tabulate_params(self) -> Dict[str, Any]:
-        params = super()._get_tabulate_params()
-        del params['headers']
-        return params
-
-    def write(self, depth: int = 0, writer: TextIOWrapper = sys.stdout):
-        sio = StringIO()
-        super().write(depth, writer)
-        sio.seek(0)
-        hlremove = 1
-        for line in map(str.strip, sio.readlines()):
-            if line == '\\hline' and hlremove > 0:
-                hlremove += 1
-                continue
-            writer.write(line + '\n')
-
-
-@dataclass
-class BareTable(Table):
-    """A table that only outputs a ``tabular`` environment, which is useful when
-    the a "floating" ``table`` is not permitted in environments such as
-    ``minipage``.
-
-    The output also creates a ``<table name>caption`` command that has the
-    string of the caption.  If :obj:`head` is provided, a the command ``<table
-    name>head`` is also created.
-
-    """
-    def _write_header(self, params: Dict[str, Any], writer: TextIOWrapper):
-        if self.head is not None:
-            # create a new command that has the header string for user access
-            hparams = dict(params)
-            hparams['head'] = self.head
-            writer.write('\\newcommand{\\%(tabname)shead}{%(head)s}\n' %
-                         hparams)
-        # create a new command that has the capture for user access
-        writer.write('\\newcommand{\\%(tabname)scaption}{%(caption)s}\n' %
-                     params)
-        # create a tabular environment; rest of the contents after this is
-        # written are the contents in :meth:`write`
-        writer.write('\\newcommand{\\%(tabname)s}{%%\n' % params)
-        writer.write('\\begin{tabular}{%(columns)s}\n' % params)
-
-    def _write_footer(self, writer: TextIOWrapper):
-        writer.write('\\end{tabular}}\n')
+        return self.name

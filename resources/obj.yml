@@ -1,2 +1,30 @@
+#@meta {author: 'Paul Landes'}
+#@meta {desc: '', date: '2025-01-03'}
+
+
+## Defaults
+#
 datdesc_hyperparam_table_default:
   replace_nan: ''
+
+
+## Tables
+#
+datdesc_table_factory:
+  class_name: zensols.datdesc.latex.TableFactory
+
+datdesc_table_two_column:
+  class_name: zensols.datdesc.table.Table
+  template: >-
+    %% usage: \%(name)s[<placement>]{<size>}
+
+    \newcommand{\%(name)s}[2][!ht]{%%
+      \begin{table*}[#1]
+      \centering
+      #2
+      \begin{tabular}{%(columns)s}
+    %(table)s
+      \end{tabular}
+      \caption{%(caption)s}
+      \label{tab:%(name)s}
+      \end{table*}}

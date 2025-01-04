@@ -18,7 +18,6 @@ Example::
 
 from .domain import *
 from .table import *
-from .mng import *
 from .desc import *
 from .app import *
 from .cli import *

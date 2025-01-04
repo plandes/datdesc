@@ -16,10 +16,9 @@ from pathlib import Path
 from zensols.util import stdout
 from zensols.cli import ApplicationError
 from zensols.config import Settings
-from . import (
-    TableFileManager, CsvToLatexTable, Table, DataFrameDescriber, DataDescriber
-)
 from .hyperparam import HyperparamModel, HyperparamSet, HyperparamSetLoader
+from .latex import TableFactory, CsvToLatexTable
+from . import LatexTableError, Table, DataFrameDescriber, DataDescriber
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +40,11 @@ class Application(object):
     """Generate LaTeX tables files from CSV files and hyperparameter .sty files.
 
     """
-    data_file_regex: re.Pattern = field(default=re.compile(r'^.+-table\.yml$'))
-    """Matches file names of tables process in the LaTeX output."""
+    table_factory: TableFactory = field()
+    """Reads the table definitions file and writes a Latex .sty file of the
+    generated tables from the CSV data.
 
+    """
     hyperparam_file_regex: re.Pattern = field(
         default=re.compile(r'^.+-hyperparam\.yml$'))
     """Matches file names of tables process in the LaTeX output."""
@@ -51,11 +52,18 @@ class Application(object):
     hyperparam_table_default: Settings = field(default=None)
     """Default settings for hyperparameter :class:`.Table` instances."""
 
+    data_file_regex: re.Pattern = field(default=re.compile(r'^.+-table\.yml$'))
+    """Matches file names of tables process in the LaTeX output."""
+
     def _process_data_file(self, data_file: Path, output_file: Path):
-        mng = TableFileManager(Path(data_file))
-        logger.info(f'{data_file} -> {output_file}, pkg={mng.package_name}')
+        tables: Tuple[Table, ...] = \
+            tuple(self.table_factory.from_file(data_file))
+        if len(tables) == 0:
+            raise LatexTableError(f'No tables found: {data_file}')
+        package_name: str = tables[0].package_name
+        logger.info(f'{data_file} -> {output_file}, pkg={package_name}')
         with stdout(output_file, 'w') as f:
-            tab = CsvToLatexTable(mng.tables, mng.package_name)
+            tab = CsvToLatexTable(tables, package_name)
             tab.write(writer=f)
         logger.info(f'wrote {output_file}')
 
@@ -203,11 +211,17 @@ class Application(object):
 class PrototypeApplication(object):
     CLI_META = {'is_usage_visible': False}
 
+    config_factory: int
     app: Application = field()
 
     def proto(self):
         """Prototype test."""
-        from . import DataDescriber
-        path = Path('test-resources/config/sections-table.yml')
-        dd = DataDescriber.from_yaml_file(path)
-        dd.write()
+        path = 'test-resources/config/sections-table.yml'
+        #path = 'test-resources/config/metrics-summary-table.yml'
+        if 1:
+            self.app.generate_tables(Path(path), Path('tmp.tex'))
+            return
+        fac: TableFactory = self.config_factory('datdesc_table_factory')
+        #fac = TableFactory.default_instance()
+        table = next(fac.from_file(path))
+        table.write()

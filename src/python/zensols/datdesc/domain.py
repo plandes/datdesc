@@ -22,18 +22,3 @@ class LatexTableError(DataDescriptionError):
 
     """
     pass
-
-
-@dataclass
-class VariableParam(object):
-    """Represents a Latex command variable.
-
-    """
-    name: str = field()
-    """The name of the variable."""
-
-    index_format: str = field(default='#{index}')
-    """Text to generate for the index number."""
-
-    value_format: str = field(default='\\{val}')
-    """Text to generate for the value of the variable."""
