@@ -11,17 +11,21 @@ datdesc_hyperparam_table_default:
 ## Tables
 #
 datdesc_table_factory:
+  # updates to this class need to be considered for .latex.TableFactory
   class_name: zensols.datdesc.latex.TableFactory
 
 datdesc_table_two_column:
   class_name: zensols.datdesc.table.Table
+  default_params:
+    - [placement, '!ht']
+    - [size]
   template: >-
     %% usage: \%(name)s[<placement>]{<size>}
 
-    \newcommand{\%(name)s}[2][!ht]{%%
-      \begin{table*}[#1]
+    \newcommand{\%(name)s}%(p:argdef)s{%%
+      \begin{table*}[%(p:placement)s]
       \centering
-      #2
+      %(p:size)s
       \begin{tabular}{%(columns)s}
     %(table)s
       \end{tabular}

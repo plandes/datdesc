@@ -48,6 +48,19 @@ class Table(PersistableContainer, Dictable):
     caption: str = field()
     """The human readable string used to the caption in the table."""
 
+    default_params: Sequence[Sequence[str]] = field(default_factory=list)
+    """Default parameters to be substituted in the template that are
+    interpolated by the LaTeX numeric values such as #1, #2, etc.  This is a
+    sequence (list or tuple) of ``(<name>, [<default>])`` where ``name`` is
+    substituted by name in the template and ``default`` is the default if not
+    given in :obj:`params`.
+
+    """
+    params: Dict[str, str] = field(default_factory=dict)
+    """Parameters used in the template that override of the
+    :obj:`default_params`.
+
+    """
     definition_file: Path = field(default=None)
     """The YAML file from which this instance was created."""
 
@@ -377,11 +390,44 @@ class Table(PersistableContainer, Dictable):
             if (lix - 2) in self.double_hlines:
                 self._write_line('\\hline \\hline', depth, writer)
 
+    def _get_command_params(self) -> Dict[str, str]:
+        dparams: Sequence[Sequence[str]] = self.default_params
+        oparams: Dict[str, str] = self.params
+        params: Dict[str, str] = {}
+        prefix: str = 'p'
+        proto: str = ''
+        init_arg: str = ''
+        pix: int
+        param: Sequence[str]
+        for pix, param in enumerate(dparams):
+            lp: int = len(param)
+            if lp < 1:
+                raise LatexTableError(
+                    f"No entries in param definition in {self.name}: '{param}'")
+            if len(param) > 2:
+                raise LatexTableError(
+                    f"Expecting < 2 params in {self.name}: '{param}'")
+            name: str = param[0]
+            default: str = param[1] if len(param) > 1 else None
+            val: str = oparams.get(name, default)
+            if pix == 0:
+                if val is not None:
+                    init_arg = f'[{val}]'
+            if val is None or (pix == 0 and len(init_arg) > 0):
+                val = f'#{pix + 1}'
+            params[f'{prefix}:{name}'] = val
+            params[f'{prefix}:{name}'] = val
+        proto = f'[{len(dparams)}]{init_arg}'
+        params[f'{prefix}:argdef'] = proto
+        return params
+
     def write(self, depth: int = 0, writer: TextIOWrapper = sys.stdout):
         params: Dict[str, Any] = dict(self.asdict())
+        cparams: Dict[str, str] = self._get_command_params()
         table = StringIO()
         self._write_table(2, table)
         params['table'] = table.getvalue().rstrip()
+        params.update(cparams)
         self._write_block(self.template % params, depth, writer)
 
     def _serialize_dict(self) -> Dict[str, Any]:
@@ -390,6 +436,7 @@ class Table(PersistableContainer, Dictable):
             path=None,
             name=None,
             template=self.template,
+            params=self.params,
             caption=None)
         dels: List[str] = []
         for k, v in dct.items():

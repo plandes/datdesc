@@ -218,7 +218,7 @@ class PrototypeApplication(object):
         """Prototype test."""
         path = 'test-resources/config/sections-table.yml'
         #path = 'test-resources/config/metrics-summary-table.yml'
-        if 1:
+        if 0:
             self.app.generate_tables(Path(path), Path('tmp.tex'))
             return
         fac: TableFactory = self.config_factory('datdesc_table_factory')
