@@ -1,28 +1,41 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{svm-hyperparam}[{{DATE}} Tables]
 
+% this table spans two columns in two column format
+% usage: \svmtab[<placement>]{<font size>}
+\newcommand{\svmtab}[1][!ht]{%
+  \begin{table}[#1]
+  \centering
+  small
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{name}   & \textbf{data type}   & \textbf{documentation}                        & \textbf{settings}   \\
+    \hline
+    kernel          & str <radial|linear>  & maps the observations into some feature space &                     \\
+    C               & float                & regularization parameter                      &                     \\
+    max_iter        & int                  & number of iterations                          & 20.0                \\
+    \hline
+  \end{tabular}
+  \caption{Some caption}
+  \label{tab:svmtab}
+  \end{table}}
 
-\newcommand{\svmtab}{%
-\begin{zttable}[h!]{svmtab}%
-{Some caption}{\small}{|l|l|l|l|}
-\hline
- \textbf{name}   & \textbf{data type}   & \textbf{documentation}                        & \textbf{settings}   \\
-\hline
- kernel          & str <radial|linear>  & maps the observations into some feature space &                     \\
- C               & float                & regularization parameter                      &                     \\
- max_iter        & int                  & number of iterations                          & 20.0                \\
-\hline
-\end{zttable}}
-
-\newcommand{\kmeanstab}{%
-\begin{zttable}[h!]{kmeanstab}%
-{k-means clustering}{\normalsize}{|l|l|l|l|}
-\hline
- \textbf{name}   & \textbf{data type}   & \textbf{documentation}                                                                & \textbf{settings}                    \\
-\hline
- n_clusters      & int                  & number of clusters                                                                    &                                      \\
- copy_x          & bool                 & When pre-computing distances it is more numerically accurate to center the data first & True                                 \\
- strata          & list                 & An array of stratified hyperparameters (made up for test cases).                      & [1, 2]                               \\
- kwargs          & dict                 & Model keyword arguments (made up for test cases).                                     & {'learning_rate': 0.01, 'epochs': 3} \\
-\hline
-\end{zttable}}
+% this table spans two columns in two column format
+% usage: \kmeanstab[<placement>]{<font size>}
+\newcommand{\kmeanstab}[2][!ht]{%
+  \begin{table}[#1]
+  \centering
+  #2
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{name}   & \textbf{data type}   & \textbf{documentation}                                                                & \textbf{settings}                    \\
+    \hline
+    n_clusters      & int                  & number of clusters                                                                    &                                      \\
+    copy_x          & bool                 & When pre-computing distances it is more numerically accurate to center the data first & True                                 \\
+    strata          & list                 & An array of stratified hyperparameters (made up for test cases).                      & [1, 2]                               \\
+    kwargs          & dict                 & Model keyword arguments (made up for test cases).                                     & {'learning_rate': 0.01, 'epochs': 3} \\
+    \hline
+  \end{tabular}
+  \caption{k-means clustering}
+  \label{tab:kmeanstab}
+  \end{table}}

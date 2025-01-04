@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 class TestApplication(unittest.TestCase):
+    DEBUG: bool = False
+
     def setUp(self):
         self.maxDiff = sys.maxsize
         self.targ_dir: Path = Path('target')
@@ -33,6 +35,9 @@ class TestApplication(unittest.TestCase):
         self.assertTrue(gold_file.is_file(), f'no gold file: {gold_file}')
         with open(out_file) as f:
             out: str = f.read().strip()
+        if self.DEBUG:
+            print(out)
+            return
         with open(gold_file) as f:
             gold: str = f.read().strip()
         today: str = self._today_date()

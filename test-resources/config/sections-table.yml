@@ -1,9 +1,16 @@
 anontab:
   path: test-resources/csv/annotation-section-id-combined.csv
   caption: The top \anontabtopn\ most frequently annotated sections.
-  type: two_column
-  code_pre: 'df = df.head(10)'
+  type: one_column
+  code_pre: 'df = df.head(3)'
+  percent_column_names: ['Spans', 'Tokens']
+
+anontabparam:
+  path: test-resources/csv/annotation-section-id-combined.csv
+  caption: The top \anontabtopn\ most frequently annotated sections.
+  type: one_column
+  code_pre: 'df = df.head(3)'
   percent_column_names: ['Spans', 'Tokens']
   params:
-    placement: h
+    placement: b
     size: \small

@@ -1,42 +1,40 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{sections-table}[{{DATE}} Tables]
 
+% this table spans two columns in two column format
+% usage: \anontab[<placement>]{<font size>}
+\newcommand{\anontab}[2][!ht]{%
+  \begin{table}[#1]
+  \centering
+  #2
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Type}              & \textbf{Tokens}   & \textbf{Spans}   & \textbf{Notes}                        \\
+    \hline
+    physical-examination       & 203K (8\%)        & 1,385 (6\%)      & Consult, Physician                    \\
+    history-of-present-illness & 239K (9\%)        & 1,348 (6\%)      & Consult, Discharge summary, Physician \\
+    allergies                  & 9,221 (0\%)       & 1,205 (5\%)      & Consult, Discharge summary, Physician \\
+    \hline
+  \end{tabular}
+  \caption{The top \anontabtopn\ most frequently annotated sections.}
+  \label{tab:anontab}
+  \end{table}}
 
-\newcommand{\anontab}[1]{%
-\begin{zttabletcolplace}[#1]{anontab}%
-{The top \anontabtopn\ most frequently annotated sections.}{\small}{|l|l|l|l|}
-\hline
- \textbf{Type}                        & \textbf{Tokens}   & \textbf{Spans}   & \textbf{Notes}                        \\
-\hline
- physical-examination                 & 203K (8\%)        & 1,385 (6\%)      & Consult, Physician                    \\
- history-of-present-illness           & 239K (9\%)        & 1,348 (6\%)      & Consult, Discharge summary, Physician \\
- allergies                            & 9,221 (0\%)       & 1,205 (5\%)      & Consult, Discharge summary, Physician \\
- hospital-course                      & 692K (26\%)       & 1,165 (5\%)      & Discharge summary                     \\
- labs-imaging                         & 416K (16\%)       & 1,155 (5\%)      & Consult, Discharge summary, Physician \\
- past-medical-history                 & 60K (2\%)         & 1,141 (5\%)      & Consult, Discharge summary, Physician \\
- discharge-condition                  & 14K (1\%)         & 1,132 (5\%)      & Discharge summary                     \\
- discharge-instructions               & 183K (7\%)        & 1,077 (5\%)      & Discharge summary                     \\
- discharge-diagnosis                  & 34K (1\%)         & 1,040 (5\%)      & Discharge summary                     \\
- chief-complaint                      & 9,622 (0\%)       & 996 (4\%)        & Consult, Discharge summary, Physician \\
- discharge-medications                & 196K (7\%)        & 914 (4\%)        & Discharge summary                     \\
- social-history                       & 28K (1\%)         & 912 (4\%)        & Consult, Discharge summary, Physician \\
- medication-history                   & 49K (2\%)         & 867 (4\%)        & Consult, Discharge summary, Physician \\
- family-history                       & 11K (0\%)         & 802 (4\%)        & Consult, Discharge summary, Physician \\
- discharge-disposition                & 5,602 (0\%)       & 754 (3\%)        & Discharge summary                     \\
- major-surgical-or-invasive-procedure & 16K (1\%)         & 704 (3\%)        & Discharge summary                     \\
- facility                             & 2,668 (0\%)       & 502 (2\%)        & Discharge summary                     \\
- reason                               & 5,588 (0\%)       & 458 (2\%)        & Consult, Radiology                    \\
- findings                             & 58K (2\%)         & 395 (2\%)        & Echo, Radiology                       \\
- assessment-and-plan                  & 131K (5\%)        & 381 (2\%)        & Consult, Physician                    \\
- review-of-systems                    & 7,422 (0\%)       & 329 (1\%)        & Consult, Discharge summary, Physician \\
- image-type                           & 1,820 (0\%)       & 328 (1\%)        & Radiology                             \\
- last-dose-of-antibiotics             & 3,689 (0\%)       & 293 (1\%)        & Consult, Physician                    \\
- 24-hour-events                       & 16K (1\%)         & 250 (1\%)        & Physician                             \\
- code-status                          & 1,879 (0\%)       & 237 (1\%)        & Physician                             \\
- impression                           & 8,233 (0\%)       & 224 (1\%)        & Echo, Radiology                       \\
- disposition                          & 1,161 (0\%)       & 210 (1\%)        & Physician                             \\
- conclusions                          & 28K (1\%)         & 206 (1\%)        & Echo                                  \\
- communication                        & 1,304 (0\%)       & 199 (1\%)        & Physician                             \\
- patient-test-information             & 13K (1\%)         & 198 (1\%)        & Echo                                  \\
-\hline
-\end{zttabletcolplace}}
+% this table spans two columns in two column format
+% usage: \anontabparam[<placement>]{<font size>}
+\newcommand{\anontabparam}[1][b]{%
+  \begin{table}[#1]
+  \centering
+  \small
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Type}              & \textbf{Tokens}   & \textbf{Spans}   & \textbf{Notes}                        \\
+    \hline
+    physical-examination       & 203K (8\%)        & 1,385 (6\%)      & Consult, Physician                    \\
+    history-of-present-illness & 239K (9\%)        & 1,348 (6\%)      & Consult, Discharge summary, Physician \\
+    allergies                  & 9,221 (0\%)       & 1,205 (5\%)      & Consult, Discharge summary, Physician \\
+    \hline
+  \end{tabular}
+  \caption{The top \anontabtopn\ most frequently annotated sections.}
+  \label{tab:anontabparam}
+  \end{table}}

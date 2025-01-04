@@ -274,15 +274,17 @@ class DataFrameDescriber(PersistableContainer, Dictable):
                        parameterized data passed to :class:`.Table`
 
         """
+        fac: TableFactory = TableFactory.default_instance()
         params: Dict[str, Any] = dict(
+            name=None,
             path=self.csv_path,
-            name=self._TABLE_FORMAT.format(name=self.tab_name),
             caption=self.desc,
             column_renames=dict(filter(lambda x: x[1] is not None,
                                        self.asdict().items())))
         params.update(self.table_kwargs)
         params.update(kwargs)
-        table = Table(**params)
+        table = fac.create(**params)
+        table.name = self._TABLE_FORMAT.format(name=self.tab_name)
         table.dataframe = self.df
         return table
 

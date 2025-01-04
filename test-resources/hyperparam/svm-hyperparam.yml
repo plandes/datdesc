@@ -1,7 +1,8 @@
 svm:
   doc: 'support vector machine'
   table:
-    size: small
+    params:
+      size: small
     caption: Some caption
   params:
     kernel:

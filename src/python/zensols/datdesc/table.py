@@ -135,7 +135,7 @@ class Table(PersistableContainer, Dictable):
     the CSV file.
 
     """
-    write_kwargs: Dict[str, str] = field(
+    tabulate_params: Dict[str, str] = field(
         default_factory=lambda: {'disable_numparse': True})
     """Keyword arguments used in the :meth:`~tabulate.tabulate` call when
     writing the table.  The default tells :mod:`tabulate` to not parse/format
@@ -201,6 +201,9 @@ class Table(PersistableContainer, Dictable):
     @property
     def columns(self) -> str:
         """Return the columns field in the Latex environment header."""
+        return self._get_columns()
+
+    def _get_columns(self) -> str:
         cols: str = self.column_aligns
         if cols is None:
             df = self.formatted_dataframe
@@ -370,15 +373,21 @@ class Table(PersistableContainer, Dictable):
         return df
 
     def _get_table_rows(self, df: pd.DataFrame) -> Iterable[List[Any]]:
+        """Return the rows/columns of the table given to :mod:``tabulate``."""
         cols = [tuple(map(lambda c: f'\\textbf{{{c}}}', df.columns))]
         return it.chain(cols, map(lambda x: x[1].tolist(), df.iterrows()))
 
     def _get_tabulate_params(self) -> Dict[str, Any]:
+        """A factory method that returns the argument to use in
+        :mod:``tabulate``.
+
+        """
         params = dict(tablefmt='latex_raw', headers='firstrow')
-        params.update(self.write_kwargs)
+        params.update(self.tabulate_params)
         return params
 
     def _write_table(self, depth: int, writer: TextIOWrapper):
+        """Write the text of the table's rows and columns."""
         df: pd.DataFrame = self.formatted_dataframe
         table_rows: Iterable[List[Any]] = self._get_table_rows(df)
         params: Dict[str, Any] = self._get_tabulate_params()
@@ -391,10 +400,15 @@ class Table(PersistableContainer, Dictable):
                 self._write_line('\\hline \\hline', depth, writer)
 
     def _get_command_params(self) -> Dict[str, str]:
-        dparams: Sequence[Sequence[str]] = self.default_params
-        oparams: Dict[str, str] = self.params
-        params: Dict[str, str] = {}
-        prefix: str = 'p'
+        """Create parameters prefixed with ``p:`` to be substituted as values in
+        the table template.  A ``p:argdef`` is also added that gives the
+        commands number of arguments and the initial default.
+
+        """
+        dparams: Sequence[Sequence[str]] = self.default_params  # metadata
+        oparams: Dict[str, str] = self.params  # user overridden
+        params: Dict[str, str] = {}  # to populate and return
+        prefix: str = 'p:'  # prefix
         proto: str = ''
         init_arg: str = ''
         pix: int = 1  # parameter index
@@ -417,16 +431,16 @@ class Table(PersistableContainer, Dictable):
             if val is None or (dpix == 0 and len(init_arg) > 0):
                 val = f'#{pix}'
                 pix += 1
-            params[f'{prefix}:{name}'] = val
+            params[f'{prefix}{name}'] = val
         proto = f'[{pix - 1}]{init_arg}'
-        params[f'{prefix}:argdef'] = proto
+        params[f'{prefix}argdef'] = proto
         return params
 
     def write(self, depth: int = 0, writer: TextIOWrapper = sys.stdout):
         params: Dict[str, Any] = dict(self.asdict())
         cparams: Dict[str, str] = self._get_command_params()
         table = StringIO()
-        self._write_table(2, table)
+        self._write_table(1, table)
         params['table'] = table.getvalue().rstrip()
         params.update(cparams)
         self._write_block(self.template % params, depth, writer)
@@ -437,10 +451,12 @@ class Table(PersistableContainer, Dictable):
             path=None,
             name=None,
             template=self.template,
-            params=self.params,
+            default_params=self.default_params,
             caption=None)
         dels: List[str] = []
         for k, v in dct.items():
+            if k in self._DICTABLE_ATTRIBUTES:
+                continue
             if (not hasattr(def_inst, k) or v == getattr(def_inst, k)) or \
                (isinstance(v, (list, set, tuple, dict)) and len(v) == 0):
                 dels.append(k)
@@ -461,3 +477,23 @@ class Table(PersistableContainer, Dictable):
 
     def __str__(self):
         return self.name
+
+
+@dataclass
+class SlackTable(Table):
+    """An instance of the table that fills up space based on the widest column.
+
+    """
+    slack_col: int = field(default=0)
+    """Which column elastically grows or shrinks to make the table fit."""
+
+    @property
+    def columns(self) -> str:
+        cols: str = self.column_aligns
+        if cols is None:
+            df = self.formatted_dataframe
+            i = self.slack_col
+            cols = ('l' * (df.shape[1] - 1))
+            cols = cols[:i] + 'X' + cols[i:]
+            cols = '|' + '|'.join(cols) + '|'
+        return cols

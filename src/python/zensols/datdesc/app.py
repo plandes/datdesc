@@ -217,11 +217,17 @@ class PrototypeApplication(object):
     def proto(self):
         """Prototype test."""
         path = 'test-resources/config/sections-table.yml'
-        #path = 'test-resources/config/metrics-summary-table.yml'
+        path = 'test-resources/config/metrics-summary-table.yml'
+        path = 'test-resources/config/notes-table.yml'
+        path = 'test-resources/config/intercoder-table.yml'
         if 0:
             self.app.generate_tables(Path(path), Path('tmp.tex'))
             return
         fac: TableFactory = self.config_factory('datdesc_table_factory')
         #fac = TableFactory.default_instance()
         table = next(fac.from_file(path))
+        if 0:
+            from pprint import pprint
+            pprint(dict(table.serialize()['anontab']))
+            return
         table.write()

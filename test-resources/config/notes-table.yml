@@ -1,11 +1,22 @@
-notestab:
+notestabdef:
   type: slack
-  slack_col: 0
+  type: one_column_slack
   path: test-resources/csv/note-events.csv
   caption: Annotated medical notes by category and their distribution in the annotation set.
-  placement: VAR
-  size: VAR
-  single_column: true
-  uses: zentable
+  uses: booktabs
   hlines: [5]
   percent_column_names: ['Proportion']
+  params:
+    size: \footnotesize
+
+notestabcolone:
+  type: slack
+  slack_col: 1
+  type: one_column_slack
+  path: test-resources/csv/note-events.csv
+  caption: Annotated medical notes by category and their distribution in the annotation set.
+  uses: booktabs
+  hlines: [5]
+  percent_column_names: ['Proportion']
+  params:
+    placement: h!

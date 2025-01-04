@@ -8,11 +8,36 @@ datdesc_hyperparam_table_default:
   replace_nan: ''
 
 
-## Tables
+## Table objects
 #
+# the factory that creates instances of `Table`; updates to this class need to
+# be considered for .latex.TableFactory
 datdesc_table_factory:
-  # updates to this class need to be considered for .latex.TableFactory
   class_name: zensols.datdesc.latex.TableFactory
+  default_table_name: one_column
+
+## Table definitions
+#
+datdesc_table_one_column:
+  class_name: zensols.datdesc.table.Table
+  default_params:
+    - [placement, '!ht']
+    - [size]
+  template: >-
+    %% this table spans two columns in two column format
+
+    %% usage: \%(name)s[<placement>]{<font size>}
+
+    \newcommand{\%(name)s}%(p:argdef)s{%%
+      \begin{table}[%(p:placement)s]
+      \centering
+      %(p:size)s
+      \begin{tabular}{%(columns)s}
+    %(table)s
+      \end{tabular}
+      \caption{%(caption)s}
+      \label{tab:%(name)s}
+      \end{table}}
 
 datdesc_table_two_column:
   class_name: zensols.datdesc.table.Table
@@ -20,7 +45,9 @@ datdesc_table_two_column:
     - [placement, '!ht']
     - [size]
   template: >-
-    %% usage: \%(name)s[<placement>]{<size>}
+    %% this table spans two columns in two column format
+
+    %% usage: \%(name)s[<placement>]{<font size>}
 
     \newcommand{\%(name)s}%(p:argdef)s{%%
       \begin{table*}[%(p:placement)s]
@@ -32,3 +59,24 @@ datdesc_table_two_column:
       \caption{%(caption)s}
       \label{tab:%(name)s}
       \end{table*}}
+
+datdesc_table_one_column_slack:
+  class_name: zensols.datdesc.table.SlackTable
+  default_params:
+    - [placement, '!ht']
+    - [size]
+  template: >-
+    %% a table that has an adjustable column
+
+    %% usage: \%(name)s[<placement>]{<font size>}
+
+    \newcommand{\%(name)s}%(p:argdef)s{%%
+      \begin{table}[%(p:placement)s]
+      \centering
+      %(p:size)s
+      \begin{tabular}{%(columns)s}
+    %(table)s
+      \end{tabular}
+      \caption{%(caption)s}
+      \label{tab:%(name)s}
+      \end{table}}

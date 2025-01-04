@@ -39,6 +39,11 @@ class TableFactory(Dictable):
     config_factory: ConfigFactory = field(repr=False)
     """The configuration factory used to create :class:`.Table` instances."""
 
+    default_table_name: str = field()
+    """The default name, which resolves to a section name, to use when creating
+    anonymous tables.
+
+    """
     @classmethod
     def default_instance(cls: TableFactory) -> TableFactory:
         if cls._DEFAULT_INSTANCE is None:
@@ -64,6 +69,17 @@ class TableFactory(Dictable):
             if rel_path.is_file():
                 tab.path = rel_path
 
+    def _get_section_by_name(self, table_name: str = None) -> str:
+        if table_name is None:
+            table_name = self.default_table_name
+        return f'datdesc_table_{table_name}'
+
+    def create(self, name: str = None, **params) -> Table:
+        sec: str = self._get_section_by_name(name)
+        inst: Table = self.config_factory.new_instance(sec, **params)
+        inst.name = name
+        return inst
+
     def from_file(self, table_path: Path) -> Iterable[Table]:
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'reading table definitions file {table_path}')
@@ -77,10 +93,14 @@ class TableFactory(Dictable):
                     f"No 'type' given for '{name}' in file '{table_path}'")
             del td['type']
             td['definition_file'] = table_path
-            sec: str = f'datdesc_table_{table_name}'
-            inst: Table = self.config_factory.new_instance(sec, **td)
-            inst.name = name
-            self._fix_path(inst)
+            sec: str = self._get_section_by_name(table_name)
+            try:
+                inst: Table = self.config_factory.new_instance(sec, **td)
+                inst.name = name
+                self._fix_path(inst)
+            except Exception as e:
+                raise LatexTableError(
+                    f"Could not parse table file '{table_path}': {e}") from e
             yield inst
 
 
@@ -105,11 +125,16 @@ class CsvToLatexTable(Writable):
             map(lambda t: t.uses, self.tables)))
         for use in sorted(uses):
             writer.write(f'\\usepackage{{{use}}}\n')
+        if len(uses) > 0:
+            writer.write('\n')
 
     def write(self, depth: int = 0, writer: TextIOWrapper = sys.stdout):
         """Write the Latex table to the writer given in the initializer.
 
         """
+        tlen: int = len(self.tables)
         self._write_header(depth, writer)
-        for table in self.tables:
+        for i, table in enumerate(self.tables):
             table.write(depth, writer)
+            if i < tlen:
+                writer.write('\n')

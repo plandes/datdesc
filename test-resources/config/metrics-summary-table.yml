@@ -3,10 +3,8 @@ metricssummarytab:
     micro precision, mR is the micro recall, MF1 is the macro F1, MP is the macro
     precision, MR is the macro recall.
   path: test-resources/csv/metrics-summary.csv
-  placement: VAR
+  type: two_column
   index_col_name: Id
-  single_column: false
-  size: VAR
   bold_cells: [[8, 2], [7, 5]]
-  write_kwargs:
+  tabulate_params:
     disable_numparse: false
