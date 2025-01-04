@@ -1,5 +1,4 @@
 notestabdef:
-  type: slack
   type: one_column_slack
   path: test-resources/csv/note-events.csv
   caption: Annotated medical notes by category and their distribution in the annotation set.
@@ -11,7 +10,7 @@ notestabdef:
 
 notestabcolone:
   type: slack
-  slack_col: 1
+  slack_column: 1
   type: one_column_slack
   path: test-resources/csv/note-events.csv
   caption: Annotated medical notes by category and their distribution in the annotation set.

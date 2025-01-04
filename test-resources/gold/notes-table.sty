@@ -2,6 +2,7 @@
 \ProvidesPackage{notes-table}[{{DATE}} Tables]
 
 \usepackage{booktabs}
+\usepackage{tabularx}
 
 % a table that has an adjustable column
 % usage: \notestabdef[<placement>]{<font size>}
@@ -9,7 +10,7 @@
   \begin{table}[#1]
   \centering
   \footnotesize
-  \begin{tabular}{|X|l|l|}
+  \begin{tabularx}{\textwidth}{|X|l|l|}
     \hline
     \textbf{Category}   & \textbf{Count}   & \textbf{Proportion}   \\
     \hline
@@ -21,7 +22,7 @@
     \hline
     Total               & 2,002            & 100\%                 \\
     \hline
-  \end{tabular}
+  \end{tabularx}
   \caption{Annotated medical notes by category and their distribution in the annotation set.}
   \label{tab:notestabdef}
   \end{table}}
@@ -32,7 +33,7 @@
   \begin{table}[#1]
   \centering
   #2
-  \begin{tabular}{|l|X|l|}
+  \begin{tabularx}{\textwidth}{|l|X|l|}
     \hline
     \textbf{Category}   & \textbf{Count}   & \textbf{Proportion}   \\
     \hline
@@ -44,7 +45,7 @@
     \hline
     Total               & 2,002            & 100\%                 \\
     \hline
-  \end{tabular}
+  \end{tabularx}
   \caption{Annotated medical notes by category and their distribution in the annotation set.}
   \label{tab:notestabcolone}
   \end{table}}

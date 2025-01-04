@@ -54,15 +54,19 @@ class SlackTable(LatexTable):
     """An instance of the table that fills up space based on the widest column.
 
     """
-    slack_col: int = field(default=0)
+    slack_column: int = field(default=0)
     """Which column elastically grows or shrinks to make the table fit."""
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.uses.append('tabularx')
 
     @property
     def columns(self) -> str:
         cols: str = self.column_aligns
         if cols is None:
-            df = self.formatted_dataframe
-            i = self.slack_col
+            df: pd.DataFrame = self.formatted_dataframe
+            i: int = self.slack_column
             cols = ('l' * (df.shape[1] - 1))
             cols = cols[:i] + 'X' + cols[i:]
             cols = '|' + '|'.join(cols) + '|'

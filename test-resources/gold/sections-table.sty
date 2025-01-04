@@ -1,13 +1,15 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{sections-table}[{{DATE}} Tables]
 
-% this table spans two columns in two column format
+\usepackage{tabularx}
+
+% a table that has an adjustable column
 % usage: \anontab[<placement>]{<font size>}
-\newcommand{\anontab}[2][!ht]{%
-  \begin{table}[#1]
+\newcommand{\anontab}[1][!ht]{%
+  \begin{table*}[#1]
   \centering
-  #2
-  \begin{tabular}{|l|l|l|l|}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{|l|l|l|X|}
     \hline
     \textbf{Type}              & \textbf{Tokens}   & \textbf{Spans}   & \textbf{Notes}                        \\
     \hline
@@ -15,10 +17,10 @@
     history-of-present-illness & 239K (9\%)        & 1,348 (6\%)      & Consult, Discharge summary, Physician \\
     allergies                  & 9,221 (0\%)       & 1,205 (5\%)      & Consult, Discharge summary, Physician \\
     \hline
-  \end{tabular}
+  \end{tabularx}
   \caption{The top \anontabtopn\ most frequently annotated sections.}
   \label{tab:anontab}
-  \end{table}}
+  \end{table*}}
 
 % this table spans two columns in two column format
 % usage: \anontabparam[<placement>]{<font size>}

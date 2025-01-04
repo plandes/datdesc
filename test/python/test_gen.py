@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class TestApplication(unittest.TestCase):
-    DEBUG: bool = False
+    DEBUG: bool = 0
 
     def setUp(self):
         self.maxDiff = sys.maxsize
@@ -35,9 +35,12 @@ class TestApplication(unittest.TestCase):
         self.assertTrue(gold_file.is_file(), f'no gold file: {gold_file}')
         with open(out_file) as f:
             out: str = f.read().strip()
-        if self.DEBUG:
+        if self.DEBUG is True:
             print(out)
             return
+        elif self.DEBUG == 'w':
+            with open(gold_file, 'w') as f:
+                f.write(out)
         with open(gold_file) as f:
             gold: str = f.read().strip()
         today: str = self._today_date()

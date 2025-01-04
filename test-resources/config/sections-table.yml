@@ -1,7 +1,10 @@
 anontab:
   path: test-resources/csv/annotation-section-id-combined.csv
   caption: The top \anontabtopn\ most frequently annotated sections.
-  type: one_column
+  type: two_column_slack
+  slack_column: 3
+  params:
+    size: \footnotesize
   code_pre: 'df = df.head(3)'
   percent_column_names: ['Spans', 'Tokens']
 

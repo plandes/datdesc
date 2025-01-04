@@ -74,7 +74,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     definition_file: Path = field(default=None)
     """The YAML file from which this instance was created."""
 
-    uses: Sequence[str] = field(default=())
+    uses: List[str] = field(default_factory=list)
     """Comma separated list of packages to use."""
 
     single_column: bool = field(default=True)

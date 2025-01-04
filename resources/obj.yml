@@ -65,6 +65,7 @@ datdesc_table_one_column_slack:
   default_params:
     - [placement, '!ht']
     - [size]
+    - [width, '\textwidth']
   template: >-
     %% a table that has an adjustable column
 
@@ -74,9 +75,31 @@ datdesc_table_one_column_slack:
       \begin{table}[%(p:placement)s]
       \centering
       %(p:size)s
-      \begin{tabular}{%(columns)s}
+      \begin{tabularx}{%(p:width)s}{%(columns)s}
     %(table)s
-      \end{tabular}
+      \end{tabularx}
       \caption{%(caption)s}
       \label{tab:%(name)s}
       \end{table}}
+
+datdesc_table_two_column_slack:
+  class_name: zensols.datdesc.latex.SlackTable
+  default_params:
+    - [placement, '!ht']
+    - [size]
+    - [width, '\textwidth']
+  template: >-
+    %% a table that has an adjustable column
+
+    %% usage: \%(name)s[<placement>]{<font size>}
+
+    \newcommand{\%(name)s}%(p:argdef)s{%%
+      \begin{table*}[%(p:placement)s]
+      \centering
+      %(p:size)s
+      \begin{tabularx}{%(p:width)s}{%(columns)s}
+    %(table)s
+      \end{tabularx}
+      \caption{%(caption)s}
+      \label{tab:%(name)s}
+      \end{table*}}
