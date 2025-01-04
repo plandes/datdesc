@@ -60,7 +60,7 @@ class TableFactory(Dictable):
         """
         tab_path = Path(tab.path)
         if not tab_path.is_file():
-            rel_path = Path(self.table_path.parent, tab_path).resolve()
+            rel_path = Path(tab.definition_file.parent, tab_path).resolve()
             if rel_path.is_file():
                 tab.path = rel_path
 

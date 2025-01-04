@@ -397,9 +397,10 @@ class Table(PersistableContainer, Dictable):
         prefix: str = 'p'
         proto: str = ''
         init_arg: str = ''
-        pix: int
+        pix: int = 1  # parameter index
+        dpix: int  # default parameter index
         param: Sequence[str]
-        for pix, param in enumerate(dparams):
+        for dpix, param in enumerate(dparams):
             lp: int = len(param)
             if lp < 1:
                 raise LatexTableError(
@@ -410,14 +411,14 @@ class Table(PersistableContainer, Dictable):
             name: str = param[0]
             default: str = param[1] if len(param) > 1 else None
             val: str = oparams.get(name, default)
-            if pix == 0:
+            if dpix == 0:
                 if val is not None:
                     init_arg = f'[{val}]'
-            if val is None or (pix == 0 and len(init_arg) > 0):
-                val = f'#{pix + 1}'
+            if val is None or (dpix == 0 and len(init_arg) > 0):
+                val = f'#{pix}'
+                pix += 1
             params[f'{prefix}:{name}'] = val
-            params[f'{prefix}:{name}'] = val
-        proto = f'[{len(dparams)}]{init_arg}'
+        proto = f'[{pix - 1}]{init_arg}'
         params[f'{prefix}:argdef'] = proto
         return params
 
