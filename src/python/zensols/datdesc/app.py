@@ -17,8 +17,10 @@ from zensols.util import stdout
 from zensols.cli import ApplicationError
 from zensols.config import Settings
 from .hyperparam import HyperparamModel, HyperparamSet, HyperparamSetLoader
-from .latex import TableFactory, CsvToLatexTable
-from . import LatexTableError, Table, DataFrameDescriber, DataDescriber
+from .latex import CsvToLatexTable
+from . import (
+    LatexTableError, TableFactory, Table, DataFrameDescriber, DataDescriber
+)
 
 logger = logging.getLogger(__name__)
 

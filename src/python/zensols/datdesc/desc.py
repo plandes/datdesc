@@ -20,8 +20,7 @@ import pandas as pd
 from tabulate import tabulate
 from zensols.config import Dictable
 from zensols.persist import PersistableContainer, persisted, FileTextUtil
-from .latex import TableFactory
-from . import DataDescriptionError, Table
+from . import DataDescriptionError, Table, TableFactory
 
 logger = logging.getLogger(__name__)
 

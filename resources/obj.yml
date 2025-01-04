@@ -13,13 +13,13 @@ datdesc_hyperparam_table_default:
 # the factory that creates instances of `Table`; updates to this class need to
 # be considered for .latex.TableFactory
 datdesc_table_factory:
-  class_name: zensols.datdesc.latex.TableFactory
+  class_name: zensols.datdesc.table.TableFactory
   default_table_name: one_column
 
 ## Table definitions
 #
 datdesc_table_one_column:
-  class_name: zensols.datdesc.table.Table
+  class_name: zensols.datdesc.latex.LatexTable
   default_params:
     - [placement, '!ht']
     - [size]
@@ -40,7 +40,7 @@ datdesc_table_one_column:
       \end{table}}
 
 datdesc_table_two_column:
-  class_name: zensols.datdesc.table.Table
+  class_name: zensols.datdesc.latex.LatexTable
   default_params:
     - [placement, '!ht']
     - [size]
@@ -61,7 +61,7 @@ datdesc_table_two_column:
       \end{table*}}
 
 datdesc_table_one_column_slack:
-  class_name: zensols.datdesc.table.SlackTable
+  class_name: zensols.datdesc.latex.SlackTable
   default_params:
     - [placement, '!ht']
     - [size]

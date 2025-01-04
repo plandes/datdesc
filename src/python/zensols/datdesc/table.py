@@ -1,13 +1,14 @@
 """This module contains classes that generate tables.
 
 """
+from __future__ import annotations
 __author__ = 'Paul Landes'
-
 from typing import (
     Dict, List, Sequence, Tuple, Any, Iterable, Set,
     ClassVar, Optional, Callable, Union
 )
 from dataclasses import dataclass, field
+from abc import abstractmethod, ABCMeta
 import logging
 import sys
 import re
@@ -16,16 +17,25 @@ import itertools as it
 from io import TextIOWrapper, StringIO
 from pathlib import Path
 import pandas as pd
+import yaml
 from tabulate import tabulate
+from zensols.util import Failure
 from zensols.persist import persisted, PersistedWork, PersistableContainer
-from zensols.config import Dictable
+from zensols.config import (
+    Dictable, ConfigFactory, ImportIniConfig, ImportConfigFactory
+)
 from . import LatexTableError
 
 logger = logging.getLogger(__name__)
 
+_TABLE_FACTORY_CONFIG: str = """
+[import]
+config_file = resource(zensols.datdesc): resources/obj.yml
+"""
+
 
 @dataclass
-class Table(PersistableContainer, Dictable):
+class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     """Generates a Zensols styled Latex table from a CSV file.
 
     """
@@ -236,14 +246,16 @@ class Table(PersistableContainer, Dictable):
             x += 'K'
         return x
 
-    @staticmethod
-    def format_scientific(x: float, sig_digits: int = 1) -> str:
-        nstr: str = f'{{0:.{sig_digits}e}}'.format(x)
-        if 'e' in nstr:
-            base, exponent = nstr.split('e')
-            base = base[:-2] if base.endswith('.0') else base
-            nstr = f'{base} \\times 10^{{{int(exponent)}}}'
-        return f'${nstr}$'
+    @abstractmethod
+    def format_scientific(self, x: float, sig_digits: int = 1) -> str:
+        """Format ``x`` in scientific notation.
+
+        :param x: the number to format
+
+        :param sig_digits: the number of digits after the decimal point
+
+        """
+        pass
 
     def _apply_df_eval_pre(self, df: pd.DataFrame) -> pd.DataFrame:
         if self.code_pre is not None:
@@ -372,32 +384,19 @@ class Table(PersistableContainer, Dictable):
         df = self._apply_df_font_format(df)
         return df
 
+    @abstractmethod
     def _get_table_rows(self, df: pd.DataFrame) -> Iterable[List[Any]]:
         """Return the rows/columns of the table given to :mod:``tabulate``."""
-        cols = [tuple(map(lambda c: f'\\textbf{{{c}}}', df.columns))]
-        return it.chain(cols, map(lambda x: x[1].tolist(), df.iterrows()))
+        pass
 
     def _get_tabulate_params(self) -> Dict[str, Any]:
         """A factory method that returns the argument to use in
         :mod:``tabulate``.
 
         """
-        params = dict(tablefmt='latex_raw', headers='firstrow')
+        params: Dict[str, Any] = dict(headers='firstrow')
         params.update(self.tabulate_params)
         return params
-
-    def _write_table(self, depth: int, writer: TextIOWrapper):
-        """Write the text of the table's rows and columns."""
-        df: pd.DataFrame = self.formatted_dataframe
-        table_rows: Iterable[List[Any]] = self._get_table_rows(df)
-        params: Dict[str, Any] = self._get_tabulate_params()
-        tab_lines: List[str] = tabulate(table_rows, **params).split('\n')
-        for lix, ln in enumerate(tab_lines[1:-1]):
-            self._write_line(ln.strip(), depth, writer)
-            if (lix - 2) in self.hlines:
-                self._write_line('\\hline', depth, writer)
-            if (lix - 2) in self.double_hlines:
-                self._write_line('\\hline \\hline', depth, writer)
 
     def _get_command_params(self) -> Dict[str, str]:
         """Create parameters prefixed with ``p:`` to be substituted as values in
@@ -436,14 +435,24 @@ class Table(PersistableContainer, Dictable):
         params[f'{prefix}argdef'] = proto
         return params
 
+    @abstractmethod
+    def _write_table(self, depth: int, writer: TextIOWrapper,
+                     content: List[str]):
+        """Write the text of the table's rows and columns."""
+        pass
+
     def write(self, depth: int = 0, writer: TextIOWrapper = sys.stdout):
-        params: Dict[str, Any] = dict(self.asdict())
-        cparams: Dict[str, str] = self._get_command_params()
+        df: pd.DataFrame = self.formatted_dataframe
+        table_rows: Iterable[List[Any]] = self._get_table_rows(df)
+        table_params: Dict[str, Any] = self._get_tabulate_params()
+        tab_lines: List[str] = tabulate(table_rows, **table_params).split('\n')
+        cmd_params: Dict[str, str] = self._get_command_params()
+        template_params: Dict[str, Any] = dict(self.asdict())
         table = StringIO()
-        self._write_table(1, table)
-        params['table'] = table.getvalue().rstrip()
-        params.update(cparams)
-        self._write_block(self.template % params, depth, writer)
+        self._write_table(1, table, tab_lines)
+        template_params['table'] = table.getvalue().rstrip()
+        template_params.update(cmd_params)
+        self._write_block(self.template % template_params, depth, writer)
 
     def _serialize_dict(self) -> Dict[str, Any]:
         dct = self.asdict()
@@ -480,20 +489,77 @@ class Table(PersistableContainer, Dictable):
 
 
 @dataclass
-class SlackTable(Table):
-    """An instance of the table that fills up space based on the widest column.
+class TableFactory(Dictable):
+    """Reads the table definitions file and writes a Latex .sty file of the
+    generated tables from the CSV data.
 
     """
-    slack_col: int = field(default=0)
-    """Which column elastically grows or shrinks to make the table fit."""
+    _DEFAULT_INSTANCE: ClassVar[TableFactory] = None
+    """The singleton instance when not created from a configuration factory."""
 
-    @property
-    def columns(self) -> str:
-        cols: str = self.column_aligns
-        if cols is None:
-            df = self.formatted_dataframe
-            i = self.slack_col
-            cols = ('l' * (df.shape[1] - 1))
-            cols = cols[:i] + 'X' + cols[i:]
-            cols = '|' + '|'.join(cols) + '|'
-        return cols
+    config_factory: ConfigFactory = field(repr=False)
+    """The configuration factory used to create :class:`.Table` instances."""
+
+    default_table_name: str = field()
+    """The default name, which resolves to a section name, to use when creating
+    anonymous tables.
+
+    """
+    @classmethod
+    def default_instance(cls: TableFactory) -> TableFactory:
+        if cls._DEFAULT_INSTANCE is None:
+            config = ImportIniConfig(StringIO(_TABLE_FACTORY_CONFIG))
+            fac = ImportConfigFactory(config)
+            try:
+                cls._DEFAULT_INSTANCE = fac('datdesc_table_factory')
+            except Exception as e:
+                fail = Failure(
+                    exception=e,
+                    message='Can not create stand-alone template factory')
+                fail.rethrow()
+        return cls._DEFAULT_INSTANCE
+
+    def _fix_path(self, tab: Table):
+        """When the CSV path in the table doesn't exist, replace it with a
+        relative file from the YAML file if it exists.
+
+        """
+        tab_path = Path(tab.path)
+        if not tab_path.is_file():
+            rel_path = Path(tab.definition_file.parent, tab_path).resolve()
+            if rel_path.is_file():
+                tab.path = rel_path
+
+    def _get_section_by_name(self, table_name: str = None) -> str:
+        if table_name is None:
+            table_name = self.default_table_name
+        return f'datdesc_table_{table_name}'
+
+    def create(self, name: str = None, **params) -> Table:
+        sec: str = self._get_section_by_name(name)
+        inst: Table = self.config_factory.new_instance(sec, **params)
+        inst.name = name
+        return inst
+
+    def from_file(self, table_path: Path) -> Iterable[Table]:
+        if logger.isEnabledFor(logging.INFO):
+            logger.info(f'reading table definitions file {table_path}')
+        with open(table_path) as f:
+            content = f.read()
+        tdefs = yaml.load(content, yaml.FullLoader)
+        for name, td in tdefs.items():
+            table_name: str = td.get('type')
+            if table_name is None:
+                raise LatexTableError(
+                    f"No 'type' given for '{name}' in file '{table_path}'")
+            del td['type']
+            td['definition_file'] = table_path
+            sec: str = self._get_section_by_name(table_name)
+            try:
+                inst: Table = self.config_factory.new_instance(sec, **td)
+                inst.name = name
+                self._fix_path(inst)
+            except Exception as e:
+                raise LatexTableError(
+                    f"Could not parse table file '{table_path}': {e}") from e
+            yield inst
