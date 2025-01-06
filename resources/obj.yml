@@ -16,6 +16,7 @@ datdesc_table_factory:
   class_name: zensols.datdesc.table.TableFactory
   default_table_name: one_column
 
+
 ## Table definitions
 #
 datdesc_table_one_column:
