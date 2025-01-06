@@ -7,10 +7,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+Major switch to template rather than code-based generation methods.
+
+### Removed
+- `Table` class and YAML attribute removed:
+  * `df_code_pre`
+  * `df_code`
 
 ### Added
+- Definition of table templates and parameters passed to generation commands.
 - A method to transpose the data, column and row metadata in
   `DataFrameDescriber.transpose`.
+
+### Changed
+- Changed from Python code to template based LaTeX tables.  The type of table
+  to generate is given by a new `type` attribute in the `Table` class and YAML
+  files.
+- `Table` class and YAML attribute renamed:
+  * `df_code_exec_pre` to `code_pre`
+  * `df_code_exec` to `code_post`
 
 
 ## [0.2.3] - 2024-07-13

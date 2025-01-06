@@ -47,16 +47,15 @@ column as the index (makes that column go away) using a variable size and
 placement, use:
 ```yaml
 intercodertab:
+  type: one_column
   path: test-resources/section-id.csv
   caption: >-
     Krippendorff’s ...
-  size: VAR
-  placement: VAR
   single_column: true
   uses: zentable
-  read_kwargs:
+  read_params:
     index_col: 0
-  write_kwargs:
+  tabulate_params:
     disable_numparse: true
   replace_nan: ' '
   blank_columns: [0]
@@ -65,10 +64,6 @@ intercodertab:
 
 Some of these fields include:
 
-* **placement**: the placement (i.e. `h!`), which `VAR` means to create the
-  command with a variable to use as the first parameter
-* **size**: the font size (i.e. `small`), which `VAR` means to create the
-  command with a variable to use as the second parameter
 * **index_col**: clears column 0 and
 * **bold_cells**: make certain cells bold
 * **disable_numparse** tells the `tabulate` module not reformat numbers

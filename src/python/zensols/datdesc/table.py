@@ -140,7 +140,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     the column identified by the key.
 
     """
-    read_kwargs: Dict[str, str] = field(default_factory=dict)
+    read_params: Dict[str, str] = field(default_factory=dict)
     """Keyword arguments used in the :meth:`~pandas.read_csv` call when reading
     the CSV file.
 
@@ -353,7 +353,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     def dataframe(self) -> pd.DataFrame:
         """The Pandas dataframe that holds the CSV data."""
         if not hasattr(self, '_dataframe_val'):
-            self._dataframe_val = pd.read_csv(self.path, **self.read_kwargs)
+            self._dataframe_val = pd.read_csv(self.path, **self.read_params)
         return self._dataframe_val
 
     @dataframe.setter

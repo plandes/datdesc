@@ -10,7 +10,7 @@ intercodertab:
     the \residentanon\ annotator, and \textbf{R} represents the regular
     expressions.
   type: one_column
-  read_kwargs:
+  read_params:
     index_col: 0
   tabulate_params:
     disable_numparse: true
