@@ -151,7 +151,7 @@ class Application(object):
 
         """
         if name is None:
-            print(', '.join(self.table_factory.get_table_names()))
+            print('\n'.join(self.table_factory.get_table_names()))
         else:
             dfd = DataFrameDescriber(
                 name='roster',
@@ -161,7 +161,7 @@ class Application(object):
                           'age': [16, 20, 19, 18]}),
                 meta=(('name', 'the person\'s name'),
                       ('age', 'the age of the individual')))
-            table: Table = dfd.create_table()
+            table: Table = dfd.create_table(name=name)
             table.write()
 
     def generate_tables(self, input_path: Path, output_path: Path):
@@ -240,4 +240,4 @@ class PrototypeApplication(object):
 
     def proto(self):
         """Prototype test."""
-        self.app.show_table()
+        self.app.show_table('one_column')

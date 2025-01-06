@@ -411,6 +411,8 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         proto: str = ''
         init_arg: str = ''
         pix: int = 1  # parameter index
+        usage = StringIO()
+        usage.write(f'\\{self.name}')
         dpix: int  # default parameter index
         param: Sequence[str]
         for dpix, param in enumerate(dparams):
@@ -427,12 +429,17 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
             if dpix == 0:
                 if val is not None:
                     init_arg = f'[{val}]'
+            if dpix == 0 and val is not None:
+                usage.write(f'[<{name}>]')
+            else:
+                usage.write(f'{{<{name}>}}')
             if val is None or (dpix == 0 and len(init_arg) > 0):
                 val = f'#{pix}'
                 pix += 1
             params[f'{prefix}{name}'] = val
         proto = f'[{pix - 1}]{init_arg}'
         params[f'{prefix}argdef'] = proto
+        params['usage'] = usage.getvalue()
         return params
 
     @abstractmethod

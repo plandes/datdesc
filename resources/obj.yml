@@ -29,7 +29,7 @@ datdesc_table_one_column:
   template: >-
     %% default table spans a single column (in two column) or the page
 
-    %% usage: \%(name)s[<placement>]{<font size>}
+    %% usage: %(usage)s
 
     \newcommand{\%(name)s}%(p:argdef)s{%%
       \begin{table}[%(p:placement)s]
@@ -50,7 +50,7 @@ datdesc_table_two_column:
   template: >-
     %% spans two columns in two column format
 
-    %% usage: \%(name)s[<placement>]{<font size>}
+    %% usage: %(usage)s
 
     \newcommand{\%(name)s}%(p:argdef)s{%%
       \begin{table*}[%(p:placement)s]
@@ -70,9 +70,9 @@ datdesc_table_one_column_slack:
     - [size]
     - [width, '\textwidth']
   template: >-
-    %% a table that has an adjustable column
+    %% adjustable column table in one column format
 
-    %% usage: \%(name)s[<placement>]{<font size>}
+    %% usage: %(usage)s
 
     \newcommand{\%(name)s}%(p:argdef)s{%%
       \begin{table}[%(p:placement)s]
@@ -92,9 +92,9 @@ datdesc_table_two_column_slack:
     - [size]
     - [width, '\textwidth']
   template: >-
-    %% a table that has an adjustable column
+    %% adjustable column table in one column format spans two columns
 
-    %% usage: \%(name)s[<placement>]{<font size>}
+    %% usage: %(usage)s
 
     \newcommand{\%(name)s}%(p:argdef)s{%%
       \begin{table*}[%(p:placement)s]
