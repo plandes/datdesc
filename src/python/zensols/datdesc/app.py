@@ -150,7 +150,6 @@ class Application(object):
                      omitted
 
         """
-        name = 'two_column_slack'
         if name is None:
             print(', '.join(self.table_factory.get_table_names()))
         else:

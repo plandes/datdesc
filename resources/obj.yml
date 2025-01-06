@@ -27,7 +27,7 @@ datdesc_table_one_column:
     - [placement, '!ht']
     - [size]
   template: >-
-    %% this table spans two columns in two column format
+    %% default table spans a single column (in two column) or the page
 
     %% usage: \%(name)s[<placement>]{<font size>}
 
@@ -48,7 +48,7 @@ datdesc_table_two_column:
     - [placement, '!ht']
     - [size]
   template: >-
-    %% this table spans two columns in two column format
+    %% spans two columns in two column format
 
     %% usage: \%(name)s[<placement>]{<font size>}
 
