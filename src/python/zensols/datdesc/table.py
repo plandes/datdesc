@@ -591,7 +591,3 @@ class TableFactory(Dictable):
                 raise LatexTableError(
                     f"Could not parse table file '{table_path}': {e}") from e
             yield inst
-
-    def tmp(self):
-        names = tuple(self.get_table_names())
-        table = self.create(names[0])
