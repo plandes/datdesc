@@ -235,7 +235,6 @@ class Application(object):
 class PrototypeApplication(object):
     CLI_META = {'is_usage_visible': False}
 
-    config_factory: int
     app: Application = field()
 
     def proto(self):

@@ -1,8 +1,8 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{svm-hyperparam}[{{DATE}} Tables]
 
-% this table spans two columns in two column format
-% usage: \svmtab[<placement>]{<font size>}
+% default table spans a single column (in two column) or the page
+% usage: \svmtab[<placement>]{<size>}
 \newcommand{\svmtab}[1][!ht]{%
   \begin{table}[#1]
   \centering
@@ -20,8 +20,8 @@
   \label{tab:svmtab}
   \end{table}}
 
-% this table spans two columns in two column format
-% usage: \kmeanstab[<placement>]{<font size>}
+% default table spans a single column (in two column) or the page
+% usage: \kmeanstab[<placement>]{<size>}
 \newcommand{\kmeanstab}[2][!ht]{%
   \begin{table}[#1]
   \centering

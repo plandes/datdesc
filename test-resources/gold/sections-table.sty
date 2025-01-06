@@ -3,8 +3,8 @@
 
 \usepackage{tabularx}
 
-% a table that has an adjustable column
-% usage: \anontab[<placement>]{<font size>}
+% adjustable column table in one column format spans two columns
+% usage: \anontab[<placement>]{<size>}{<width>}
 \newcommand{\anontab}[1][!ht]{%
   \begin{table*}[#1]
   \centering
@@ -22,8 +22,8 @@
   \label{tab:anontab}
   \end{table*}}
 
-% this table spans two columns in two column format
-% usage: \anontabparam[<placement>]{<font size>}
+% default table spans a single column (in two column) or the page
+% usage: \anontabparam[<placement>]{<size>}
 \newcommand{\anontabparam}[1][b]{%
   \begin{table}[#1]
   \centering

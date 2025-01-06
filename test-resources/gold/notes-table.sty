@@ -4,8 +4,8 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 
-% a table that has an adjustable column
-% usage: \notestabdef[<placement>]{<font size>}
+% adjustable column table in one column format
+% usage: \notestabdef[<placement>]{<size>}{<width>}
 \newcommand{\notestabdef}[1][!ht]{%
   \begin{table}[#1]
   \centering
@@ -27,8 +27,8 @@
   \label{tab:notestabdef}
   \end{table}}
 
-% a table that has an adjustable column
-% usage: \notestabcolone[<placement>]{<font size>}
+% adjustable column table in one column format
+% usage: \notestabcolone[<placement>]{<size>}{<width>}
 \newcommand{\notestabcolone}[2][h!]{%
   \begin{table}[#1]
   \centering
