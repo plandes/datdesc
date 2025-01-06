@@ -500,6 +500,9 @@ class TableFactory(Dictable):
     config_factory: ConfigFactory = field(repr=False)
     """The configuration factory used to create :class:`.Table` instances."""
 
+    table_section_regex: re.Pattern = field()
+    """A regular expression that matches table entries."""
+
     default_table_name: str = field()
     """The default name, which resolves to a section name, to use when creating
     anonymous tables.
@@ -535,13 +538,38 @@ class TableFactory(Dictable):
             table_name = self.default_table_name
         return f'datdesc_table_{table_name}'
 
-    def create(self, name: str = None, **params) -> Table:
+    def get_table_names(self) -> Iterable[str]:
+        """Return names of tables used in :meth:``create``."""
+        def map_sec(sec: str) -> Optional[str]:
+            m: re.Match = self.table_section_regex.match(sec)
+            if m is not None:
+                return m.group(1)
+        return filter(lambda s: s is not None,
+                      map(map_sec, self.config_factory.config.sections))
+
+    def create(self, name: str = None, **params: Dict[str, Any]) -> Table:
+        """Create a table from the application configuration.
+
+        :param name: the name used to find the table by section
+
+        :param params: the keyword arguments used to create the table
+
+        :return: a new instance of the name
+
+        :see: :meth:`get_table_names`
+
+        """
         sec: str = self._get_section_by_name(name)
         inst: Table = self.config_factory.new_instance(sec, **params)
         inst.name = name
         return inst
 
     def from_file(self, table_path: Path) -> Iterable[Table]:
+        """Return tables parsed from a YAML file.
+
+        :param table_path: the file containing the table configurations
+
+        """
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'reading table definitions file {table_path}')
         with open(table_path) as f:
@@ -563,3 +591,7 @@ class TableFactory(Dictable):
                 raise LatexTableError(
                     f"Could not parse table file '{table_path}': {e}") from e
             yield inst
+
+    def tmp(self):
+        names = tuple(self.get_table_names())
+        table = self.create(names[0])

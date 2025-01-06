@@ -13,6 +13,7 @@ import logging
 import re
 from itertools import chain
 from pathlib import Path
+import pandas as pd
 from zensols.util import stdout
 from zensols.cli import ApplicationError
 from zensols.config import Settings
@@ -142,6 +143,28 @@ class Application(object):
             raise ApplicationError(f'No such file for directory: {input_path}')
         return paths
 
+    def show_table(self, name: str = None):
+        """Print a list of example LaTeX tables.
+
+        :param name: the name of the example table or a listing of tables if
+                     omitted
+
+        """
+        name = 'two_column_slack'
+        if name is None:
+            print(', '.join(self.table_factory.get_table_names()))
+        else:
+            dfd = DataFrameDescriber(
+                name='roster',
+                desc='Example dataframe using mock roster data',
+                df=pd.DataFrame(
+                    data={'name': ['Stan', 'Kyle', 'Cartman', 'Kenny'],
+                          'age': [16, 20, 19, 18]}),
+                meta=(('name', 'the person\'s name'),
+                      ('age', 'the age of the individual')))
+            table: Table = dfd.create_table()
+            table.write()
+
     def generate_tables(self, input_path: Path, output_path: Path):
         """Create LaTeX tables.
 
@@ -218,18 +241,4 @@ class PrototypeApplication(object):
 
     def proto(self):
         """Prototype test."""
-        path = 'test-resources/config/sections-table.yml'
-        path = 'test-resources/config/metrics-summary-table.yml'
-        path = 'test-resources/config/notes-table.yml'
-        path = 'test-resources/config/intercoder-table.yml'
-        if 0:
-            self.app.generate_tables(Path(path), Path('tmp.tex'))
-            return
-        fac: TableFactory = self.config_factory('datdesc_table_factory')
-        #fac = TableFactory.default_instance()
-        table = next(fac.from_file(path))
-        if 0:
-            from pprint import pprint
-            pprint(dict(table.serialize()['anontab']))
-            return
-        table.write()
+        self.app.show_table()

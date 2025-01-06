@@ -14,6 +14,8 @@ datdesc_hyperparam_table_default:
 # be considered for .latex.TableFactory
 datdesc_table_factory:
   class_name: zensols.datdesc.table.TableFactory
+  table_section_regex: >-
+    eval({'import': ['re']}): re.compile('^datdesc_table_((?!factory).+)')
   default_table_name: one_column
 
 

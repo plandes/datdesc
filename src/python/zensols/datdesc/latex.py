@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class LatexTable(Table):
+    """This subclass generates LaTeX tables.
+
+    """
     def format_scientific(self, x: float, sig_digits: int = 1) -> str:
         nstr: str = f'{{0:.{sig_digits}e}}'.format(x)
         if 'e' in nstr:
