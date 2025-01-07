@@ -16,7 +16,23 @@ Example::
 
 """
 
-from .domain import *
+from zensols.util import APIError
+
+
+class DataDescriptionError(APIError):
+    """Thrown for any application level error.
+
+    """
+    pass
+
+
+class LatexTableError(DataDescriptionError):
+    """Thrown for any application level error related to creating tables.
+
+    """
+    pass
+
+
 from .table import *
 from .desc import *
 from .app import *
