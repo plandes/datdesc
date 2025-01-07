@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-Major switch to template rather than code-based generation methods.
+
+## [1.0.0] - 2025-01-06
+Major feature update to switch to template rather than code-based generation
+methods.
 
 ### Removed
 - `Table` class and YAML attribute removed:
@@ -102,7 +105,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/plandes/datdesc/compare/v0.2.3...v1.0.0
 [0.2.3]: https://github.com/plandes/datdesc/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/plandes/datdesc/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/plandes/datdesc/compare/v0.2.0...v0.2.1
