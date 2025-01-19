@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changed
+- Switch from Python 2 to jinja2 templates.
+
+
 ## [1.1.0] - 2025-01-11
 ### Removed
 - Support for Python 3.10.
