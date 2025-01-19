@@ -26,20 +26,18 @@ datdesc_table_one_column:
   default_params:
     - [placement, '!ht']
     - [size]
-  template: >-
-    %% default table spans a single column (in two column) or the page
-
-    %% usage: %(usage)s
-
-    \newcommand{\%(name)s}%(p:argdef)s{%%
-      \begin{table}[%(p:placement)s]
+  template: |-
+    % default table spans a single column (in two column) or the page
+    % usage: {{ usage }}
+    \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
+      \begin{table}[ {{-p.placement-}} ]
       \centering
-      %(p:size)s
-      \begin{tabular}{%(columns)s}
-    %(table)s
+      {{p.size}}
+      \begin{tabular}{ {{-columns-}} }
+    {{table}}
       \end{tabular}
-      \caption{%(caption)s}
-      \label{tab:%(name)s}
+      \caption{ {{-caption-}} }
+      \label{tab:{{ name }}}
       \end{table}}
 
 datdesc_table_two_column:
@@ -47,20 +45,18 @@ datdesc_table_two_column:
   default_params:
     - [placement, '!ht']
     - [size]
-  template: >-
-    %% spans two columns in two column format
-
-    %% usage: %(usage)s
-
-    \newcommand{\%(name)s}%(p:argdef)s{%%
-      \begin{table*}[%(p:placement)s]
+  template: |-
+    % spans two columns in two column format
+    % usage: {{ usage }}
+    \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
+      \begin{table*}[ {{-p.placement-}} ]
       \centering
-      %(p:size)s
-      \begin{tabular}{%(columns)s}
-    %(table)s
+      {{p.size}}
+      \begin{tabular}{ {{-columns-}} }
+    {{table}}
       \end{tabular}
-      \caption{%(caption)s}
-      \label{tab:%(name)s}
+      \caption{ {{-caption-}} }
+      \label{tab:{{ name }}}
       \end{table*}}
 
 datdesc_table_one_column_slack:
@@ -69,20 +65,18 @@ datdesc_table_one_column_slack:
     - [placement, '!ht']
     - [size]
     - [width, '\textwidth']
-  template: >-
-    %% adjustable column table in one column format
-
-    %% usage: %(usage)s
-
-    \newcommand{\%(name)s}%(p:argdef)s{%%
-      \begin{table}[%(p:placement)s]
+  template: |-
+    % adjustable column table in one column format
+    % usage: {{ usage }}
+    \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
+      \begin{table}[ {{-p.placement-}} ]
       \centering
-      %(p:size)s
-      \begin{tabularx}{%(p:width)s}{%(columns)s}
-    %(table)s
+      {{p.size}}
+      \begin{tabularx}{ {{-p.width-}} }{ {{-columns-}} }
+    {{table}}
       \end{tabularx}
-      \caption{%(caption)s}
-      \label{tab:%(name)s}
+      \caption{ {{-caption-}} }
+      \label{tab:{{ name }}}
       \end{table}}
 
 datdesc_table_two_column_slack:
@@ -91,18 +85,29 @@ datdesc_table_two_column_slack:
     - [placement, '!ht']
     - [size]
     - [width, '\textwidth']
-  template: >-
-    %% adjustable column table in one column format spans two columns
-
-    %% usage: %(usage)s
-
-    \newcommand{\%(name)s}%(p:argdef)s{%%
-      \begin{table*}[%(p:placement)s]
+  template: |-
+    % adjustable column table in one column format spans two columns
+    % usage: {{ usage }}
+    \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
+      \begin{table*}[ {{-p.placement-}} ]
       \centering
-      %(p:size)s
-      \begin{tabularx}{%(p:width)s}{%(columns)s}
-    %(table)s
+      {{p.size}}
+      \begin{tabularx}{ {{-p.width-}} }{ {{-columns-}} }
+    {{table}}
       \end{tabularx}
-      \caption{%(caption)s}
-      \label{tab:%(name)s}
+      \caption{ {{-caption-}} }
+      \label{tab:{{ name }}}
       \end{table*}}
+
+datdesc_table_bare:
+  class_name: zensols.datdesc.latex.LatexTable
+  template: |-
+    % table contents only to be used in custom environments
+    % usage: {{ usage }}
+    {% if caption is not none  %}
+    \newcommand{\{{-name-}}caption}{ {{-caption-}} }
+    {% endif %}
+    \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
+      \begin{tabular}{ {{-columns-}} }
+    {{table}}
+      \end{tabular}}

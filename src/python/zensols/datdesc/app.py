@@ -153,6 +153,16 @@ class Application(object):
             raise ApplicationError(f'No such file for directory: {input_path}')
         return paths
 
+    def _get_example(self) -> DataFrameDescriber:
+        return DataFrameDescriber(
+            name='roster',
+            desc='Example dataframe using mock roster data',
+            df=pd.DataFrame(
+                data={'name': ['Stan', 'Kyle', 'Cartman', 'Kenny'],
+                      'age': [16, 20, 19, 18]}),
+            meta=(('name', 'the person\'s name'),
+                  ('age', 'the age of the individual')))
+
     def show_table(self, name: str = None):
         """Print a list of example LaTeX tables.
 
@@ -163,14 +173,7 @@ class Application(object):
         if name is None:
             print('\n'.join(self.table_factory.get_table_names()))
         else:
-            dfd = DataFrameDescriber(
-                name='roster',
-                desc='Example dataframe using mock roster data',
-                df=pd.DataFrame(
-                    data={'name': ['Stan', 'Kyle', 'Cartman', 'Kenny'],
-                          'age': [16, 20, 19, 18]}),
-                meta=(('name', 'the person\'s name'),
-                      ('age', 'the age of the individual')))
+            dfd: DataFrameDescriber = self._get_example()
             table: Table = dfd.create_table(name=name)
             table.write()
 
@@ -249,4 +252,8 @@ class PrototypeApplication(object):
 
     def proto(self):
         """Prototype test."""
-        self.app.show_table('one_column')
+        TableFactory.reset_default_instance()
+        #self.app.show_table('one_column')
+        dfd: DataFrameDescriber = self.app._get_example()
+        table: Table = dfd.create_table(name='one_column')
+        print(table.write())

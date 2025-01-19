@@ -10,7 +10,7 @@ import logging
 import itertools as it
 from itertools import chain
 from datetime import datetime
-from io import TextIOWrapper
+from io import TextIOBase
 import pandas as pd
 from zensols.config import Writable
 from . import Table
@@ -41,7 +41,7 @@ class LatexTable(Table):
         params['tablefmt'] = 'latex_raw'
         return params
 
-    def _write_table(self, depth: int, writer: TextIOWrapper,
+    def _write_table(self, depth: int, writer: TextIOBase,
                      content: List[str]):
         """Write the text of the table's rows and columns."""
         for lix, ln in enumerate(content[1:-1]):
@@ -87,7 +87,7 @@ class CsvToLatexTable(Writable):
     package_name: str = field()
     """The name Latex .sty package."""
 
-    def _write_header(self, depth: int, writer: TextIOWrapper):
+    def _write_header(self, depth: int, writer: TextIOBase):
         date = datetime.now().strftime('%Y/%m/%d')
         writer.write("""\\NeedsTeXFormat{LaTeX2e}
 \\ProvidesPackage{%(package_name)s}[%(date)s Tables]
@@ -100,7 +100,7 @@ class CsvToLatexTable(Writable):
         if len(uses) > 0:
             writer.write('\n')
 
-    def write(self, depth: int = 0, writer: TextIOWrapper = sys.stdout):
+    def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
         """Write the Latex table to the writer given in the initializer.
 
         """

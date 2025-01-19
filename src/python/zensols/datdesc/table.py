@@ -14,10 +14,11 @@ import sys
 import re
 import string
 import itertools as it
-from io import TextIOWrapper, StringIO
+from io import TextIOBase, StringIO
 from pathlib import Path
 import pandas as pd
 import yaml
+from jinja2 import Template, Environment, BaseLoader
 from tabulate import tabulate
 from zensols.util import Failure
 from zensols.persist import persisted, PersistedWork, PersistableContainer
@@ -400,15 +401,16 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         return params
 
     def _get_command_params(self) -> Dict[str, str]:
-        """Create parameters prefixed with ``p:`` to be substituted as values in
-        the table template.  A ``p:argdef`` is also added that gives the
-        commands number of arguments and the initial default.
+        """Create parameters prefixed as a nested :class:`~builtins.Dict` with
+        name ``p`` to be substituted as values in the table template.  A
+        ``p.argdef`` is also added that gives the commands number of arguments
+        and the initial default.
 
         """
         dparams: Sequence[Sequence[str]] = self.default_params  # metadata
         oparams: Dict[str, str] = self.params  # user overridden
-        params: Dict[str, str] = {}  # to populate and return
-        prefix: str = 'p:'  # prefix
+        aparams: Dict[str, str] = {}  # argument params
+        params: Dict[str, str] = {'p': aparams}  # to populate and return
         proto: str = ''
         init_arg: str = ''
         pix: int = 1  # parameter index
@@ -437,30 +439,38 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
             if val is None or (dpix == 0 and len(init_arg) > 0):
                 val = f'#{pix}'
                 pix += 1
-            params[f'{prefix}{name}'] = val
+            aparams[name] = val
         proto = f'[{pix - 1}]{init_arg}'
-        params[f'{prefix}argdef'] = proto
+        aparams['argdef'] = proto
         params['usage'] = usage.getvalue()
         return params
 
     @abstractmethod
-    def _write_table(self, depth: int, writer: TextIOWrapper,
+    def _write_table(self, depth: int, writer: TextIOBase,
                      content: List[str]):
         """Write the text of the table's rows and columns."""
         pass
 
-    def write(self, depth: int = 0, writer: TextIOWrapper = sys.stdout):
+    def _render_flat_table(self, params: Dict[str, Any]) -> str:
+        if logger.isEnabledFor(logging.TRACE):
+            logger.trace(f'template: <<{self.template}>>')
+        template: Template = Environment(loader=BaseLoader).from_string(
+            self.template)
+        return template.render(params)
+
+    def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
         df: pd.DataFrame = self.formatted_dataframe
         table_rows: Iterable[List[Any]] = self._get_table_rows(df)
         table_params: Dict[str, Any] = self._get_tabulate_params()
         tab_lines: List[str] = tabulate(table_rows, **table_params).split('\n')
         cmd_params: Dict[str, str] = self._get_command_params()
         template_params: Dict[str, Any] = dict(self.asdict())
-        table = StringIO()
-        self._write_table(1, table, tab_lines)
-        template_params['table'] = table.getvalue().rstrip()
+        table_rows_flat = StringIO()
+        self._write_table(1, table_rows_flat, tab_lines)
+        template_params['table'] = table_rows_flat.getvalue().rstrip()
         template_params.update(cmd_params)
-        self._write_block(self.template % template_params, depth, writer)
+        table: str = self._render_flat_table(template_params)
+        self._write_block(table, depth, writer)
 
     def _serialize_dict(self) -> Dict[str, Any]:
         dct = self.asdict()
@@ -529,6 +539,10 @@ class TableFactory(Dictable):
                     message='Can not create stand-alone template factory')
                 fail.rethrow()
         return cls._DEFAULT_INSTANCE
+
+    @classmethod
+    def reset_default_instance(cls: TableFactory):
+        cls._DEFAULT_INSTANCE = None
 
     def _fix_path(self, tab: Table):
         """When the CSV path in the table doesn't exist, replace it with a
