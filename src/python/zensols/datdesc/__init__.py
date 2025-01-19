@@ -30,7 +30,11 @@ class LatexTableError(DataDescriptionError):
     """Thrown for any application level error related to creating tables.
 
     """
-    pass
+    def __init__(self, reason: str, table: str = None):
+        if table is not None:
+            reason = f'{reason} for table {table}'
+        super().__init__(reason)
+        self.table = table
 
 
 from .table import *

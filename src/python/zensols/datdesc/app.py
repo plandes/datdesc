@@ -16,7 +16,7 @@ from pathlib import Path
 import pandas as pd
 from zensols.util import stdout
 from zensols.cli import ApplicationError
-from zensols.config import Settings
+from zensols.config import Settings, FactoryError
 from .hyperparam import HyperparamModel, HyperparamSet, HyperparamSetLoader
 from .latex import CsvToLatexTable
 from . import (
@@ -113,6 +113,16 @@ class Application(object):
                     input_file, output_file, _OutputFormat.table)
         except FileNotFoundError as e:
             raise ApplicationError(str(e)) from e
+        except LatexTableError as e:
+            reason: str = str(e)
+            c: Exception = e.__cause__
+            if isinstance(c, FactoryError):
+                table: str = e.table
+                table = f"'{table}'" if len(table) > 0 else table
+                reason = (
+                    f"Can not process table {table} " +
+                    f"in {c.config_file}: {c.__cause__} ")
+            raise ApplicationError(reason)
 
     def _get_paths(self, input_path: Path, output_path: Path) -> \
             Iterable[Tuple[str, Path]]:

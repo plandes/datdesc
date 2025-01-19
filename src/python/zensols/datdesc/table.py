@@ -205,7 +205,8 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         fname = self.definition_file.name
         m = self._FILE_NAME_REGEX.match(fname)
         if m is None:
-            raise LatexTableError(f'does not appear to be a YAML file: {fname}')
+            raise LatexTableError(
+                f'does not appear to be a YAML file: {fname}', self.name)
         return m.group(1)
 
     @property
@@ -418,11 +419,11 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         for dpix, param in enumerate(dparams):
             lp: int = len(param)
             if lp < 1:
-                raise LatexTableError(
-                    f"No entries in param definition in {self.name}: '{param}'")
+                msg: str = f"No entries in param definition '{param}'"
+                raise LatexTableError(msg, self.name)
             if len(param) > 2:
                 raise LatexTableError(
-                    f"Expecting < 2 params in {self.name}: '{param}'")
+                    f"Expecting < 2 params: '{param}'", self.name)
             name: str = param[0]
             default: str = param[1] if len(param) > 1 else None
             val: str = oparams.get(name, default)
@@ -586,7 +587,7 @@ class TableFactory(Dictable):
             table_name: str = td.get('type')
             if table_name is None:
                 raise LatexTableError(
-                    f"No 'type' given for '{name}' in file '{table_path}'")
+                    f"No 'type' given for in file '{table_path}'", name)
             del td['type']
             td['definition_file'] = table_path
             sec: str = self._get_section_by_name(table_name)
@@ -595,6 +596,12 @@ class TableFactory(Dictable):
                 inst.name = name
                 self._fix_path(inst)
             except Exception as e:
-                raise LatexTableError(
-                    f"Could not parse table file '{table_path}': {e}") from e
+                msg: str = f"Could not parse table file '{table_path}': {e}"
+                raise LatexTableError(msg, name) from e
             yield inst
+
+    def __str__(self):
+        return f'{self.name} in {self.path}'
+
+    def __repr__(self):
+        return self.__str__()
