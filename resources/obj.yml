@@ -32,9 +32,9 @@ datdesc_table_one_column:
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{table}[ {{-p.placement-}} ]
       \centering
-      {{p.size}}
+      {{ p.size }}
       \begin{tabular}{ {{-columns-}} }
-    {{table}}
+    {{ table }}
       \end{tabular}
       \caption{ {{-caption-}} }
       \label{tab:{{ name }}}
@@ -51,9 +51,9 @@ datdesc_table_two_column:
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{table*}[ {{-p.placement-}} ]
       \centering
-      {{p.size}}
+      {{ p.size }}
       \begin{tabular}{ {{-columns-}} }
-    {{table}}
+    {{ table }}
       \end{tabular}
       \caption{ {{-caption-}} }
       \label{tab:{{ name }}}
@@ -71,9 +71,9 @@ datdesc_table_one_column_slack:
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{table}[ {{-p.placement-}} ]
       \centering
-      {{p.size}}
+      {{ p.size }}
       \begin{tabularx}{ {{-p.width-}} }{ {{-columns-}} }
-    {{table}}
+    {{ table }}
       \end{tabularx}
       \caption{ {{-caption-}} }
       \label{tab:{{ name }}}
@@ -91,9 +91,9 @@ datdesc_table_two_column_slack:
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{table*}[ {{-p.placement-}} ]
       \centering
-      {{p.size}}
+      {{ p.size }}
       \begin{tabularx}{ {{-p.width-}} }{ {{-columns-}} }
-    {{table}}
+    {{ table }}
       \end{tabularx}
       \caption{ {{-caption-}} }
       \label{tab:{{ name }}}
@@ -109,5 +109,5 @@ datdesc_table_bare:
     {% endif %}
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{tabular}{ {{-columns-}} }
-    {{table}}
+    {{ table }}
       \end{tabular}}
