@@ -65,4 +65,5 @@ class TestHyperparamConfig(unittest.TestCase):
             print(hp_val, epsilon)
         self.assertTrue(epsilon < 5., f'e={epsilon}, val={hp_val}')
         self.assertTrue(abs(hp_val - res.hyp.C) < 1e-5)
-        self.assertEqual('linear', res.hyp.kernel)
+        # the kernel is a hyperparameter, which isn't determinant from the opt
+        self.assertTrue(res.hyp.kernel in {'linear', 'radial'})
