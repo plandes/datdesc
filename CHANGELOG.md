@@ -8,8 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.1.1] - 2025-02-01
+### Added
+- A Pandas dataframe `zensols.persist.Stash` implementation that saves as CSV
+  files.
+
 ### Changed
 - Switch from Python 2 to jinja2 templates.
+- Fixed non-determinate unit test case failure.
 
 
 ## [1.1.0] - 2025-01-11
@@ -117,7 +123,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/plandes/datdesc/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/plandes/datdesc/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/plandes/datdesc/compare/v0.2.3...v1.0.0
 [0.2.3]: https://github.com/plandes/datdesc/compare/v0.2.2...v0.2.3
