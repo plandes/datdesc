@@ -43,6 +43,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     desc: str = field()
     """The description of the data frame."""
 
+    head: str = field(default=None)
+    """A short summary of the table and used in :obj:`.Table.head`."""
+
     meta_path: Optional[Path] = field(default=None)
     """A path to use to create :obj:`meta` metadata.
 
@@ -276,6 +279,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         fac: TableFactory = TableFactory.default_instance()
         params: Dict[str, Any] = dict(
             name=None,
+            head=self.head,
             path=self.csv_path,
             caption=self.desc,
             column_renames=dict(filter(lambda x: x[1] is not None,

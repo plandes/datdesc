@@ -29,6 +29,9 @@ datdesc_table_one_column:
   template: |-
     % default table spans a single column (in two column) or the page
     % usage: {{ usage }}
+    {% if head is not none  -%}
+    \newcommand{\{{-name-}}head}{ {{-head-}} }
+    {% endif -%}
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{table}[ {{-p.placement-}} ]
       \centering
@@ -36,7 +39,11 @@ datdesc_table_one_column:
       \begin{tabular}{ {{-columns-}} }
     {{ table }}
       \end{tabular}
+      {% if head is not none -%}
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
+      {% else -%}
       \caption{ {{-caption-}} }
+      {% endif -%}
       \label{tab:{{ name }}}
       \end{table}}
 
@@ -48,6 +55,9 @@ datdesc_table_two_column:
   template: |-
     % spans two columns in two column format
     % usage: {{ usage }}
+    {% if head is not none  -%}
+    \newcommand{\{{-name-}}head}{ {{-head-}} }
+    {% endif -%}
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{table*}[ {{-p.placement-}} ]
       \centering
@@ -55,7 +65,11 @@ datdesc_table_two_column:
       \begin{tabular}{ {{-columns-}} }
     {{ table }}
       \end{tabular}
+      {% if head is not none -%}
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
+      {% else -%}
       \caption{ {{-caption-}} }
+      {% endif -%}
       \label{tab:{{ name }}}
       \end{table*}}
 
@@ -68,6 +82,9 @@ datdesc_table_one_column_slack:
   template: |-
     % adjustable column table in one column format
     % usage: {{ usage }}
+    {% if head is not none  -%}
+    \newcommand{\{{-name-}}head}{ {{-head-}} }
+    {% endif -%}
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{table}[ {{-p.placement-}} ]
       \centering
@@ -75,7 +92,11 @@ datdesc_table_one_column_slack:
       \begin{tabularx}{ {{-p.width-}} }{ {{-columns-}} }
     {{ table }}
       \end{tabularx}
+      {% if head is not none -%}
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
+      {% else -%}
       \caption{ {{-caption-}} }
+      {% endif -%}
       \label{tab:{{ name }}}
       \end{table}}
 
@@ -88,6 +109,9 @@ datdesc_table_two_column_slack:
   template: |-
     % adjustable column table in one column format spans two columns
     % usage: {{ usage }}
+    {% if head is not none  -%}
+    \newcommand{\{{-name-}}head}{ {{-head-}} }
+    {% endif -%}
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{table*}[ {{-p.placement-}} ]
       \centering
@@ -95,7 +119,11 @@ datdesc_table_two_column_slack:
       \begin{tabularx}{ {{-p.width-}} }{ {{-columns-}} }
     {{ table }}
       \end{tabularx}
+      {% if head is not none -%}
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
+      {% else -%}
       \caption{ {{-caption-}} }
+      {% endif -%}
       \label{tab:{{ name }}}
       \end{table*}}
 
@@ -106,7 +134,10 @@ datdesc_table_bare:
     % usage: {{ usage }}
     {% if caption is not none  %}
     \newcommand{\{{-name-}}caption}{ {{-caption-}} }
-    {% endif %}
+    {% endif -%}
+    {% if head is not none  -%}
+    \newcommand{\{{-name-}}head}{ {{-head-}} }
+    {% endif -%}
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
       \begin{tabular}{ {{-columns-}} }
     {{ table }}

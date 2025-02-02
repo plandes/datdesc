@@ -156,7 +156,8 @@ class Application(object):
     def _get_example(self) -> DataFrameDescriber:
         return DataFrameDescriber(
             name='roster',
-            desc='Example dataframe using mock roster data',
+            desc='Example dataframe using mock roster data.',
+            head='Mock Roster',
             df=pd.DataFrame(
                 data={'name': ['Stan', 'Kyle', 'Cartman', 'Kenny'],
                       'age': [16, 20, 19, 18]}),

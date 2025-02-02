@@ -59,6 +59,11 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     caption: str = field()
     """The human readable string used to the caption in the table."""
 
+    head: str = field(default=None)
+    """The header to use for the table, which is used as the text in the list of
+    tables and made bold in the table.
+
+    """
     default_params: Sequence[Sequence[str]] = field(default_factory=list)
     """Default parameters to be substituted in the template that are
     interpolated by the LaTeX numeric values such as #1, #2, etc.  This is a
