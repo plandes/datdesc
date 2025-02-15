@@ -52,7 +52,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     """The name of the table, also used as the label."""
 
     template: str = field()
-    """The table template, which lives in the application configuraiton
+    """The table template, which lives in the application configuration
     ``obj.yml``.
 
     """
@@ -64,6 +64,8 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     tables and made bold in the table.
 
     """
+    type: str = field(default=None)
+    """"""
     default_params: Sequence[Sequence[str]] = field(default_factory=list)
     """Default parameters to be substituted in the template that are
     interpolated by the LaTeX numeric values such as #1, #2, etc.  This is a
@@ -478,14 +480,17 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         self._write_block(table, depth, writer)
 
     def _serialize_dict(self) -> Dict[str, Any]:
-        dct = self.asdict()
-        def_inst = self.__class__(
+        priorities: List[str] = 'type caption head path definition_file'.split()
+        dct: Dict[str, Any] = super().asflatdict()
+        def_inst: Table = self.__class__(
             path=None,
             name=None,
             template=self.template,
             default_params=self.default_params,
             caption=None)
         dels: List[str] = []
+        k: str
+        v: Any
         for k, v in dct.items():
             if k in self._DICTABLE_ATTRIBUTES:
                 continue
@@ -494,18 +499,20 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
                 dels.append(k)
         for k in dels:
             del dct[k]
-        return dct
+        # preferred order (dicts officially keep order starting in 3.7)
+        odct: Dict[str, Any] = {}
+        for k in priorities:
+            if k in dct:
+                odct[k] = dct.pop(k)
+        for k in dct.keys():
+            odct[k] = dct[k]
+        return odct
 
-    def serialize(self) -> Dict[str, Any]:
-        """Return a data structure usable for YAML or JSON output by flattening
-        Python objects.
-
-        """
-        tab_name: str = self.name
-        # using json to recursively convert OrderedDict to dicts
-        tab_def: Dict[str, Any] = self._serialize_dict()
-        del tab_def['name']
-        return {tab_name: tab_def}
+    def asflatdict(self, *args, **kwargs) -> Dict[str, Any]:
+        if kwargs.get('format') == 'serial':
+            return self._serialize_dict()
+        else:
+            return super().asflatdict(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -520,19 +527,28 @@ class TableFactory(Dictable):
     _DEFAULT_INSTANCE: ClassVar[TableFactory] = None
     """The singleton instance when not created from a configuration factory."""
 
+    _TYPE_NAME: ClassVar[str] = 'type'
+    """The field in the table that indicates the type of table.  This is used to
+    select the template used to generate the table.
+
+    """
+    _SECTION_PREFIX: ClassVar[str] = 'datdesc_table_'
+    """The section name prefix for table templates."""
+
     config_factory: ConfigFactory = field(repr=False)
     """The configuration factory used to create :class:`.Table` instances."""
 
     table_section_regex: re.Pattern = field()
     """A regular expression that matches table entries."""
 
-    default_table_name: str = field()
+    default_table_type: str = field()
     """The default name, which resolves to a section name, to use when creating
     anonymous tables.
 
     """
     @classmethod
     def default_instance(cls: TableFactory) -> TableFactory:
+        """Get the singleton instance."""
         if cls._DEFAULT_INSTANCE is None:
             config = ImportIniConfig(StringIO(_TABLE_FACTORY_CONFIG))
             fac = ImportConfigFactory(config)
@@ -547,6 +563,10 @@ class TableFactory(Dictable):
 
     @classmethod
     def reset_default_instance(cls: TableFactory):
+        """Force :meth:`default_instance' to re-instantiate a new instance on a
+        subsequent call.
+
+        """
         cls._DEFAULT_INSTANCE = None
 
     def _fix_path(self, tab: Table):
@@ -560,10 +580,8 @@ class TableFactory(Dictable):
             if rel_path.is_file():
                 tab.path = rel_path
 
-    def _get_section_by_name(self, table_name: str = None) -> str:
-        if table_name is None:
-            table_name = self.default_table_name
-        return f'datdesc_table_{table_name}'
+    def _get_section_by_name(self, table_type: str = None) -> str:
+        return self._SECTION_PREFIX + table_type
 
     def get_table_names(self) -> Iterable[str]:
         """Return names of tables used in :meth:``create``."""
@@ -574,21 +592,23 @@ class TableFactory(Dictable):
         return filter(lambda s: s is not None,
                       map(map_sec, self.config_factory.config.sections))
 
-    def create(self, name: str = None, **params: Dict[str, Any]) -> Table:
+    def create(self, type: str = None, **params: Dict[str, Any]) -> Table:
         """Create a table from the application configuration.
 
-        :param name: the name used to find the table by section
+        :param type: the name used to find the table by section
 
         :param params: the keyword arguments used to create the table
 
-        :return: a new instance of the name
+        :return: a new instance of the table defined by the template
 
         :see: :meth:`get_table_names`
 
         """
-        sec: str = self._get_section_by_name(name)
+        type = self.default_table_type if type is None else type
+        sec: str = self._get_section_by_name(type)
         inst: Table = self.config_factory.new_instance(sec, **params)
-        inst.name = name
+        inst.name = f'{type}_nascent'
+        inst.type = type
         return inst
 
     def from_file(self, table_path: Path) -> Iterable[Table]:
@@ -603,21 +623,42 @@ class TableFactory(Dictable):
             content = f.read()
         tdefs = yaml.load(content, yaml.FullLoader)
         for name, td in tdefs.items():
-            table_name: str = td.get('type')
-            if table_name is None:
+            table_type: str = td.get(self._TYPE_NAME)
+            if table_type is None:
                 raise LatexTableError(
-                    f"No 'type' given for in file '{table_path}'", name)
-            del td['type']
+                    f"No '{self._TYPE_NAME}' given for in file '{table_path}'",
+                    name)
+            del td[self._TYPE_NAME]
             td['definition_file'] = table_path
-            sec: str = self._get_section_by_name(table_name)
+            sec: str = self._get_section_by_name(table_type)
             try:
                 inst: Table = self.config_factory.new_instance(sec, **td)
                 inst.name = name
+                inst.type = sec[len(self._SECTION_PREFIX):]
                 self._fix_path(inst)
             except Exception as e:
                 msg: str = f"Could not parse table file '{table_path}': {e}"
                 raise LatexTableError(msg, name) from e
             yield inst
+
+    def _to_flatdict(self, table: Table) -> Dict[str, Any]:
+        """Return a data structure usable for YAML or JSON output by flattening
+        Python objects.
+
+        """
+        # using json to recursively convert OrderedDict to dicts
+        tab_def: Dict[str, Any] = table.asflatdict(format='serial')
+        del tab_def['name']
+        return {table.name: tab_def}
+
+    def to_file(self, table: Table, table_path: Path) -> Dict[str, Any]:
+        tab_def: Dict[str, Any] = self._to_flatdict(table)
+        with open(table_path, 'w') as f:
+            yaml.dump(
+                tab_def,
+                stream=f,
+                default_flow_style=False,
+                sort_keys=False)
 
     def __str__(self):
         return f'{self.name} in {self.path}'

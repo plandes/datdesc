@@ -251,10 +251,21 @@ class PrototypeApplication(object):
 
     app: Application = field()
 
+    def _create_example(self):
+        TableFactory.reset_default_instance()
+        dfd: DataFrameDescriber = self.app._get_example()
+        table: Table = dfd.create_table(type='one_column')
+        table.write()
+
+    def _from_file_example(self):
+        tab_file = Path('test-resources/config/sections-table.yml')
+        ofile = Path('example.yml')
+        table = next(TableFactory.default_instance().from_file(tab_file))
+        TableFactory.default_instance().to_file(table, ofile)
+        with open(ofile) as f:
+            print(f.read().strip())
+
     def proto(self):
         """Prototype test."""
-        TableFactory.reset_default_instance()
-        #self.app.show_table('one_column')
-        dfd: DataFrameDescriber = self.app._get_example()
-        table: Table = dfd.create_table(name='one_column')
-        print(table.write())
+        #self._create_example()
+        self._from_file_example()

@@ -278,7 +278,6 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         """
         fac: TableFactory = TableFactory.default_instance()
         params: Dict[str, Any] = dict(
-            name=None,
             head=self.head,
             path=self.csv_path,
             caption=self.desc,
@@ -540,6 +539,7 @@ class DataDescriber(PersistableContainer, Dictable):
             output_dir = self._create_path(self.csv_dir)
         if yaml_dir is None:
             yaml_dir = self._create_path(self.yaml_dir)
+        fac: TableFactory = TableFactory.default_instance()
         paths: List[Path] = []
         desc: DataFrameDescriber
         for desc in self.describers:
@@ -547,10 +547,8 @@ class DataDescriber(PersistableContainer, Dictable):
             out_file: Path = yaml_dir / f'{desc.tab_name}-table.yml'
             tab: Table = desc.create_table()
             tab.path = csv_file
-            tab_def: Dict[str, Any] = tab.serialize()
             out_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(out_file, 'w') as f:
-                yaml.dump(tab_def, f)
+            fac.to_file(tab, out_file)
             logger.info(f'saved yml file to: {out_file}')
             paths.append(out_file)
         return paths

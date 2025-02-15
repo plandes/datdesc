@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changed
+- Replaced Python templates with `jinja2`.
+- Moved `Table` YAML serialization and file output to `TableFactory` for
+  symmetry.
+- `Table` YAML has logical field ordering.
+- Added `Table.type` to allow for table re-serialization.
+- Renamed CLI action name `show` to `showtab`.
+
+
 ## [1.1.1] - 2025-02-01
 ### Added
 - A Pandas dataframe `zensols.persist.Stash` implementation that saves as CSV
