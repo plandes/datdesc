@@ -41,6 +41,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 
     """
     _DICTABLE_ATTRIBUTES: ClassVar[Set[str]] = {'columns'}
+    _TABLE_ATTRIBUTES_EXCLUDES: ClassVar[Set[str]] = {'columns'}
 
     _FILE_NAME_REGEX: ClassVar[re.Pattern] = re.compile(r'(.+)\.yml')
     """Used to narrow down to a :obj:`package_name`."""
@@ -274,6 +275,11 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         return df
 
     def _apply_df_number_format(self, df: pd.DataFrame) -> pd.DataFrame:
+        def make_per(v: Any):
+            if not pd.isna(v):
+                v = fmt.format(v=round(v * 100, rnd), rnd=rnd)
+            return v
+
         col: str
         for col in self.percent_column_names:
             df[col] = df[col].apply(lambda s: s.replace('%', '\\%'))
@@ -286,8 +292,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
             df[col] = df[col].apply(lambda x: self.format_scientific(x, mlen))
         for col, rnd in self.make_percent_column_names.items():
             fmt = f'{{v:.{rnd}f}}\\%'
-            df[col] = df[col].apply(
-                lambda v: fmt.format(v=round(v * 100, rnd), rnd=rnd))
+            df[col] = df[col].apply(make_per)
         return df
 
     def _apply_df_eval_post(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -492,6 +497,9 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         k: str
         v: Any
         for k, v in dct.items():
+            if k in self._TABLE_ATTRIBUTES_EXCLUDES:
+                dels.append(k)
+                continue
             if k in self._DICTABLE_ATTRIBUTES:
                 continue
             if (not hasattr(def_inst, k) or v == getattr(def_inst, k)) or \

@@ -257,6 +257,16 @@ class PrototypeApplication(object):
         table: Table = dfd.create_table(type='one_column')
         table.write()
 
+    def _create_write_example(self):
+        TableFactory.reset_default_instance()
+        dfd: DataFrameDescriber = self.app._get_example()
+        table: Table = dfd.create_table(type='one_column')
+        ofile = Path('example.yml')
+        TableFactory.default_instance().to_file(table, ofile)
+        with open(ofile) as f:
+            print(f.read().strip())
+        #table2 = next(TableFactory.default_instance().from_file(ofile))
+
     def _from_file_example(self):
         tab_file = Path('test-resources/config/sections-table.yml')
         ofile = Path('example.yml')
@@ -268,4 +278,5 @@ class PrototypeApplication(object):
     def proto(self):
         """Prototype test."""
         #self._create_example()
-        self._from_file_example()
+        self._create_write_example()
+        #self._from_file_example()

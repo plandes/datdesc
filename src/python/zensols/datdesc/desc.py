@@ -423,6 +423,7 @@ class DataDescriber(PersistableContainer, Dictable):
         return self.output_dir / fname
 
     @property
+    @persisted('_describers_by_name', transient=True)
     def describers_by_name(self) -> Dict[str, DataFrameDescriber]:
         """Data frame describers keyed by the describer name."""
         return frozendict(dict(map(lambda t: (t.name, t), self.describers)))
@@ -618,6 +619,12 @@ class DataDescriber(PersistableContainer, Dictable):
 
     def keys(self) -> Sequence[str]:
         return self.describers_by_name.keys()
+
+    def items(self) -> Iterable[Tuple[str, DataFrameDescriber]]:
+        return self.describers_by_name.items()
+
+    def __contains__(self, name: str) -> bool:
+        return name in self.describers_by_name
 
     def __getitem__(self, name: str) -> DataFrameDescriber:
         return self.describers_by_name[name]
