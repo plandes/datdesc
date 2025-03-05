@@ -278,6 +278,11 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         return df
 
     def _apply_df_number_format(self, df: pd.DataFrame) -> pd.DataFrame:
+        def round_val(v: Any):
+            if not pd.isna(v):
+                v = fmt.format(v=round(v, rnd), rnd=rnd)
+            return v
+
         def make_per(v: Any):
             if not pd.isna(v):
                 v = fmt.format(v=round(v * 100, rnd), rnd=rnd)
@@ -294,7 +299,8 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
             mlen = 1 if mlen is None else mlen
             df[col] = df[col].apply(lambda x: self.format_scientific(x, mlen))
         for col, rnd in self.round_column_names.items():
-            df[col] = df[col].astype(float).round(rnd)
+            fmt = f'{{v:.{rnd}f}}'
+            df[col] = df[col].apply(round_val)
         for col, rnd in self.make_percent_column_names.items():
             fmt = f'{{v:.{rnd}f}}\\%'
             df[col] = df[col].apply(make_per)
