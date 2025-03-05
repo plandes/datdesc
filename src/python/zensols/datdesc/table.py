@@ -120,6 +120,9 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     table.
 
     """
+    round_column_names: Dict[str, int] = field(default_factory=dict)
+    """Each column in the map will get rounded to their respective values."""
+
     percent_column_names: Sequence[str] = field(default=())
     """Column names that have a percent sign to be escaped."""
 
@@ -290,6 +293,8 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         for col, mlen in self.format_scientific_column_names.items():
             mlen = 1 if mlen is None else mlen
             df[col] = df[col].apply(lambda x: self.format_scientific(x, mlen))
+        for col, rnd in self.round_column_names.items():
+            df[col] = df[col].astype(float).round(rnd)
         for col, rnd in self.make_percent_column_names.items():
             fmt = f'{{v:.{rnd}f}}\\%'
             df[col] = df[col].apply(make_per)
