@@ -86,12 +86,6 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     uses: List[str] = field(default_factory=list)
     """Comma separated list of packages to use."""
 
-    single_column: bool = field(default=True)
-    """Makes the table one column wide in a two column.  Setting this to false
-    generates a ``table*`` two column table, which won't work in beamer
-    (slides) document types.
-
-    """
     hlines: Sequence[int] = field(default_factory=set)
     """Indexes of rows to put horizontal line breaks."""
 
