@@ -15,7 +15,6 @@ import textwrap as tw
 import parse
 from io import TextIOBase
 from pathlib import Path
-import yaml
 import pandas as pd
 from tabulate import tabulate
 from zensols.config import Dictable
