@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Generated tables use reverse camel notation.
 - `DataFrameDescriber.tab_name` property was refactored into the method
   `get_table_name()`.
+- Fix two column slack `tabularx` bug.
 
 
 ## [1.1.1] - 2025-02-01

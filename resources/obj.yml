@@ -78,7 +78,7 @@ datdesc_table_one_column_slack:
   default_params:
     - [placement, '!ht']
     - [size]
-    - [width, '\textwidth']
+    - [width, '\columnwidth']
   template: |-
     % adjustable column table in one column format
     % usage: {{ usage }}
