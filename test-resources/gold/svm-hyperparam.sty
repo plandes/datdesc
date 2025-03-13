@@ -2,8 +2,8 @@
 \ProvidesPackage{svm-hyperparam}[{{DATE}} Tables]
 
 % default table spans a single column (in two column) or the page
-% usage: \svmtab[<placement>]{<size>}
-\newcommand{\svmtab}[1][!ht]{%
+% usage: \svmTab[<placement>]{<size>}
+\newcommand{\svmTab}[1][!ht]{%
   \begin{table}[#1]
   \centering
   small
@@ -17,12 +17,12 @@
     \hline
   \end{tabular}
   \caption{Some caption}
-  \label{tab:svmtab}
+  \label{tab:svmTab}
   \end{table}}
 
 % default table spans a single column (in two column) or the page
-% usage: \kmeanstab[<placement>]{<size>}
-\newcommand{\kmeanstab}[2][!ht]{%
+% usage: \kMeansTab[<placement>]{<size>}
+\newcommand{\kMeansTab}[2][!ht]{%
   \begin{table}[#1]
   \centering
   #2
@@ -37,5 +37,5 @@
     \hline
   \end{tabular}
   \caption{k-means clustering}
-  \label{tab:kmeanstab}
+  \label{tab:kMeansTab}
   \end{table}}

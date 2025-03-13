@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `Table` YAML has logical field ordering.
 - Added `Table.type` to allow for table re-serialization.
 - Renamed CLI action name `show` to `showtab`.
+- Generated tables use reverse camel notation.
+- `DataFrameDescriber.tab_name` property was refactored into the method
+  `get_table_name()`.
 
 
 ## [1.1.1] - 2025-02-01

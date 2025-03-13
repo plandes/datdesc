@@ -31,7 +31,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
 
     """
     _PERSITABLE_PROPERTIES: ClassVar[Set[str]] = {'_meta_val'}
-    _TABLE_FORMAT: ClassVar[str] = '{name}tab'
+    _TABLE_FORMAT: ClassVar[str] = '{name}Tab'
 
     name: str = field()
     """The description of the data this describer holds."""
@@ -107,11 +107,22 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         fname: str = FileTextUtil.normalize_text(self.name) + '.csv'
         return Path(fname)
 
-    @property
-    @persisted('_tab_name', transient=True)
-    def tab_name(self) -> str:
-        """The table derived from :obj:`name`."""
-        return self.csv_path.stem.replace('-', '')
+    def get_table_name(self, form: str) -> str:
+        """The table derived from :obj:`name`.
+
+        :param form: specifies the format: ``file`` means file-friendly,
+                     ``camel`` is for reverse camel notation
+
+        """
+        name: str = self.csv_path.stem
+        if form == 'file':
+            pass
+        elif form == 'camel':
+            name = ''.join(map(str.capitalize, name.split('-')))
+            name = name[0].lower() + name[1:]
+        else:
+            raise DataDescriptionError(f'No table form name: {form}')
+        return name
 
     def derive(self, *,
                name: str = None,
@@ -284,8 +295,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
                                        self.asdict().items())))
         params.update(self.table_kwargs)
         params.update(kwargs)
-        table = fac.create(**params)
-        table.name = self._TABLE_FORMAT.format(name=self.tab_name)
+        table: Table = fac.create(**params)
+        name: str = self.get_table_name('camel')
+        table.name = self._TABLE_FORMAT.format(name=name)
         table.dataframe = self.df
         return table
 
@@ -397,7 +409,7 @@ class DataDescriber(PersistableContainer, Dictable):
     SHEET_NAME_MAXLEN: ClassVar[int] = 31
     """Maximum allowed characters in an Excel spreadsheet's name."""
 
-    describers: Tuple[DataFrameDescriber] = field()
+    describers: Tuple[DataFrameDescriber, ...] = field()
     """The contained dataframe and metadata.
 
     """
@@ -544,7 +556,8 @@ class DataDescriber(PersistableContainer, Dictable):
         desc: DataFrameDescriber
         for desc in self.describers:
             csv_file: Path = output_dir / desc.csv_path
-            out_file: Path = yaml_dir / f'{desc.tab_name}-table.yml'
+            name: str = desc.get_table_name('file')
+            out_file: Path = yaml_dir / f'{name}-table.yml'
             tab: Table = desc.create_table()
             tab.path = csv_file
             out_file.parent.mkdir(parents=True, exist_ok=True)
