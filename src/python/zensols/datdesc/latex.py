@@ -107,6 +107,11 @@ class CsvToLatexTable(Writable):
         tlen: int = len(self.tables)
         self._write_header(depth, writer)
         for i, table in enumerate(self.tables):
-            table.write(depth, writer)
+            try:
+                table.write(depth, writer)
+            except Exception as e:
+                msg: str = f"could not format table '{table.name}': {e}"
+                self._write_line(f'% erorr: {msg}', depth, writer)
+                logger.error(msg, e)
             if i < tlen:
                 writer.write('\n')

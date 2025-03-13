@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Generated tables use reverse camel notation.
 - `DataFrameDescriber.tab_name` property was refactored into the method
   `get_table_name()`.
+- Recover from table generation errors.  Instead, log the error, add the error
+  in the `.tex` file, and keep processing.
 - Fix two column slack `tabularx` bug.
 
 
