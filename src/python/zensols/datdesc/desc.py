@@ -13,7 +13,7 @@ from frozendict import frozendict
 from collections import OrderedDict
 import textwrap as tw
 import parse
-from io import TextIOBase
+from io import TextIOBase, StringIO
 from pathlib import Path
 import pandas as pd
 from tabulate import tabulate
@@ -24,7 +24,7 @@ from . import DataDescriptionError, Table, TableFactory
 logger = logging.getLogger(__name__)
 
 
-@dataclass
+@dataclass(repr=False)
 class DataFrameDescriber(PersistableContainer, Dictable):
     """A class that contains a Pandas dataframe, a description of the data, and
     descriptions of all the columns in that dataframe.
@@ -396,11 +396,23 @@ class DataFrameDescriber(PersistableContainer, Dictable):
                 descs[col] = None
         return descs
 
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        sio = StringIO()
+        sio.write(self.name)
+        if self.head is not None:
+            sio.write(f'[{self.head}]')
+        if self.desc is not None:
+            sio.write(f': {self.desc}')
+        return sio.getvalue()
+
 
 DataFrameDescriber.meta = DataFrameDescriber._meta
 
 
-@dataclass
+@dataclass(repr=False)
 class DataDescriber(PersistableContainer, Dictable):
     """Container class for :class:`.DataFrameDescriber` instances.  It also
     saves their instances as CSV data files and YAML configuration files.
@@ -645,5 +657,4 @@ class DataDescriber(PersistableContainer, Dictable):
         return self.name
 
     def __repr__(self) -> str:
-        dfs: str = ', '.join(map(lambda d: d.name, self.describers))
-        return f'{self.name}: describers={dfs}'
+        return f'{self.name}: describers={self.describers}'
