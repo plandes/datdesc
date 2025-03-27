@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- A new feature to set variables with `\newcommand` from table values, which
+  can then be used in the paper text.
 
 ### Changed
 - Replaced Python templates with `jinja2`.

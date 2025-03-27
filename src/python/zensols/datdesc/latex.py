@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Sequence, Set, Iterable, List, Dict, Any
+from typing import Sequence, Set, List, Dict, Iterable, Any
 from dataclasses import dataclass, field
 import sys
 import logging
@@ -14,6 +14,7 @@ from io import TextIOBase
 import pandas as pd
 from zensols.config import Writable
 from . import Table
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +42,12 @@ class LatexTable(Table):
         params['tablefmt'] = 'latex_raw'
         return params
 
-    def _write_table(self, depth: int, writer: TextIOBase,
-                     content: List[str]):
+    def _write_variable_content(self, name: str, value: Any,
+                                depth: int, writer: TextIOBase):
+        self._write_line(f'\\newcommand{{\\{name}}}{{{value}}}', depth, writer)
+
+    def _write_table_content(self, depth: int, writer: TextIOBase,
+                             content: List[str]):
         """Write the text of the table's rows and columns."""
         for lix, ln in enumerate(content[1:-1]):
             self._write_line(ln.strip(), depth, writer)

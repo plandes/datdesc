@@ -15,6 +15,7 @@ import re
 import string
 import itertools as it
 from io import TextIOBase, StringIO
+import traceback
 from pathlib import Path
 import pandas as pd
 import yaml
@@ -57,7 +58,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     ``obj.yml``.
 
     """
-    caption: str = field()
+    caption: str = field(default='')
     """The human readable string used to the caption in the table."""
 
     head: str = field(default=None)
@@ -182,6 +183,35 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     index_col_name: str = field(default=None)
     """If set, add an index column with the given name."""
 
+    variables: Dict[str, str] = field(default_factory=dict)
+    """A mapping of variable names to a Python code snipped that is evaluated
+    with :func:`exec`.  In LaTeX, this is done by setting a ``newcommand`` (see
+    :class:`.LatexTable`).
+
+    The code values must set variables ``v`` to the variable value.  A variable
+    ``stages`` is a :class:`~typing.Dict` used to get one of the dataframes
+    created at various stages of formatting the table with entries:
+
+        * ``nascent``: same as :obj:`dataframe`
+
+        * ``unformatted``: after the pre-evaluation but before any formatting
+
+        * ``postformat``: after number formatting and post evaluation, but
+          before remaining column and cell modifications
+
+        * ``formatted``: same as :obj:`formatted_dataframe`
+
+    For example, the following uses the value at row 2 and column 3 of the
+    unformatted dataframe::
+
+        v = stages['unformatted'].iloc[2, 3]
+
+    """
+    writes: List[str] = field(default_factory=lambda: ['table', 'variables'])
+    """A list of what to output for this table.  Entries are ``table`` and
+    ``varaibles``.
+
+    """
     code_pre: str = field(default=None)
     """Python code executed that manipulates the table's dataframe before
     modifications made by this class.  The code has a local ``df`` variable and
@@ -381,27 +411,37 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         self._dataframe_val = dataframe
         self._formatted_dataframe.clear()
 
+    @persisted('_formatted_dataframe_stages')
+    def _get_formatted_dataframe_stages(self) -> Dict[str, pd.DataFrame]:
+        """Return named stages of the table formatting.  The entries returned:
+
+        """
+        df: pd.DataFrame = self.dataframe
+        stages: Dict[str, pd.DataFrame] = {'nascent': df}
+        # Pandas 2.x dislikes mixed float with string dtypes
+        df = df.astype(object)
+        df = self._apply_df_eval_pre(df)
+        stages['unformatted'] = df.copy()
+        bold_cols: Tuple[Tuple[int, int]] = self._get_bold_columns(df)
+        df = self._apply_df_number_format(df)
+        df = self._apply_df_eval_post(df)
+        stages['postformat'] = df.copy()
+        df = self._apply_df_bold_cells(df, bold_cols)
+        df = self._apply_df_capitalize(df)
+        df = self._apply_df_add_indexes(df)
+        df = self._apply_df_column_modifies(df)
+        df = self._apply_df_font_format(df)
+        stages['formatted'] = df.copy()
+        return stages
+
     @property
-    @persisted('_formatted_dataframe')
     def formatted_dataframe(self) -> pd.DataFrame:
         """The :obj:`dataframe` with the formatting applied to it used to create
         the Latex table.  Modifications such as string replacements for adding
         percents is done.
 
         """
-        df: pd.DataFrame = self.dataframe
-        # Pandas 2.x dislikes mixed float with string dtypes
-        df = df.astype(object)
-        df = self._apply_df_eval_pre(df)
-        bold_cols: Tuple[Tuple[int, int]] = self._get_bold_columns(df)
-        df = self._apply_df_number_format(df)
-        df = self._apply_df_eval_post(df)
-        df = self._apply_df_bold_cells(df, bold_cols)
-        df = self._apply_df_capitalize(df)
-        df = self._apply_df_add_indexes(df)
-        df = self._apply_df_column_modifies(df)
-        df = self._apply_df_font_format(df)
-        return df
+        return self._get_formatted_dataframe_stages()['formatted']
 
     @abstractmethod
     def _get_table_rows(self, df: pd.DataFrame) -> Iterable[List[Any]]:
@@ -463,10 +503,48 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         return params
 
     @abstractmethod
-    def _write_table(self, depth: int, writer: TextIOBase,
-                     content: List[str]):
+    def _write_table_content(self, depth: int, writer: TextIOBase,
+                             content: List[str]):
         """Write the text of the table's rows and columns."""
         pass
+
+    @abstractmethod
+    def _write_variable_content(self, name: str, value: Any,
+                                depth: int, writer: TextIOBase):
+        """Format a variable that can be interpolated in the text.  This is used
+        by :meth:`_write_variables`, and in LaTeX, done by setting a
+        ``newcommand`` (see :class:`.latex`).
+
+        """
+        pass
+
+    def _write_variables(self, depth: int, writer: TextIOBase):
+        """Write the text fo create environment :obj:`variables`.
+
+        :param variables: possibly modified :obj`variables`
+
+        :param stages: see :meth:`_get_formatted_dataframe_stages`
+
+        :see: obj:`variables`
+
+        """
+        variables: Dict[str, Tuple[int, int]] = self.variables
+        stages: Dict[str, pd.DataFrame] = self._get_formatted_dataframe_stages()
+        name: str
+        code: str
+        for name, code in variables.items():
+            locs: Dict[str, Any] = locals()
+            s: Dict[str, pd.DataFrame] = stages
+            v: Any = None
+            try:
+                exec(code)
+            except Exception as e:
+                msg: str = f"could not write variable '{name}'"
+                v = f"{msg}: <{e}>"
+                logger.error(msg, e)
+                #traceback.print_exc()
+            v = locs['v']
+            self._write_variable_content(name, v, depth, writer)
 
     def _render_flat_table(self, params: Dict[str, Any]) -> str:
         if logger.isEnabledFor(logging.TRACE):
@@ -475,19 +553,31 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
             self.template)
         return template.render(params)
 
-    def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
+    def _write_table(self, depth: int = 0, writer: TextIOBase = sys.stdout):
+        """Write the formatted table."""
         df: pd.DataFrame = self.formatted_dataframe
-        table_rows: Iterable[List[Any]] = self._get_table_rows(df)
+        table_rows: Tuple[List[Any], ...] = tuple(self._get_table_rows(df))
         table_params: Dict[str, Any] = self._get_tabulate_params()
         tab_lines: List[str] = tabulate(table_rows, **table_params).split('\n')
         cmd_params: Dict[str, str] = self._get_command_params()
         template_params: Dict[str, Any] = dict(self.asdict())
         table_rows_flat = StringIO()
-        self._write_table(1, table_rows_flat, tab_lines)
+        self._write_table_content(1, table_rows_flat, tab_lines)
         template_params['table'] = table_rows_flat.getvalue().rstrip()
         template_params.update(cmd_params)
         table: str = self._render_flat_table(template_params)
         self._write_block(table, depth, writer)
+
+    def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
+        writeable: str
+        for writeable in self.writes:
+            meth_name: str = f'_write_{writeable}'
+            if not hasattr(self, meth_name):
+                raise LatexTableError(
+                    f"No such writeable object in {self}: '{writeable}'")
+            else:
+                meth: Callable = getattr(self, meth_name)
+                meth(depth, writer)
 
     def _serialize_dict(self) -> Dict[str, Any]:
         priorities: List[str] = 'type caption head path definition_file'.split()
