@@ -4,13 +4,15 @@
 from __future__ import annotations
 __author__ = 'Paul Landes'
 from typing import (
-    Tuple, Any, Dict, List, Set, Sequence, ClassVar, Optional, Iterable, Union
+    Tuple, Any, Dict, List, Set, Sequence,
+    ClassVar, Optional, Iterable, Union, Type
 )
 from dataclasses import dataclass, field
 import logging
 import sys
 from frozendict import frozendict
 from collections import OrderedDict
+import itertools as it
 import textwrap as tw
 import parse
 from io import TextIOBase, StringIO
@@ -78,6 +80,49 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     """
     def __post_init__(self):
         super().__init__()
+
+    @classmethod
+    def from_columns(cls: Type,
+                     source: Union[pd.DataFrame, Sequence[Sequence[Any]]],
+                     name: str = None, desc: str = None) -> DataFrameDescriber:
+        """Create a new instance by transposing a column data into a new
+        dataframe describer.  If ``source`` is a dataframe, it that has the
+        following columns:
+
+            * ``column``: the column names of the resulting describer
+            * ``meta``: the description that makes up the :obj:`meta`
+            * ``data``: :class:`~typing.Sequence`'s of the data
+
+        Otherwise, each element of the sequence is a row of column, meta
+        descriptions, and data sequences.
+
+        :param source: the data as columns
+
+        :param name: used for :obj:`name`
+
+        :param desc: used for :obj:`desc`
+
+        """
+        df: pd.DataFrame
+        if isinstance(source, pd.DataFrame):
+            df = source
+        else:
+            df = pd.DataFrame(source, columns='column meta data'.split())
+        data: pd.Series = df['data']
+        max_rows = data.apply(len).max()
+        rows: List[List[Any]] = list(it.repeat([], max_rows))
+        for cix, col in enumerate(data):
+            for rix, v in enumerate(col):
+                row = rows[rix]
+                while len(row) < cix:
+                    row.append(None)
+                row.append(v)
+        return DataFrameDescriber(
+            name=name,
+            desc=desc,
+            df=pd.DataFrame(data=rows, columns=df['column']),
+            meta=tuple(df[['column', 'meta']].itertuples(
+                index=False, name=None)))
 
     def _meta_dict_to_dataframe(self, meta: Tuple[Tuple[str, str]]):
         return pd.DataFrame(data=map(lambda t: t[1], meta),
@@ -216,10 +261,15 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         clone.index_meta = None
         return clone
 
+    @property
+    def T(self) -> DataFrameDescriber:
+        """See :meth:`transpose`."""
+        return self.transpose()
+
     def transpose(self,
                   row_names: Tuple[int, str, str] = ((0, 'value', 'Value'),),
                   name_column: str = 'name', name_description: str = 'Name',
-                  index_column: str = 'description'):
+                  index_column: str = 'description') -> DataFrameDescriber:
         """Transpose all data in this descriptor by transposing :obj:`df` and
         swapping :obj:`meta` with :obj:`index_meta` as a new instance.
 
