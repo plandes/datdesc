@@ -15,7 +15,6 @@ import re
 import string
 import itertools as it
 from io import TextIOBase, StringIO
-import traceback
 from pathlib import Path
 import pandas as pd
 import yaml
@@ -183,14 +182,19 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     index_col_name: str = field(default=None)
     """If set, add an index column with the given name."""
 
-    variables: Dict[str, str] = field(default_factory=dict)
-    """A mapping of variable names to a Python code snipped that is evaluated
-    with :func:`exec`.  In LaTeX, this is done by setting a ``newcommand`` (see
-    :class:`.LatexTable`).
+    variables: Dict[str, Union[Tuple[int, int], str]] = field(
+        default_factory=dict)
+    """A mapping of variable names to a dataframe cell or Python code snipped
+    that is evaluated with :func:`exec`.  In LaTeX, this is done by setting a
+    ``newcommand`` (see :class:`.LatexTable`).
 
-    The code values must set variables ``v`` to the variable value.  A variable
-    ``stages`` is a :class:`~typing.Dict` used to get one of the dataframes
-    created at various stages of formatting the table with entries:
+    If set to a tuple of ``(<row>, <column>)`` the value of the pre-formatted
+    dataframe is used (see ``unformatted`` below).
+
+    If a Python evalution string, the code values must set variables ``v`` to
+    the variable value.  A variable ``stages`` is a :class:`~typing.Dict` used
+    to get one of the dataframes created at various stages of formatting the
+    table with entries:
 
         * ``nascent``: same as :obj:`dataframe`
 
@@ -528,22 +532,26 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         :see: obj:`variables`
 
         """
-        variables: Dict[str, Tuple[int, int]] = self.variables
+        variables: Dict[str, Union[Tuple[int, int], str]] = self.variables
         stages: Dict[str, pd.DataFrame] = self._get_formatted_dataframe_stages()
         name: str
-        code: str
-        for name, code in variables.items():
-            locs: Dict[str, Any] = locals()
-            s: Dict[str, pd.DataFrame] = stages
+        ctx: Union[Tuple[int, int], str]
+        for name, ctx in variables.items():
             v: Any = None
-            try:
-                exec(code)
-            except Exception as e:
-                msg: str = f"could not write variable '{name}'"
-                v = f"{msg}: <{e}>"
-                logger.error(msg, e)
-                #traceback.print_exc()
-            v = locs['v']
+            if isinstance(ctx, str):
+                code: str = ctx
+                locs: Dict[str, Any] = locals()
+                s: Dict[str, pd.DataFrame] = stages
+                try:
+                    exec(code)
+                except Exception as e:
+                    msg: str = f"could not write variable '{name}'"
+                    v = f"{msg}: <{e}>"
+                    logger.error(msg, e)
+                v = locs['v']
+            else:
+                row, col = ctx
+                v = stages['unformatted'].iloc[row, col]
             self._write_variable_content(name, v, depth, writer)
 
     def _render_flat_table(self, params: Dict[str, Any]) -> str:

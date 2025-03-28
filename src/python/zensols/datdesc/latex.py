@@ -38,8 +38,8 @@ class LatexTable(Table):
         return it.chain(cols, map(lambda x: x[1].tolist(), df.iterrows()))
 
     def _get_tabulate_params(self) -> Dict[str, Any]:
-        params: Dict[str, Any] = super()._get_tabulate_params()
-        params['tablefmt'] = 'latex_raw'
+        params: Dict[str, Any] = {'tablefmt': 'latex_raw'}
+        params.update(super()._get_tabulate_params())
         return params
 
     def _write_variable_content(self, name: str, value: Any,
