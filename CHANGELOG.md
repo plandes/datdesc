@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [1.1.2] - 2025-04-11
+Refactor release, but still compatible with [1.1.1].
+
 ### Added
 - A new feature to set variables with `\newcommand` from table values, which
   can then be used in the paper text.
@@ -141,7 +145,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/plandes/datdesc/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/plandes/datdesc/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/plandes/datdesc/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/plandes/datdesc/compare/v0.2.3...v1.0.0
