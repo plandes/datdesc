@@ -133,7 +133,7 @@ datdesc_table_bare:
     % table contents only to be used in custom environments
     % usage: {{ usage }}
     {% if caption is not none  %}
-    \newcommand{\{{-name-}}caption}{ {{-caption-}} }
+    \newcommand{\{{-name-}}Caption}{ {{-caption-}} }
     {% endif -%}
     {% if head is not none  -%}
     \newcommand{\{{-name-}}Head}{ {{-head-}} }
