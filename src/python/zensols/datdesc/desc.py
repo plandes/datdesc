@@ -78,6 +78,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     respective row.
 
     """
+    mangle_file_names: bool = field(default=False)
+    """Whether to normalize output file names."""
+
     def __post_init__(self):
         super().__init__()
 
@@ -149,7 +152,10 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     @persisted('_csv_path', transient=True)
     def csv_path(self) -> Path:
         """The CVS file that contains the data this instance describes."""
-        fname: str = FileTextUtil.normalize_text(self.name) + '.csv'
+        fname: str = self.name
+        if self.mangle_file_names:
+            fname = FileTextUtil.normalize_text(fname)
+        fname = fname + '.csv'
         return Path(fname)
 
     def get_table_name(self, form: str) -> str:
@@ -472,9 +478,8 @@ class DataDescriber(PersistableContainer, Dictable):
     """Maximum allowed characters in an Excel spreadsheet's name."""
 
     describers: Tuple[DataFrameDescriber, ...] = field()
-    """The contained dataframe and metadata.
+    """The contained dataframe and metadata."""
 
-    """
     name: str = field(default='default')
     """The name of the dataset."""
 
@@ -486,6 +491,9 @@ class DataDescriber(PersistableContainer, Dictable):
 
     yaml_dir: Path = field(default=Path('config'))
     """The directory where to write the CSV files."""
+
+    mangle_file_names: bool = field(default=False)
+    """Whether to normalize output file names."""
 
     mangle_sheet_name: bool = field(default=False)
     """Whether to normalize the Excel sheet names when
@@ -543,7 +551,9 @@ class DataDescriber(PersistableContainer, Dictable):
         """
         from xlsxwriter.worksheet import Worksheet
         if output_file is None:
-            fname: str = FileTextUtil.normalize_text(self.name)
+            fname: str = self.name
+            if self.mangle_file_names:
+                fname = FileTextUtil.normalize_text(fname)
             output_file = self._create_path(f'{fname}.xlsx')
         elif len(output_file.suffix) == 0:
             output_file = output_file.parent / f'{output_file.name}.xlsx'
