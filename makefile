@@ -1,13 +1,26 @@
-## makefile automates the build and deployment for python projects
+#@meta {author: "Paul Landes"}
+#@meta {desc: "automate build and deploy of the project", date: "2025-06-07"}
 
+
+## Build
+#
 PROJ_TYPE =		python
-PROJ_MODULES =		git python-resources python-cli python-doc python-doc-deploy
-ENTRY =			./datdesc
+PROJ_MODULES =		python/doc
 
+
+## Includes
+#
 include ./zenbuild/main.mk
 
 
-.PHONY:			inttest
-inttest:
-			mkdir -p target/lat
-			$(ENTRY) test-resources/config target/lat
+## Targets
+#
+# integration test
+.PHONY:			testint
+testint:
+			@echo "running integration test"
+			@mkdir -p target/lat
+			make pyrun ARG="test-resources/config target/lat"
+
+.PHONY:			testall
+testall:		test testint
