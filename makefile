@@ -20,7 +20,11 @@ include ./zenbuild/main.mk
 testint:
 			@echo "running integration test"
 			@mkdir -p target/lat
-			make pyrun ARG="test-resources/config target/lat"
+			@make pyinvoke ARG="table test-resources/config target/lat"
+			( cd target/lat ; \
+			  for i in * ; do \
+				diff $$i ../../test-resources/gold/$$i ; \
+			  done )
 
 .PHONY:			testall
 testall:		test testint
