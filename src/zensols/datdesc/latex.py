@@ -25,6 +25,17 @@ class LatexTable(Table):
 
     """
     row_range: Tuple[int, int] = field(default=(1, -1))
+    """The range of rows to add to output proeduced by :obj:`tabulate`."""
+
+    use_booktabs: bool = field(default=False)
+    """Whether or not to use the ``booktabs`` style table and to format using
+    its style.
+
+    """
+    def __post_init__(self):
+        super().__post_init__()
+        if self.use_booktabs:
+            self.uses.append('booktabs')
 
     def format_scientific(self, x: float, sig_digits: int = 1) -> str:
         nstr: str = f'{{0:.{sig_digits}e}}'.format(x)
@@ -33,6 +44,12 @@ class LatexTable(Table):
             base = base[:-2] if base.endswith('.0') else base
             nstr = f'{base} \\times 10^{{{int(exponent)}}}'
         return f'${nstr}$'
+
+    def _get_columns(self) -> str:
+        cols: str = super()._get_columns()
+        if self.use_booktabs:
+            cols = cols.replace('|', ' ')
+        return cols
 
     def _get_table_rows(self, df: pd.DataFrame) -> Iterable[List[Any]]:
         """Return the rows/columns of the table given to :mod:``tabulate``."""
@@ -54,7 +71,16 @@ class LatexTable(Table):
     def _write_table_content(self, depth: int, writer: TextIOBase,
                              content: List[str]):
         """Write the text of the table's rows and columns."""
+        n_hlines: int = 0
+        hl_map: Dict[int, str] = {
+            0: r'\toprule',
+            1: r'\midrule',
+            2: r'\bottomrule'}
         for lix, ln in enumerate(content[self.row_range[0]:self.row_range[1]]):
+            if self.use_booktabs:
+                if ln == r'\hline':
+                    ln = hl_map.get(n_hlines, ln)
+                    n_hlines += 1
             self._write_line(ln.strip(), depth, writer)
             if (lix - 2) in self.hlines:
                 self._write_line('\\hline', depth, writer)
@@ -83,6 +109,8 @@ class SlackTable(LatexTable):
             cols = ('l' * (df.shape[1] - 1))
             cols = cols[:i] + 'X' + cols[i:]
             cols = '|' + '|'.join(cols) + '|'
+        if self.use_booktabs:
+            cols = cols.replace('|', ' ')
         return cols
 
 
