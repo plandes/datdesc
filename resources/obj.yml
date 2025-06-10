@@ -142,3 +142,12 @@ datdesc_table_bare:
       \begin{tabular}{ {{-columns-}} }
     {{ table }}
       \end{tabular}}
+
+datdesc_table_only_data:
+  class_name: zensols.datdesc.latex.LatexTable
+  template: |-
+    % only table data
+    % usage: {{ usage }}
+    \newcommand{\ {{-name-}} }{
+    {{ table }}
+    }

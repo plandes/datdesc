@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Sequence, Set, List, Dict, Iterable, Any
+from typing import Sequence, Set, List, Tuple, Dict, Iterable, Any
 from dataclasses import dataclass, field
 import sys
 import logging
@@ -24,6 +24,8 @@ class LatexTable(Table):
     """This subclass generates LaTeX tables.
 
     """
+    row_range: Tuple[int, int] = field(default=(1, -1))
+
     def format_scientific(self, x: float, sig_digits: int = 1) -> str:
         nstr: str = f'{{0:.{sig_digits}e}}'.format(x)
         if 'e' in nstr:
@@ -34,8 +36,11 @@ class LatexTable(Table):
 
     def _get_table_rows(self, df: pd.DataFrame) -> Iterable[List[Any]]:
         """Return the rows/columns of the table given to :mod:``tabulate``."""
-        cols = [tuple(map(lambda c: f'\\textbf{{{c}}}', df.columns))]
-        return it.chain(cols, map(lambda x: x[1].tolist(), df.iterrows()))
+        rows: Iterable[List[Any]] = map(lambda x: x[1].tolist(), df.iterrows())
+        cols: Tuple[str, ...] = tuple(map(
+            lambda c: f'\\textbf{{{c}}}', df.columns))
+        rows = it.chain([cols], rows)
+        return rows
 
     def _get_tabulate_params(self) -> Dict[str, Any]:
         params: Dict[str, Any] = {'tablefmt': 'latex_raw'}
@@ -49,7 +54,7 @@ class LatexTable(Table):
     def _write_table_content(self, depth: int, writer: TextIOBase,
                              content: List[str]):
         """Write the text of the table's rows and columns."""
-        for lix, ln in enumerate(content[1:-1]):
+        for lix, ln in enumerate(content[self.row_range[0]:self.row_range[1]]):
             self._write_line(ln.strip(), depth, writer)
             if (lix - 2) in self.hlines:
                 self._write_line('\\hline', depth, writer)
