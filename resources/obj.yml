@@ -148,6 +148,11 @@ datdesc_table_only_data:
   template: |-
     % only table data
     % usage: {{ usage }}
+    {% if caption is not none  %}
+    \newcommand{\{{-name-}}Caption}{ {{-caption-}} }
+    {% endif -%}
+    {% if head is not none  -%}
+    \newcommand{\{{-name-}}Head}{ {{-head-}} }
+    {% endif -%}
     \newcommand{\ {{-name-}} }{
-    {{ table }}
-    }
+    {{ table }}}
