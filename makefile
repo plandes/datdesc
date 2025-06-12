@@ -19,10 +19,14 @@ include ./zenbuild/main.mk
 .PHONY:			testint
 testint:
 			@echo "running integration test"
+			$(eval dte=$(shell date +'%Y/%m/%d'))
 			@mkdir -p target/lat
-			@make pyinvoke ARG="table test-resources/config target/lat"
-			( cd target/lat ; \
+			@make pyinvoke PY_INVOKE_ARG="-e testcur" \
+				ARG="table test-resources/config target/lat"
+			@( cd target/lat ; \
 			  for i in * ; do \
+				sed -i 's@$(dte)@{{DATE}}@' $$i ; \
+				truncate -s -1 $$i ; \
 				diff $$i ../../test-resources/gold/$$i ; \
 			  done )
 
