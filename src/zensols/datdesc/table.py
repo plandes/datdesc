@@ -128,9 +128,9 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     """
     format_thousands_column_names: Dict[str, Optional[Dict[str, Any]]] = \
         field(default_factory=dict)
-    """Columns to format using thousands.  The keys are the column names of the
-    table and the values are either ``None`` or the keyword arguments to
-    :meth:`format_thousand`.
+    """Columns to format using thousands, and optionally round.  The keys are
+    the column names of the table and the values are either ``None`` or the
+    keyword arguments to :meth:`format_thousand`.
 
     """
     format_scientific_column_names: Dict[str, Optional[int]] = \
@@ -264,7 +264,8 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 
     @staticmethod
     def format_thousand(x: int, apply_k: bool = True,
-                        add_comma: bool = True) -> str:
+                        add_comma: bool = True,
+                        round_digits: int = None) -> str:
         """Format a number as a string with comma separating thousands.
 
         :param x: the number to format
@@ -273,8 +274,14 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 
         :param add_comma: whether to add a comma
 
+        :param round_digits: the number to round the mantissa if given
+
         """
         add_k = False
+        if round_digits is not None:
+            x = round(x, round_digits)
+            if round_digits == 0:
+                x = int(x)
         if x > 10000:
             if apply_k:
                 x = round(x / 1000)
