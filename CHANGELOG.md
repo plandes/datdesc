@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Removed
+- `Table.column_evals` and its functionality.  This has been replaced with
+  `code_pre`, `code_post`, `code_format`, which are far more robust.
+### Added
+- `Table` provides a way to only output the table data using `type: only_data`.
+- `Table` provides to subset the row data with `row_range: [<start>, <end>]`.
+- `Table` formats as a LaTeX *booktabs* table with `booktabs: true`.
+- `Table` can now round and format thousands.
+
+
 ## [1.1.3] - 2025-05-29
 ### Added
 - Add file name mangle options in `DataFrameDescriber`.

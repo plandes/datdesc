@@ -14,6 +14,7 @@ import sys
 import re
 import string
 import itertools as it
+import math
 from io import TextIOBase, StringIO
 from pathlib import Path
 import pandas as pd
@@ -33,6 +34,8 @@ _TABLE_FACTORY_CONFIG: str = """
 [import]
 config_file = resource(zensols.datdesc): resources/obj.yml
 """
+
+_round: Callable = round
 
 
 @dataclass
@@ -140,12 +143,6 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     length or 1 if ``None``.
 
     """
-    column_evals: Dict[str, str] = field(default_factory=dict)
-    """Keys are column names with values as functions (i.e. lambda expressions)
-    evaluated with a single column value parameter.  The return value replaces
-    the column identified by the key.
-
-    """
     read_params: Dict[str, str] = field(default_factory=dict)
     """Keyword arguments used in the :meth:`~pandas.read_csv` call when reading
     the CSV file.
@@ -228,6 +225,11 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     modifications of the table.
 
     """
+    code_format: str = field(default=None)
+    """Like :obj:`code_post` but modifies the table after this class's all
+    formatting of the table (including those applied by this class).
+
+    """
     def __post_init__(self):
         super().__init__()
         if isinstance(self.uses, str):
@@ -265,7 +267,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     @staticmethod
     def format_thousand(x: int, apply_k: bool = True,
                         add_comma: bool = True,
-                        round_digits: int = None) -> str:
+                        round: int = None) -> str:
         """Format a number as a string with comma separating thousands.
 
         :param x: the number to format
@@ -274,13 +276,13 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 
         :param add_comma: whether to add a comma
 
-        :param round_digits: the number to round the mantissa if given
+        :param round: the number to round the mantissa if given
 
         """
-        add_k = False
-        if round_digits is not None:
-            x = round(x, round_digits)
-            if round_digits == 0:
+        add_k: int = False
+        if round is not None and not math.isnan(x):
+            x = _round(x, round)
+            if round == 0:
                 x = int(x)
         if x > 10000:
             if apply_k:
@@ -305,10 +307,10 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         """
         pass
 
-    def _apply_df_eval_pre(self, df: pd.DataFrame) -> pd.DataFrame:
-        if self.code_pre is not None:
+    def _apply_df_eval(self, df: pd.DataFrame, code: str) -> pd.DataFrame:
+        if code is not None:
             _locs = locals()
-            exec(self.code_pre)
+            exec(code)
             df = _locs['df']
         return df
 
@@ -339,14 +341,6 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         for col, rnd in self.make_percent_column_names.items():
             fmt = f'{{v:.{rnd}f}}\\%'
             df[col] = df[col].apply(make_per)
-        return df
-
-    def _apply_df_eval_post(self, df: pd.DataFrame) -> pd.DataFrame:
-        if self.code_post is not None:
-            exec(self.code_post)
-        for col, code, in self.column_evals.items():
-            func = eval(code)
-            df[col] = df[col].apply(func)
         return df
 
     def _apply_df_add_indexes(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -431,17 +425,18 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         stages: Dict[str, pd.DataFrame] = {'nascent': df}
         # Pandas 2.x dislikes mixed float with string dtypes
         df = df.astype(object)
-        df = self._apply_df_eval_pre(df)
+        df = self._apply_df_eval(df, self.code_pre)
         stages['unformatted'] = df.copy()
         bold_cols: Tuple[Tuple[int, int]] = self._get_bold_columns(df)
         df = self._apply_df_number_format(df)
-        df = self._apply_df_eval_post(df)
+        df = self._apply_df_eval(df, self.code_post)
         stages['postformat'] = df.copy()
         df = self._apply_df_bold_cells(df, bold_cols)
         df = self._apply_df_capitalize(df)
         df = self._apply_df_add_indexes(df)
         df = self._apply_df_column_modifies(df)
         df = self._apply_df_font_format(df)
+        df = self._apply_df_eval(df, self.code_format)
         stages['formatted'] = df.copy()
         return stages
 
