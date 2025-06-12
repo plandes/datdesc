@@ -27,14 +27,14 @@ class LatexTable(Table):
     row_range: Tuple[int, int] = field(default=(1, -1))
     """The range of rows to add to output proeduced by :obj:`tabulate`."""
 
-    use_booktabs: bool = field(default=False)
+    booktabs: bool = field(default=False)
     """Whether or not to use the ``booktabs`` style table and to format using
     its style.
 
     """
     def __post_init__(self):
         super().__post_init__()
-        if self.use_booktabs:
+        if self.booktabs:
             self.uses.append('booktabs')
 
     def format_scientific(self, x: float, sig_digits: int = 1) -> str:
@@ -47,7 +47,7 @@ class LatexTable(Table):
 
     def _get_columns(self) -> str:
         cols: str = super()._get_columns()
-        if self.use_booktabs:
+        if self.booktabs:
             cols = cols.replace('|', ' ')
         return cols
 
@@ -77,7 +77,7 @@ class LatexTable(Table):
             1: r'\midrule',
             2: r'\bottomrule'}
         for lix, ln in enumerate(content[self.row_range[0]:self.row_range[1]]):
-            if self.use_booktabs:
+            if self.booktabs:
                 if ln == r'\hline':
                     ln = hl_map.get(n_hlines, ln)
                     n_hlines += 1
@@ -109,7 +109,7 @@ class SlackTable(LatexTable):
             cols = ('l' * (df.shape[1] - 1))
             cols = cols[:i] + 'X' + cols[i:]
             cols = '|' + '|'.join(cols) + '|'
-        if self.use_booktabs:
+        if self.booktabs:
             cols = cols.replace('|', ' ')
         return cols
 
