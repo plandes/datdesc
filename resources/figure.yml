@@ -8,5 +8,11 @@
 # be considered for .latex.FigureFactory
 datdesc_figure_factory:
   class_name: zensols.datdesc.figure.FigureFactory
-  figure_section_regex: >-
-    eval({'import': ['re']}): re.compile('^datdesc_figure_((?!factory).+)')
+  plot_section_regex: >-
+    eval({'import': ['re']}): re.compile('^datdesc_plot_((?!factory).+)')
+
+datdesc_figure:
+  class_name: zensols.datdesc.figure.Figure
+
+datdesc_plot_bar:
+  class_name: zensols.datdesc.plots.BarPlot

@@ -15,6 +15,7 @@ from io import StringIO
 import re
 import yaml
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import Axes
 from matplotlib.figure import Figure as MatplotFigure
@@ -23,8 +24,9 @@ from zensols.persist import (
     persisted, PersistedWork, FileTextUtil, Deallocatable
 )
 from zensols.config import (
-    ConfigFactory, Dictable, ImportConfigFactory, ImportIniConfig
+    Serializer, Dictable, ConfigFactory, ImportConfigFactory, ImportIniConfig
 )
+from . import FigureError
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +140,14 @@ class Figure(Deallocatable, Dictable):
     image_format: str = field(default='svg')
     """The image format to use when saving plots."""
 
+    seaborn: Dict[str, Any] = field(default_factory=dict)
+    """Seaborn (:mod:`seaborn`) rendering configuration.  It has the following
+    optional keys:
+
+      * ``style``: used with :function:`sns.set_style`
+      * ``context``: used with :function:`sns.set_context`
+
+    """
     def __post_init__(self):
         super().__init__()
         self._subplots = PersistedWork('_subplots', self)
@@ -248,10 +258,21 @@ class Figure(Deallocatable, Dictable):
         metadata.update(self.metadata)
         return metadata
 
+    def _configure_seaborn(self):
+        import seaborn as sns
+        style: str = self.seaborn.get('style')
+        context: Dict[str, Any] = self.seaborn.get('context')
+        if style is not None:
+            sns.set_style(style)
+        if context is not None:
+            sns.set_context(**context)
+
     def _render(self):
         """Render the image using :meth:`.Plot.render`."""
         if not self._rendered:
             self._set_matplotlib_offline()
+            if len(self.seaborn) > 0:
+                self._configure_seaborn()
             axes: Union[Axes, np.ndarray] = self._get_axes()
             plot: Plot
             for plot in self.plots:
@@ -310,6 +331,19 @@ class Figure(Deallocatable, Dictable):
 
 
 @dataclass
+class _FigureSerializer(Serializer):
+    DATAFRAME_REGEXP = re.compile(r'^dataframe:\s*(.+)$')
+
+    def parse_object(self, v: str) -> Any:
+        v = super().parse_object(v)
+        if isinstance(v, str):
+            m: re.Pattern = self.DATAFRAME_REGEXP.match(v)
+            if m is not None:
+                v = pd.read_csv(m.group(1))
+        return v
+
+
+@dataclass
 class FigureFactory(Dictable):
     _DEFAULT_INSTANCE: ClassVar[FigureFactory] = None
     """The singleton instance when not created from a configuration factory."""
@@ -319,14 +353,26 @@ class FigureFactory(Dictable):
     to select the template used to generate the figure.
 
     """
-    _SECTION_PREFIX: ClassVar[str] = 'datdesc_figure_'
-    """The section name prefix for figure templates."""
+    _SECTION_PREFIX: ClassVar[str] = 'datdesc_plot_'
+    """The section name prefix for plot templates."""
+
+    _FIGURE_SEC_NAME: ClassVar[str] = 'datdesc_figure'
+    """The section name prefix for plot templates."""
+
+    _PLOTS_NAME: ClassVar[str] = 'plots'
+    """The name of the key of the plots in figure definitions."""
+
+    _PATH_NAME: ClassVar[str] = 'path'
+    """The name of the key of the path to a CSV file of the plot data."""
+
+    _CODE_NAME: ClassVar[str] = 'code'
+    """The name of the key of the plots in figure definitions."""
 
     config_factory: ConfigFactory = field(repr=False)
     """The configuration factory used to create :class:`.Table` instances."""
 
-    figure_section_regex: re.Pattern = field()
-    """A regular expression that matches figure entries."""
+    plot_section_regex: re.Pattern = field()
+    """A regular expression that matches plot entries."""
 
     @classmethod
     def default_instance(cls: FigureFactory) -> FigureFactory:
@@ -351,18 +397,113 @@ class FigureFactory(Dictable):
         """
         cls._DEFAULT_INSTANCE = None
 
-    def _get_section_by_name(self, figure_type: str = None) -> str:
-        return self._SECTION_PREFIX + figure_type
+    @persisted('_serializer')
+    def _get_serializer(self) -> Serializer:
+        return _FigureSerializer()
 
-    def get_figure_names(self) -> Iterable[str]:
-        """Return names of figures used in :meth:``create``."""
+    def _get_section_by_name(self, plot_type: str = None) -> str:
+        return self._SECTION_PREFIX + plot_type
+
+    def get_plot_names(self) -> Iterable[str]:
+        """Return names of plots used in :meth:``create``."""
         def map_sec(sec: str) -> Optional[str]:
-            m: re.Match = self.figure_section_regex.match(sec)
+            m: re.Match = self.plot_section_regex.match(sec)
             if m is not None:
                 return m.group(1)
         return filter(lambda s: s is not None,
                       map(map_sec, self.config_factory.config.sections))
 
-    def tmp(self):
-        for i in self.get_figure_names():
-            print(i)
+    def create(self, type: str, **params: Dict[str, Any]) -> Plot:
+        """Create a plot from the application configuration.
+
+        :param type: the name used to find the plot by section
+
+        :param params: the keyword arguments used to create the plot
+
+        :return: a new instance of the plot defined by the template
+
+        :see: :meth:`get_plot_names`
+
+        """
+        sec: str = self._get_section_by_name(type)
+        return self.config_factory.new_instance(sec, **params)
+
+    def _apply_df_eval(self, df, code: str):
+        if code is not None:
+            _locs = locals()
+            exec(code)
+            df = _locs['df']
+        return df
+
+    def _parse_plot(self, pdef: Dict[str, Any], raise_fn: Callable) -> Plot:
+        figure_type: str = pdef.pop(self._TYPE_NAME, None)
+        data: pd.DataFrame = pdef.pop('data', None)
+        code: str = pdef.pop(self._CODE_NAME, None)
+        if figure_type is None:
+            raise_fn(f"No '{self._TYPE_NAME}' given <{pdef}>")
+        # if path is None:
+        #     raise_fn(f"No '{self._PATH_NAME}' given <{pdef}>")
+        #df: pd.DataFrame = pd.read_csv(path)
+        if data is not None and code is not None:
+            assert isinstance(data, pd.DataFrame)
+            pdef['data'] = self._apply_df_eval(data, code)
+        #pdef['data'] = df
+        return self.create(figure_type, **pdef)
+
+    def _unserialize(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        def trav(node):
+            if isinstance(node, Dict):
+                for k, v in node.items():
+                    trav(v)
+                repl = ser.populate_state(node, {})
+                node.update(repl)
+            elif isinstance(node, (list, tuple, set)):
+                for v in node:
+                    trav(v)
+
+        ser: Serializer = self._get_serializer()
+        trav(data)
+
+    def from_file(self, figure_path: Path) -> Iterable[Figure]:
+        """Return figures parsed from a YAML file.
+
+        :param figure_path: the file containing the figure configurations
+
+        """
+        def raise_fn(msg: str):
+            msg = f"{msg} in figure '{fig_name}' in file '{figure_path}'"
+            raise FigureError(msg)
+
+        if logger.isEnabledFor(logging.INFO):
+            logger.info(f'reading figure definitions file {figure_path}')
+        if 1:
+            with open(figure_path) as f:
+                content = f.read()
+                defs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
+            self._unserialize(defs)
+        if 0:
+            from zensols.config import ImportYamlConfig
+            yaml_config = ImportYamlConfig(figure_path)
+            defs = yaml_config.config
+            from pprint import pprint
+            pprint(defs)
+            print(type(defs['iris_fig']['image_dir']))
+            return
+        fig_name: str
+        fdef: Dict[str, Any]
+        for fig_name, fdef in defs.items():
+            pdefs: List[Dict[str, Any]] = fdef.pop(self._PLOTS_NAME, None)
+            fig: Figure = self.config_factory.new_instance(
+                self._FIGURE_SEC_NAME, **fdef)
+            if pdefs is None:
+                raise_fn(f"Plot definition '{self._PLOTS_NAME}' not found")
+            if not isinstance(pdefs, List):
+                raise_fn(f"Invalid plot definition: '{pdefs}'")
+            fig.name = fig_name
+            pdef: Dict[str, Any]
+            for pdef in pdefs:
+                if not isinstance(pdef, Dict):
+                    raise_fn(f"Invalid plot definition: '{pdefs}'")
+                plot: Plot = self._parse_plot(pdef, raise_fn)
+                fig.add_plot(plot)
+            yield fig

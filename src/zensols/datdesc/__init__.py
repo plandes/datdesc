@@ -37,6 +37,17 @@ class LatexTableError(DataDescriptionError):
         self.table = table
 
 
+class FigureError(DataDescriptionError):
+    """Thrown for any application level error related to creating figures.
+
+    """
+    def __init__(self, reason: str, figure: str = None):
+        if figure is not None:
+            reason = f'{reason} for figure {figure}'
+        super().__init__(reason)
+        self.figure = figure
+
+
 from .table import *
 from .desc import *
 from .app import *

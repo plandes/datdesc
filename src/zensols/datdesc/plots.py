@@ -143,13 +143,16 @@ class PointPlot(PaletteContainerPlot):
 
 
 @dataclass
-class BarPlot(PaletteContainerPlot):
-    """Create a bar plot using :meth:`seaborn.barplot`.
-
-    """
+class DataFramePlot(Plot):
     data: pd.DataFrame = field(default=None, repr=False)
     """The data to plot."""
 
+
+@dataclass
+class BarPlot(PaletteContainerPlot, DataFramePlot):
+    """Create a bar plot using :meth:`seaborn.barplot`.
+
+    """
     x_axis_label: str = field(default=None)
     """The axis name with the X label."""
 
@@ -306,14 +309,11 @@ class HistPlot(PaletteContainerPlot):
 
 
 @dataclass
-class HeatMapPlot(Plot):
+class HeatMapPlot(PaletteContainerPlot, DataFramePlot):
     """Create heat map plot and optionally normalize.  This uses
     :mod:`seaborn`'s ``heatmap``.
 
     """
-    dataframe: pd.DataFrame = field(default=None)
-    """The data to render."""
-
     format: str = field(default='.2f')
     """The format of the plots's cell numerical values."""
 
@@ -325,7 +325,7 @@ class HeatMapPlot(Plot):
 
     def _render(self, axes: Axes):
         import seaborn as sns
-        chart = sns.heatmap(ax=axes, data=self.dataframe,
+        chart = sns.heatmap(ax=axes, data=self.data,
                             annot=True, fmt=self.format, **self.params)
         if self.x_label_rotation != 0:
             axes.set_xticklabels(

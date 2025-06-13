@@ -51,8 +51,8 @@ class Application(object):
     data_file_regex: re.Pattern = field(default=re.compile(r'^.+-table\.yml$'))
     """Matches file names of table definitions process in the LaTeX output."""
 
-    plot_file_regex: re.Pattern = field(default=re.compile(r'^.+-plot\.yml$'))
-    """Matches file names of plot definitions process in the LaTeX output."""
+    figure_file_regex: re.Pattern = field(default=re.compile(r'^.+-figure\.yml$'))
+    """Matches file names of figure definitions process in the LaTeX output."""
 
     hyperparam_file_regex: re.Pattern = field(
         default=re.compile(r'^.+-hyperparam\.yml$'))
@@ -111,9 +111,11 @@ class Application(object):
         try:
             if file_type == 'd':
                 return self._process_data_file(input_file, output_file)
-            else:
+            elif file_type == 'h':
                 return self._process_hyper_file(
                     input_file, output_file, _OutputFormat.table)
+            else:
+                raise ValueError(f'Unknown file type: {file_type}')
         except FileNotFoundError as e:
             raise ApplicationError(str(e)) from e
         except LatexTableError as e:
@@ -142,8 +144,8 @@ class Application(object):
             t: str = None
             if self.data_file_regex.match(path.name) is not None:
                 t = 'd'
-            if self.plot_file_regex.match(path.name) is not None:
-                t = 'p'
+            if self.figure_file_regex.match(path.name) is not None:
+                t = 'f'
             elif self.hyperparam_file_regex.match(path.name) is not None:
                 t = 'h'
             return (t, path)
@@ -217,8 +219,8 @@ class Application(object):
         for _, path in filter(lambda x: x[0] == 'h', paths):
             self._process_hyper_file(path, output_path, output_format)
 
-    def generate_plots(self, input_path: Path, output_path: Path):
-        """Generate plots
+    def generate_figures(self, input_path: Path, output_path: Path):
+        """Generate figures
 
         :param input_path: definitions YAML path location or directory
 
@@ -293,8 +295,12 @@ class PrototypeApplication(object):
     def _create_figure_example(self):
         from .figure import FigureFactory
         FigureFactory.reset_default_instance()
+        fig_file = Path('test-resources/fig/iris-figure.yml')
         fac = FigureFactory.default_instance()
-        fac.tmp()
+        fig = next(fac.from_file(fig_file))
+        #fig.write()
+        #print(type(fig.image_dir))
+        fig.save()
 
     def proto(self):
         """Prototype test."""
