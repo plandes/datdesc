@@ -3,21 +3,35 @@
 """
 from __future__ import annotations
 __author__ = 'Paul Landes'
-from typing import Tuple, List, Dict, Set, Any, Union, Type, Callable, ClassVar
+from typing import (
+    Tuple, List, Dict, Set, Iterable, Any, Optional, Union,
+    Type, Callable, ClassVar
+)
 from dataclasses import dataclass, field
 from abc import ABCMeta, abstractmethod
-from pathlib import Path
 import logging
+from pathlib import Path
+from io import StringIO
+import re
+import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import Axes
 from matplotlib.figure import Figure as MatplotFigure
+from zensols.util import Failure
 from zensols.persist import (
     persisted, PersistedWork, FileTextUtil, Deallocatable
 )
-from zensols.config import Dictable, ConfigFactory
+from zensols.config import (
+    ConfigFactory, Dictable, ImportConfigFactory, ImportIniConfig
+)
 
 logger = logging.getLogger(__name__)
+
+_FIGURE_FACTORY_CONFIG: str = """
+[import]
+config_file = resource(zensols.datdesc): resources/figure.yml
+"""
 
 
 @dataclass
@@ -293,3 +307,62 @@ class Figure(Deallocatable, Dictable):
 
     def deallocate(self):
         self.clear()
+
+
+@dataclass
+class FigureFactory(Dictable):
+    _DEFAULT_INSTANCE: ClassVar[FigureFactory] = None
+    """The singleton instance when not created from a configuration factory."""
+
+    _TYPE_NAME: ClassVar[str] = 'type'
+    """The field in the figure that indicates the type of figure.  This is used
+    to select the template used to generate the figure.
+
+    """
+    _SECTION_PREFIX: ClassVar[str] = 'datdesc_figure_'
+    """The section name prefix for figure templates."""
+
+    config_factory: ConfigFactory = field(repr=False)
+    """The configuration factory used to create :class:`.Table` instances."""
+
+    figure_section_regex: re.Pattern = field()
+    """A regular expression that matches figure entries."""
+
+    @classmethod
+    def default_instance(cls: FigureFactory) -> FigureFactory:
+        """Get the singleton instance."""
+        if cls._DEFAULT_INSTANCE is None:
+            config = ImportIniConfig(StringIO(_FIGURE_FACTORY_CONFIG))
+            fac = ImportConfigFactory(config, reload=True)# TODO: reload
+            try:
+                cls._DEFAULT_INSTANCE = fac('datdesc_figure_factory')
+            except Exception as e:
+                fail = Failure(
+                    exception=e,
+                    message='Can not create stand-alone template factory')
+                fail.rethrow()
+        return cls._DEFAULT_INSTANCE
+
+    @classmethod
+    def reset_default_instance(cls: FigureFactory):
+        """Force :meth:`default_instance' to re-instantiate a new instance on a
+        subsequent call.
+
+        """
+        cls._DEFAULT_INSTANCE = None
+
+    def _get_section_by_name(self, figure_type: str = None) -> str:
+        return self._SECTION_PREFIX + figure_type
+
+    def get_figure_names(self) -> Iterable[str]:
+        """Return names of figures used in :meth:``create``."""
+        def map_sec(sec: str) -> Optional[str]:
+            m: re.Match = self.figure_section_regex.match(sec)
+            if m is not None:
+                return m.group(1)
+        return filter(lambda s: s is not None,
+                      map(map_sec, self.config_factory.config.sections))
+
+    def tmp(self):
+        for i in self.get_figure_names():
+            print(i)

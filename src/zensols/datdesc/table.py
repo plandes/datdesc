@@ -32,9 +32,8 @@ logger = logging.getLogger(__name__)
 
 _TABLE_FACTORY_CONFIG: str = """
 [import]
-config_file = resource(zensols.datdesc): resources/obj.yml
+config_file = resource(zensols.datdesc): resources/table.yml
 """
-
 _round: Callable = round
 
 
@@ -734,7 +733,7 @@ class TableFactory(Dictable):
             logger.info(f'reading table definitions file {table_path}')
         with open(table_path) as f:
             content = f.read()
-        tdefs = yaml.load(content, yaml.FullLoader)
+        tdefs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
         for name, td in tdefs.items():
             table_type: str = td.get(self._TYPE_NAME)
             if table_type is None:

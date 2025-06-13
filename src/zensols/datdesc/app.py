@@ -51,7 +51,7 @@ class Application(object):
     data_file_regex: re.Pattern = field(default=re.compile(r'^.+-table\.yml$'))
     """Matches file names of table definitions process in the LaTeX output."""
 
-    plot_file_regexp: re.Pattern = field(default=re.compile(r'^.+-plot\.yml$'))
+    plot_file_regex: re.Pattern = field(default=re.compile(r'^.+-plot\.yml$'))
     """Matches file names of plot definitions process in the LaTeX output."""
 
     hyperparam_file_regex: re.Pattern = field(
@@ -290,8 +290,15 @@ class PrototypeApplication(object):
         with open(ofile) as f:
             print(f.read().strip())
 
+    def _create_figure_example(self):
+        from .fig import FigureFactory
+        FigureFactory.reset_default_instance()
+        fac = FigureFactory.default_instance()
+        fac.tmp()
+
     def proto(self):
         """Prototype test."""
         #self._create_example()
         #self._create_write_example()
         #self._from_file_example()
+        self._create_figure_example()
