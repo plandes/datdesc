@@ -144,8 +144,8 @@ class Figure(Deallocatable, Dictable):
     """Seaborn (:mod:`seaborn`) rendering configuration.  It has the following
     optional keys:
 
-      * ``style``: used with :function:`sns.set_style`
-      * ``context``: used with :function:`sns.set_context`
+      * ``style``: parameters used with :function:`sns.set_style`
+      * ``context``: parameters used with :function:`sns.set_context`
 
     """
     def __post_init__(self):
@@ -260,10 +260,10 @@ class Figure(Deallocatable, Dictable):
 
     def _configure_seaborn(self):
         import seaborn as sns
-        style: str = self.seaborn.get('style')
+        style: Dict[str, Any] = self.seaborn.get('style')
         context: Dict[str, Any] = self.seaborn.get('context')
         if style is not None:
-            sns.set_style(style)
+            sns.set_style(**style)
         if context is not None:
             sns.set_context(**context)
 
@@ -441,13 +441,9 @@ class FigureFactory(Dictable):
         code: str = pdef.pop(self._CODE_NAME, None)
         if figure_type is None:
             raise_fn(f"No '{self._TYPE_NAME}' given <{pdef}>")
-        # if path is None:
-        #     raise_fn(f"No '{self._PATH_NAME}' given <{pdef}>")
-        #df: pd.DataFrame = pd.read_csv(path)
         if data is not None and code is not None:
             assert isinstance(data, pd.DataFrame)
             pdef['data'] = self._apply_df_eval(data, code)
-        #pdef['data'] = df
         return self.create(figure_type, **pdef)
 
     def _unserialize(self, data: Dict[str, Any]) -> Dict[str, Any]:

@@ -1,7 +1,11 @@
 iris_fig:
   image_dir: 'path: target'
   seaborn:
-    style: 'whitegrid'
+    style:
+      #style: 'whitegrid'
+      style: darkgrid
+      rc:
+        axes.facecolor: 'str: .9'
     context:
       context: 'paper'
       font_scale: 1.3
