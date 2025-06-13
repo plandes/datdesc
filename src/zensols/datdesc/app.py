@@ -48,15 +48,18 @@ class Application(object):
     generated tables from the CSV data.
 
     """
+    data_file_regex: re.Pattern = field(default=re.compile(r'^.+-table\.yml$'))
+    """Matches file names of table definitions process in the LaTeX output."""
+
+    plot_file_regexp: re.Pattern = field(default=re.compile(r'^.+-plot\.yml$'))
+    """Matches file names of plot definitions process in the LaTeX output."""
+
     hyperparam_file_regex: re.Pattern = field(
         default=re.compile(r'^.+-hyperparam\.yml$'))
     """Matches file names of tables process in the LaTeX output."""
 
     hyperparam_table_default: Settings = field(default=None)
     """Default settings for hyperparameter :class:`.Table` instances."""
-
-    data_file_regex: re.Pattern = field(default=re.compile(r'^.+-table\.yml$'))
-    """Matches file names of tables process in the LaTeX output."""
 
     def _process_data_file(self, data_file: Path, output_file: Path):
         tables: Tuple[Table, ...] = \
@@ -139,6 +142,8 @@ class Application(object):
             t: str = None
             if self.data_file_regex.match(path.name) is not None:
                 t = 'd'
+            if self.plot_file_regex.match(path.name) is not None:
+                t = 'p'
             elif self.hyperparam_file_regex.match(path.name) is not None:
                 t = 'h'
             return (t, path)
@@ -212,6 +217,16 @@ class Application(object):
         for _, path in filter(lambda x: x[0] == 'h', paths):
             self._process_hyper_file(path, output_path, output_format)
 
+    def generate_plots(self, input_path: Path, output_path: Path):
+        """Generate plots
+
+        :param input_path: definitions YAML path location or directory
+
+        :param output_path: output file or directory
+
+        """
+        pass
+
     def write_excel(self, input_path: Path, output_file: Path = None,
                     output_latex_format: bool = False):
         """Create an Excel file from table data.
@@ -278,5 +293,5 @@ class PrototypeApplication(object):
     def proto(self):
         """Prototype test."""
         #self._create_example()
-        self._create_write_example()
+        #self._create_write_example()
         #self._from_file_example()

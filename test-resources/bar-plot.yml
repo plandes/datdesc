@@ -1,0 +1,9 @@
+note_event_figure:
+  class_name: zensols.datdesc.fig.Figure
+  name: note-events
+  metadata:
+    Description: >-
+      Note event data
+  height: 5
+  width: 5
+  image_dir: 'path: target'

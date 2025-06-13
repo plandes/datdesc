@@ -25,6 +25,12 @@ class PaletteContainerPlot(Plot):
     ``palette`` parameter in the ``sns.pointplot`` call.
 
     """
+    def __post_init__(self):
+        import seaborn as sns
+        super().__post_init__()
+        self._set_defaults(
+            palette=lambda n: sns.color_palette('hls', n_colors=n))
+
     def _get_palette(self, hue_names: Sequence[str]) -> \
             Dict[str, Tuple[int, int, int]]:
         palette: Union[str, Callable] = self.palette
@@ -137,27 +143,86 @@ class PointPlot(PaletteContainerPlot):
 
 
 @dataclass
-class LossPlot(PointPlot):
-    """A training and validation loss plot.  The :obj:`data` dataframe columns
-    are:
-
-        * ``epoch``: for the X values
-        * ``loss``: for the Y values
-
-    The :meth:`add_line` method adds a dataset split curves where the ``name``
-    is the split name and ``line`` are the loss values.
+class BarPlot(PaletteContainerPlot):
+    """Create a bar plot using :meth:`seaborn.barplot`.
 
     """
-    def __post_init__(self):
-        super().__post_init__()
-        self._set_defaults(
-            title='Model Loss',
-            key_title='Dataset Split',
-            palette='rbgm',
-            x_axis_name='Epocs',
-            y_axis_name='Loss',
-            x_column_name='epocs',
-            y_column_name='loss')
+    data: pd.DataFrame = field(default=None, repr=False)
+    """The data to plot."""
+
+    x_axis_label: str = field(default=None)
+    """The axis name with the X label."""
+
+    y_axis_label: str = field(default=None)
+    """The axis name with the Y label."""
+
+    x_column_name: str = field(default=None)
+    """The :obj:`data` column with the X values."""
+
+    y_column_name: str = field(default=None)
+    """The :obj:`data` column with the Y values."""
+
+    hue_column_name: str = field(default=None)
+    """The column in :obj:`data` used for the data hue (each data category will
+    have a unique in :obj:`palette`.
+
+    """
+    x_label_rotation: float = field(default=0)
+    """The degree of label rotation."""
+
+    key_title: str = field(default=None)
+    """The title that goes in the key."""
+
+    log_scale: float = field(default=None)
+    """The log scale of the Y-axis (see :obj:`matplotlib.axes.Axis.set_yscale`.
+
+    """
+    render_value_font_size: int = field(default=None)
+    """Whether to add Y-axis values to the bars."""
+
+    hue_palette: bool = field(default=False)
+    """Whether to use the hue to calculate the palette colors."""
+
+    plot_params: Dict[str, Any] = field(default_factory=dict)
+    """Parameters given to :func:`seaborn.barplot`."""
+
+    def _render(self, axes: Axes):
+        from matplotlib.ticker import ScalarFormatter
+        import seaborn as sns
+        df: pd.DataFrame = self.data
+        params: Dict[str, Any] = dict(
+            # dataframe of occurances and hue name
+            data=df,
+            # subplot
+            ax=axes,
+            # data mapping
+            x=self.x_column_name,
+            y=self.y_column_name,
+            hue=self.hue_column_name,
+            # do not render the error (line above/intersecting with bars)
+            errorbar=None,
+            **self.plot_params)
+        if self.hue_palette and 'palette' not in params:
+            # palette's colors are the hues of variables
+            params['palette'] = self._get_palette(
+                self.data[self.hue_column_name].drop_duplicates())
+        sns.barplot(**params)
+        if self.render_value_font_size:
+            for cont in axes.containers:
+                axes.bar_label(cont, fontsize=self.render_value_font_size)
+        if self.log_scale is not None:
+            # add log scale
+            axes.set_yscale('log', base=self.log_scale)
+            # create human readable ticks
+            # https://stackoverflow.com/questions/21920233/matplotlib-log-scale-tick-label-number-formatting
+            axes.yaxis.set_major_formatter(ScalarFormatter())
+        # set x/y axis text
+        self._set_axis_labels(axes, self.x_axis_label, self.y_axis_label)
+        # set the legend title or hide the hue_col text if not set
+        self._set_legend_title(axes, self.key_title)
+        # rotate labels
+        if self.x_label_rotation != 0:
+            axes.tick_params(axis='x', labelrotation=self.x_label_rotation)
 
 
 @dataclass
@@ -187,11 +252,6 @@ class HistPlot(PaletteContainerPlot):
     """
     plot_params: Dict[str, Any] = field(default_factory=dict)
     """Parameters given to :func:`seaborn.histplot`."""
-
-    def __post_init__(self):
-        import seaborn as sns
-        self._set_defaults(
-            palette=lambda n: sns.color_palette('hls', n_colors=n))
 
     def add(self, name: str, data: Iterable[float]):
         """Add occurances to use in the histogram.
@@ -229,8 +289,6 @@ class HistPlot(PaletteContainerPlot):
             x=value_col,
             # hue identifier
             hue=hue_col,
-            # palette's colors are the hues of variables
-            palette=self._get_palette(tuple(map(lambda t: t[0], self.data))),
             **self.plot_params)
         # log_scale is treated separately to recreate ticks
         if self.log_scale is not None:

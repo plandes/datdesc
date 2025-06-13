@@ -5,7 +5,8 @@
 ## Build
 #
 PROJ_TYPE =		python
-PROJ_MODULES =		python/doc
+PROJ_MODULES =		python/doc python/pixipack
+PY_TEST_ALL_TARGETS +=	testint
 
 
 ## Includes
@@ -29,6 +30,3 @@ testint:
 				truncate -s -1 $$i ; \
 				diff $$i ../../test-resources/gold/$$i ; \
 			  done )
-
-.PHONY:			testall
-testall:		test testint

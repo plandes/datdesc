@@ -62,10 +62,13 @@ class Plot(Dictable, metaclass=ABCMeta):
                 setattr(self, attr, val)
 
     def _set_legend_title(self, axes: Axes, title: str = None):
-        if title is None:
-            axes.legend_.set_title(None)
+        if axes.legend_ is None:
+            logger.error(f'No legend set for figure: {self}')
         else:
-            axes.legend(title=title)
+            if title is None:
+                axes.legend_.set_title(None)
+            else:
+                axes.legend(title=title)
 
     def _set_axis_labels(self, axes: Axes, x_label: str = None,
                          y_label: str = None):
@@ -245,6 +248,7 @@ class Figure(Deallocatable, Dictable):
                         ax = axes[ix]
                     else:
                         ax = axes[plot.row, plot.column]
+                assert ax is not None
                 plot.render(ax)
             self._rendered = True
 
