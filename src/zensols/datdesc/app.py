@@ -291,7 +291,7 @@ class PrototypeApplication(object):
             print(f.read().strip())
 
     def _create_figure_example(self):
-        from .fig import FigureFactory
+        from .figure import FigureFactory
         FigureFactory.reset_default_instance()
         fac = FigureFactory.default_instance()
         fac.tmp()

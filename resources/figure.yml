@@ -7,6 +7,6 @@
 # the factory that creates instances of `Figure`; updates to this class need to
 # be considered for .latex.FigureFactory
 datdesc_figure_factory:
-  class_name: zensols.datdesc.fig.FigureFactory
+  class_name: zensols.datdesc.figure.FigureFactory
   figure_section_regex: >-
     eval({'import': ['re']}): re.compile('^datdesc_figure_((?!factory).+)')

@@ -10,7 +10,7 @@ import math
 from matplotlib.pyplot import Axes
 import pandas as pd
 from zensols.util import APIError
-from .fig import Plot
+from .figure import Plot
 
 
 @dataclass

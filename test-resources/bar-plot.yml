@@ -1,5 +1,5 @@
 note_event_figure:
-  class_name: zensols.datdesc.fig.Figure
+  class_name: zensols.datdesc.figure.Figure
   name: note-events
   metadata:
     Description: >-
