@@ -2,7 +2,6 @@ irisFig:
   image_dir: 'path: target'
   seaborn:
     style:
-      #style: 'whitegrid'
       style: darkgrid
       rc:
         axes.facecolor: 'str: .9'

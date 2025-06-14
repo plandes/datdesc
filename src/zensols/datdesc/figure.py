@@ -353,6 +353,13 @@ class _FigureSerializer(Serializer):
 
 @dataclass
 class FigureFactory(Dictable):
+    """Create instances of :`.Figure` using :meth:`create` or from configuration
+    files with :meth:`from_file`.  See the `usage`_ documentation for
+    information about the configuration files used by :meth:`from_file`.
+
+    .. _usage: https://github.com/plandes/datdesc?#figures
+
+    """
     _DEFAULT_INSTANCE: ClassVar[FigureFactory] = None
     """The singleton instance when not created from a configuration factory."""
 
@@ -469,7 +476,7 @@ class FigureFactory(Dictable):
         trav(data)
 
     def from_file(self, figure_path: Path) -> Iterable[Figure]:
-        """Return figures parsed from a YAML file.
+        """Return figures parsed from a YAML file (see class documentation).
 
         :param figure_path: the file containing the figure configurations
 

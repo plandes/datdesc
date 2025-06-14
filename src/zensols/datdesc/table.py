@@ -632,8 +632,12 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 
 @dataclass
 class TableFactory(Dictable):
-    """Reads the table definitions file and writes a Latex .sty file of the
-    generated tables from the CSV data.
+    """Reads the table definitions file and writes a Latex ``.sty`` file of the
+    generated tables from the CSV data.  Tables are created with either
+    :meth:`usage` or :meth:`from_file`.  See the `usage`_ documentation for
+    information about the configuration files used by :meth:`from_file`.
+
+    .. _usage: https://github.com/plandes/datdesc?#tables
 
     """
     _DEFAULT_INSTANCE: ClassVar[TableFactory] = None
@@ -724,7 +728,7 @@ class TableFactory(Dictable):
         return inst
 
     def from_file(self, table_path: Path) -> Iterable[Table]:
-        """Return tables parsed from a YAML file.
+        """Return tables parsed from a YAML file (see class documentation).
 
         :param table_path: the file containing the table configurations
 
