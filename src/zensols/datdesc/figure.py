@@ -140,6 +140,9 @@ class Figure(Deallocatable, Dictable):
     image_format: str = field(default='svg')
     """The image format to use when saving plots."""
 
+    image_file_norm: bool = field(default=True)
+    """Whether to normalize the image output file name."""
+
     seaborn: Dict[str, Any] = field(default_factory=dict)
     """Seaborn (:mod:`seaborn`) rendering configuration.  It has the following
     optional keys:
@@ -218,7 +221,10 @@ class Figure(Deallocatable, Dictable):
         if hasattr(self, '_file_name') and self._file_name is not None:
             file_name = self._file_name
         else:
-            file_name = FileTextUtil.normalize_text(self.name)
+            if self.image_file_norm:
+                file_name = FileTextUtil.normalize_text(self.name)
+            else:
+                file_name = self.name
             file_name = f'{file_name}.{self.image_format}'
         return self.image_dir / file_name
 
@@ -339,7 +345,8 @@ class _FigureSerializer(Serializer):
         if isinstance(v, str):
             m: re.Pattern = self.DATAFRAME_REGEXP.match(v)
             if m is not None:
-                v = pd.read_csv(m.group(1))
+                path = Path(m.group(1)).expanduser()
+                v = pd.read_csv(path)
         return v
 
 
@@ -379,7 +386,7 @@ class FigureFactory(Dictable):
         """Get the singleton instance."""
         if cls._DEFAULT_INSTANCE is None:
             config = ImportIniConfig(StringIO(_FIGURE_FACTORY_CONFIG))
-            fac = ImportConfigFactory(config, reload=True)# TODO: reload
+            fac = ImportConfigFactory(config)
             try:
                 cls._DEFAULT_INSTANCE = fac('datdesc_figure_factory')
             except Exception as e:
@@ -428,7 +435,7 @@ class FigureFactory(Dictable):
         sec: str = self._get_section_by_name(type)
         return self.config_factory.new_instance(sec, **params)
 
-    def _apply_df_eval(self, df, code: str):
+    def _apply_df_eval(self, df: pd.DataFrame, code: str):
         if code is not None:
             _locs = locals()
             exec(code)
@@ -472,19 +479,10 @@ class FigureFactory(Dictable):
 
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'reading figure definitions file {figure_path}')
-        if 1:
-            with open(figure_path) as f:
-                content = f.read()
-                defs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
-            self._unserialize(defs)
-        if 0:
-            from zensols.config import ImportYamlConfig
-            yaml_config = ImportYamlConfig(figure_path)
-            defs = yaml_config.config
-            from pprint import pprint
-            pprint(defs)
-            print(type(defs['iris_fig']['image_dir']))
-            return
+        with open(figure_path) as f:
+            content = f.read()
+            defs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
+        self._unserialize(defs)
         fig_name: str
         fdef: Dict[str, Any]
         for fig_name, fdef in defs.items():

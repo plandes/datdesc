@@ -1,4 +1,4 @@
-iris_fig:
+irisFig:
   image_dir: 'path: target'
   seaborn:
     style:

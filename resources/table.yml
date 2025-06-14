@@ -2,12 +2,6 @@
 #@meta {desc: "LaTeX table factory objects", date: "2025-01-03"}
 
 
-## Defaults
-#
-datdesc_hyperparam_table_default:
-  replace_nan: ''
-
-
 ## Table objects
 #
 # the factory that creates instances of `Table`; updates to this class need to

@@ -6,19 +6,16 @@ only files that match *-table.yml are considered.
 """
 __author__ = 'Paul Landes'
 
-from typing import Tuple, Iterable, Any, Dict, List
+from typing import Tuple, Iterable, Any, Dict, List, Set
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import logging
 import re
 from itertools import chain
 from pathlib import Path
-import pandas as pd
 from zensols.util import stdout
 from zensols.cli import ApplicationError
-from zensols.config import Settings, FactoryError
-from .hyperparam import HyperparamModel, HyperparamSet, HyperparamSetLoader
-from .latex import CsvToLatexTable
+from zensols.config import Settings, FactoryError, ConfigFactory
 from . import (
     LatexTableError, TableFactory, Table, DataFrameDescriber, DataDescriber
 )
@@ -43,15 +40,21 @@ class Application(object):
     """Generate LaTeX tables files from CSV files and hyperparameter .sty files.
 
     """
-    table_factory: TableFactory = field()
-    """Reads the table definitions file and writes a Latex .sty file of the
-    generated tables from the CSV data.
+    config_factory: ConfigFactory = field()
+    """Creates table and figure factories."""
 
-    """
-    data_file_regex: re.Pattern = field(default=re.compile(r'^.+-table\.yml$'))
+    table_factory_name: str = field()
+    """The section name of the table factory (see :obj:`table_factory`)."""
+
+    figure_factory_name: str = field()
+    """The section name of the figure factory (see :obj:`figure_factory`)."""
+
+    data_file_regex: re.Pattern = field(
+        default=re.compile(r'^.+-table\.yml$'))
     """Matches file names of table definitions process in the LaTeX output."""
 
-    figure_file_regex: re.Pattern = field(default=re.compile(r'^.+-figure\.yml$'))
+    figure_file_regex: re.Pattern = field(
+        default=re.compile(r'^.+-figure\.yml$'))
     """Matches file names of figure definitions process in the LaTeX output."""
 
     hyperparam_file_regex: re.Pattern = field(
@@ -61,7 +64,24 @@ class Application(object):
     hyperparam_table_default: Settings = field(default=None)
     """Default settings for hyperparameter :class:`.Table` instances."""
 
+    @property
+    def table_factory(self) -> 'TableFactory':
+        """Reads the table definitions file and writes a Latex .sty file of the
+        generated tables from the CSV data.
+
+        """
+        return self.config_factory(self.table_factory_name)
+
+    @property
+    def figure_factory(self) -> 'FigureFactory':
+        """Reads the figure definitions file and writes ``eps`` figures..
+
+        """
+        return self.config_factory(self.figure_factory_name)
+
     def _process_data_file(self, data_file: Path, output_file: Path):
+        from .latex import CsvToLatexTable
+
         tables: Tuple[Table, ...] = \
             tuple(self.table_factory.from_file(data_file))
         if len(tables) == 0:
@@ -73,7 +93,10 @@ class Application(object):
             tab.write(writer=f)
         logger.info(f'wrote {output_file}')
 
-    def _write_hyper_table(self, hset: HyperparamSet, table_file: Path):
+    def _write_hyper_table(self, hset: 'HyperparamSet', table_file: Path):
+        from .hyperparam import HyperparamModel
+        from .latex import CsvToLatexTable
+
         def map_table(dd: DataFrameDescriber, hp: HyperparamModel) -> Table:
             hmtab: Dict[str, Any] = hp.table
             params: Dict[str, Any] = dict(**table_defs, **hmtab) \
@@ -91,6 +114,8 @@ class Application(object):
 
     def _process_hyper_file(self, hyper_file: Path, output_file: Path,
                             output_format: _OutputFormat):
+        from .hyperparam import HyperparamSet, HyperparamSetLoader
+
         loader = HyperparamSetLoader(hyper_file)
         hset: HyperparamSet = loader.load()
         with stdout(output_file, 'w') as f:
@@ -129,9 +154,29 @@ class Application(object):
                     f"in {c.config_file}: {c.__cause__} ")
             raise ApplicationError(reason)
 
+    def _get_figures(self, fig_config_file: Path) -> Iterable['Figure']:
+        from .figure import FigureFactory, Figure
+        fac: FigureFactory = self.figure_factory
+        fig: Figure
+        for fig in fac.from_file(fig_config_file):
+            fig.image_file_norm = False
+            yield fig
+
+    def _process_figure_file(self, fig_config_file: Path, output_dir: Path,
+                             output_image_format: str):
+        from .figure import Figure
+        fig: Figure
+        for fig in self._get_figures(fig_config_file):
+            fig.image_dir = output_dir
+            if output_image_format is not None:
+                fig.image_format = output_image_format
+            fig.save()
+
     def _get_paths(self, input_path: Path, output_path: Path) -> \
             Iterable[Tuple[str, Path]]:
-        if input_path.is_dir() and not output_path.exists():
+        if input_path.is_dir() and \
+           output_path is not None and \
+           not output_path.exists():
             output_path.mkdir(parents=True)
         if output_path is not None and \
            ((input_path.is_dir() and not output_path.is_dir()) or
@@ -161,6 +206,7 @@ class Application(object):
         return paths
 
     def _get_example(self) -> DataFrameDescriber:
+        import pandas as pd
         return DataFrameDescriber(
             name='roster',
             desc='Example dataframe using mock roster data.',
@@ -194,9 +240,10 @@ class Application(object):
 
         """
         paths: Iterable[str, Path] = self._get_paths(input_path, output_path)
+        table_types: Set[str] = {'h', 'd'}
         file_type: str
         path: Path
-        for file_type, path in paths:
+        for file_type, path in filter(lambda x: x[0] in table_types, paths):
             if input_path.is_dir():
                 ofile: Path = output_path / f'{path.stem}.sty'
                 self._process_file(path, ofile, file_type)
@@ -205,7 +252,7 @@ class Application(object):
 
     def generate_hyperparam(self, input_path: Path, output_path: Path,
                             output_format: _OutputFormat = _OutputFormat.short):
-        """Write hyperparameter formatted data
+        """Write hyperparameter formatted data.
 
         :param input_path: definitions YAML path location or directory
 
@@ -219,15 +266,41 @@ class Application(object):
         for _, path in filter(lambda x: x[0] == 'h', paths):
             self._process_hyper_file(path, output_path, output_format)
 
-    def generate_figures(self, input_path: Path, output_path: Path):
-        """Generate figures
+    def generate_figures(self, input_path: Path, output_path: Path,
+                         output_image_format: str = None):
+        """Generate figures.
 
         :param input_path: definitions YAML path location or directory
 
         :param output_path: output file or directory
 
+        :param output_image_format: the output format (defaults to ``svg``)
+
         """
-        pass
+        paths: Iterable[str, Path] = self._get_paths(input_path, output_path)
+        path: Path
+        for _, path in filter(lambda x: x[0] == 'f', paths):
+            self._process_figure_file(path, output_path, output_image_format)
+
+    def list_figures(self, input_path: Path):
+        """Generate figures.
+
+        :param input_path: definitions YAML path location or directory
+
+        :param output_path: output file or directory
+
+        :param output_image_format: the output format (defaults to ``svg``)
+
+        """
+        from .figure import Figure
+        logging.getLogger('zensols.datdesc').setLevel(logging.WARNING)
+        paths: Iterable[str, Path] = self._get_paths(input_path, None)
+        path: Path
+        for _, path in filter(lambda x: x[0] == 'f', paths):
+            fig: Figure
+            for fig in self._get_figures(path):
+                path: Path = fig.path
+                print(path.stem)
 
     def write_excel(self, input_path: Path, output_file: Path = None,
                     output_latex_format: bool = False):
@@ -293,11 +366,12 @@ class PrototypeApplication(object):
             print(f.read().strip())
 
     def _create_figure_example(self):
-        from .figure import FigureFactory
+        from .figure import FigureFactory, Figure
         FigureFactory.reset_default_instance()
         fig_file = Path('test-resources/fig/iris-figure.yml')
         fac = FigureFactory.default_instance()
-        fig = next(fac.from_file(fig_file))
+        fig: Figure = next(fac.from_file(fig_file))
+        fig.image_file_norm = False
         #fig.write()
         #print(type(fig.image_dir))
         fig.save()
@@ -307,4 +381,5 @@ class PrototypeApplication(object):
         #self._create_example()
         #self._create_write_example()
         #self._from_file_example()
-        self._create_figure_example()
+        self.app.list_figures(Path('test-resources/fig'))
+        #self._create_figure_example()

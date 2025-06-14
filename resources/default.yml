@@ -1,0 +1,6 @@
+#@meta {author: "Paul Landes"}
+#@meta {desc: "application defaults", date: "2025-06-13"}
+
+
+datdesc_hyperparam_table_default:
+  replace_nan: ''
