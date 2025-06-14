@@ -79,7 +79,8 @@ class Plot(Dictable, metaclass=ABCMeta):
 
     def _set_legend_title(self, axes: Axes, title: str = None):
         if axes.legend_ is None:
-            logger.error(f'No legend set for figure: {self}')
+            if logger.isEnabledFor(logging.INFO):
+                logger.info(f'No legend set for figure: {self}')
         else:
             if title is None:
                 axes.legend_.set_title(None)
