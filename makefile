@@ -5,7 +5,7 @@
 ## Build
 #
 PROJ_TYPE =		python
-PROJ_MODULES =		python/doc python/pixipack markdown
+PROJ_MODULES =		python/doc python/pixipack python/deploy
 PY_TEST_ALL_TARGETS +=	testint
 
 

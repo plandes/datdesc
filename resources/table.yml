@@ -17,6 +17,9 @@ datdesc_table_factory:
 #
 datdesc_table_one_column:
   class_name: zensols.datdesc.latex.LatexTable
+  template_params:
+    tabular: tabular
+    tabular_args: ''
   default_params:
     - [placement, '!ht']
     - [size]
@@ -30,9 +33,9 @@ datdesc_table_one_column:
       \begin{table}[ {{-p.placement-}} ]
       \centering
       {{ p.size }}
-      \begin{tabular}{ {{-columns-}} }
+      \begin{ {{-t.tabular-}} }{{ t.tabular_args }}{ {{-columns-}} }
     {{ table }}
-      \end{tabular}
+      \end{ {{-t.tabular-}} }
       {% if head is not none -%}
       \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
       {% else -%}
@@ -43,6 +46,9 @@ datdesc_table_one_column:
 
 datdesc_table_two_column:
   class_name: zensols.datdesc.latex.LatexTable
+  template_params:
+    tabular: tabular
+    tabular_args: ''
   default_params:
     - [placement, '!ht']
     - [size]
@@ -56,9 +62,9 @@ datdesc_table_two_column:
       \begin{table*}[ {{-p.placement-}} ]
       \centering
       {{ p.size }}
-      \begin{tabular}{ {{-columns-}} }
+      \begin{ {{-t.tabular-}} }{{ t.tabular_args }}{ {{-columns-}} }
     {{ table }}
-      \end{tabular}
+      \end{ {{-t.tabular-}} }
       {% if head is not none -%}
       \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
       {% else -%}
@@ -123,6 +129,9 @@ datdesc_table_two_column_slack:
 
 datdesc_table_bare:
   class_name: zensols.datdesc.latex.LatexTable
+  template_params:
+    tabular: tabular
+    tabular_args: ''
   template: |-
     % table contents only to be used in custom environments
     % usage: {{ usage }}
@@ -133,9 +142,9 @@ datdesc_table_bare:
     \newcommand{\{{-name-}}Head}{ {{-head-}} }
     {% endif -%}
     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
-      \begin{tabular}{ {{-columns-}} }
+      \begin{ {{-t.tabular-}} }{{ t.tabular_args }}{ {{-columns-}} }
     {{ table }}
-      \end{tabular}}
+      \end{ {{-t.tabular-}} }
 
 datdesc_table_only_data:
   class_name: zensols.datdesc.latex.LatexTable

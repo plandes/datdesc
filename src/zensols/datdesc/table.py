@@ -69,6 +69,9 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     """
     type: str = field(default=None)
     """"""
+    template_params: Dict[str, str] = field(default_factory=dict)
+    """Parameters used in the template."""
+
     default_params: Sequence[Sequence[str]] = field(default_factory=list)
     """Default parameters to be substituted in the template that are
     interpolated by the LaTeX numeric values such as #1, #2, etc.  This is a
@@ -472,7 +475,10 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         dparams: Sequence[Sequence[str]] = self.default_params  # metadata
         oparams: Dict[str, str] = self.params  # user overridden
         aparams: Dict[str, str] = {}  # argument params
-        params: Dict[str, str] = {'p': aparams}  # to populate and return
+        # to populate and return
+        params: Dict[str, str] = {
+            'p': aparams,
+            't': self.template_params}
         proto: str = ''
         init_arg: str = ''
         pix: int = 1  # parameter index
