@@ -366,7 +366,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 
     def _apply_df_font_format(self, df: pd.DataFrame) -> pd.DataFrame:
         if self.replace_nan is not None:
-            df = df.fillna(self.replace_nan)
+            df = df.infer_objects(copy=False).fillna(self.replace_nan)
         if len(self.blank_columns) > 0:
             cols = df.columns.to_list()
             for i in self.blank_columns:
