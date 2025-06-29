@@ -5,7 +5,7 @@
 ## Build
 #
 PROJ_TYPE =		python
-PROJ_MODULES =		python/doc python/test python/package python/deploy python/pixipack
+PROJ_MODULES =		python/doc python/package python/deploy python/pixipack
 PY_TEST_ALL_TARGETS +=	testint
 
 
