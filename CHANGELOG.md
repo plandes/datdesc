@@ -8,13 +8,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.2.3] - 2025-07-15
+### Changed
+- Add `DataDescriber` derive and derive index meta methods.
+
+
 ## [1.2.2] - 2025-06-22
-### Changes
+### Changed
 - Pin `numpy` to 1.26.
 
 
 ## [1.2.1] - 2025-06-20
-### Changes
+### Changed
 - Upgrade [pandas] to 2.3.0.
 
 
@@ -171,7 +176,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.2.3...HEAD
+[1.2.3]: https://github.com/plandes/datdesc/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/plandes/datdesc/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/plandes/datdesc/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/plandes/datdesc/compare/v1.1.3...v1.2.0

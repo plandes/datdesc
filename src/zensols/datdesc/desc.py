@@ -509,6 +509,30 @@ class DataDescriber(PersistableContainer, Dictable):
         """Data frame describers keyed by the describer name."""
         return frozendict(dict(map(lambda t: (t.name, t), self.describers)))
 
+    def derive(self, **kwargs) -> DataDescriber:
+        """Create a new instance based on this instance and replace any
+        non-``None`` kwargs.
+
+        :param kwargs: the key word arguments to replace any field data from
+                       this instance
+
+        :return: a new instance with replaced data, or a clone if called with no
+                 key word arguments
+
+        """
+        params = dict(self.__dict__)
+        params.update(kwargs)
+        return self.__class__(**params)
+
+    def derive_with_index_meta(self, index_format: str = None) -> \
+            DataFrameDescriber:
+        """Applies :meth:`.DataFrameDescriber.derive_with_index_meta` to each
+        element of :obj:`describers`.
+
+        """
+        meth = DataFrameDescriber.derive_with_index_meta
+        return self.derive(describers=tuple(map(meth, self.describers)))
+
     def add_summary(self) -> DataFrameDescriber:
         """Add a new metadata like :class:`.DataFrameDescriber` as a first entry
         in :obj:`describers` that describes what data this instance currently
