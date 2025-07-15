@@ -490,7 +490,7 @@ class DataDescriber(PersistableContainer, Dictable):
     """The directory where to write the CSV files."""
 
     yaml_dir: Path = field(default=Path('config'))
-    """The directory where to write the CSV files."""
+    """The directory where to write the YAML config files."""
 
     mangle_file_names: bool = field(default=False)
     """Whether to normalize output file names."""
@@ -662,9 +662,13 @@ class DataDescriber(PersistableContainer, Dictable):
             paths.append(out_file)
         return paths
 
-    def save(self, output_dir: Path = None,
-             yaml_dir: Path = None, include_excel: bool = False) -> List[Path]:
+    def save(self, output_dir: Path = None, yaml_dir: Path = None,
+             include_excel: bool = False) -> List[Path]:
         """Save both the CSV and YAML configuration file.
+
+        :param output_dir: the directory of where to save the data
+
+        :param yaml_dir: the directory of where to save the YAML files
 
         :param include_excel: whether to also write the Excel file to its
                               default output file name
@@ -678,7 +682,7 @@ class DataDescriber(PersistableContainer, Dictable):
         paths = paths + self.save_yaml(output_dir, yaml_dir)
         if include_excel:
             paths.append(self.save_excel())
-        return paths
+            return paths
 
     @classmethod
     def from_yaml_file(cls, path: Path) -> DataDescriber:
