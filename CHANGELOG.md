@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Removed
+- `DataDescriber.{output_path,csv_dir,yaml_dir}` paths. Now specific paths of
+  where to save data is provided to `save*` methods.
+
+### Changed
+- `DataDescriber` `save*` methods expect specific paths of where data is saved.
+
+
 ## [1.2.3] - 2025-07-15
 ### Changed
 - Add `DataDescriber` derive and derive index meta methods.

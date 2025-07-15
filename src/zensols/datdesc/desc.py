@@ -483,26 +483,11 @@ class DataDescriber(PersistableContainer, Dictable):
     name: str = field(default='default')
     """The name of the dataset."""
 
-    output_dir: Path = field(default=Path('results'))
-    """The directory where to write the results."""
-
-    csv_dir: Path = field(default=Path('csv'))
-    """The directory where to write the CSV files."""
-
-    yaml_dir: Path = field(default=Path('config'))
-    """The directory where to write the YAML config files."""
-
-    mangle_file_names: bool = field(default=False)
-    """Whether to normalize output file names."""
-
     mangle_sheet_name: bool = field(default=False)
     """Whether to normalize the Excel sheet names when
     :class:`xlsxwriter.exceptions.InvalidWorksheetName` is raised.
 
     """
-    def _create_path(self, fname: Union[Path, str]) -> Path:
-        return self.output_dir / fname
-
     @property
     @persisted('_describers_by_name', transient=True)
     def describers_by_name(self) -> Dict[str, DataFrameDescriber]:
@@ -565,21 +550,15 @@ class DataDescriber(PersistableContainer, Dictable):
         return [max([min(min_col, len(str(s))) for s in df[col].values] +
                     [len(col)]) for col in df.columns]
 
-    def save_excel(self, output_file: Path = None) -> Path:
+    def save_excel(self, output_file: Path) -> Path:
         """Save all provided dataframe describers to an Excel file.
 
-        :param output_file: the Excel file to write, which needs an ``.xlsx``
-                            extension; this defaults to a path created from
-                            :obj:`output_dir` and :obj:`name`
+        :param output_file: the Excel file to write; ``.xlsx`` will be postpend
+                            if no extension exists
 
         """
         from xlsxwriter.worksheet import Worksheet
-        if output_file is None:
-            fname: str = self.name
-            if self.mangle_file_names:
-                fname = FileTextUtil.normalize_text(fname)
-            output_file = self._create_path(f'{fname}.xlsx')
-        elif len(output_file.suffix) == 0:
+        if len(output_file.suffix) == 0:
             output_file = output_file.parent / f'{output_file.name}.xlsx'
         # create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
@@ -616,42 +595,37 @@ class DataDescriber(PersistableContainer, Dictable):
         logger.info(f'wrote {output_file}')
         return output_file
 
-    def save_csv(self, output_dir: Path = None) -> List[Path]:
+    def save_csv(self, csv_dir: Path) -> List[Path]:
         """Save all provided dataframe describers to an CSV files.
 
-        :param output_dir: the directory of where to save the data
+        :param csv_dir: the directory of where to save the data
 
         """
-        if output_dir is None:
-            output_dir = self._create_path(self.csv_dir)
         paths: List[Path] = []
         desc: DataFrameDescriber
         for desc in self.describers:
-            out_file: Path = output_dir / desc.csv_path
+            out_file: Path = csv_dir / desc.csv_path
             out_file.parent.mkdir(parents=True, exist_ok=True)
             desc.df.to_csv(out_file, index=False)
             logger.info(f'saved csv file to: {out_file}')
             paths.append(out_file)
-        logger.info(f'saved csv files to directory: {output_dir}')
+        logger.info(f'saved csv files to directory: {csv_dir}')
         return paths
 
-    def save_yaml(self, output_dir: Path = None,
-                  yaml_dir: Path = None) -> List[Path]:
+    def save_yaml(self, csv_dir: Path, yaml_dir: Path) -> List[Path]:
         """Save all provided dataframe describers YAML files used by the
         ``datdesc`` command.
 
-        :param output_dir: the directory of where to save the data
+        :param csv_dir: the directory of where to save the data
+
+        :param yaml_dir: the directory where the YAML config files are saved
 
         """
-        if output_dir is None:
-            output_dir = self._create_path(self.csv_dir)
-        if yaml_dir is None:
-            yaml_dir = self._create_path(self.yaml_dir)
         fac: TableFactory = TableFactory.default_instance()
         paths: List[Path] = []
         desc: DataFrameDescriber
         for desc in self.describers:
-            csv_file: Path = output_dir / desc.csv_path
+            csv_file: Path = csv_dir / desc.csv_path
             name: str = desc.get_table_name('file')
             out_file: Path = yaml_dir / f'{name}-table.yml'
             tab: Table = desc.create_table()
@@ -662,30 +636,44 @@ class DataDescriber(PersistableContainer, Dictable):
             paths.append(out_file)
         return paths
 
-    def save(self, output_dir: Path = None, yaml_dir: Path = None,
-             include_excel: bool = False) -> List[Path]:
+    def save(self, csv_dir: Path = Path('config/csv'),
+             yaml_dir: Path = Path('results/config'),
+             excel_path: Union[bool, Path] = None) -> List[Path]:
         """Save both the CSV and YAML configuration file.
 
-        :param output_dir: the directory of where to save the data
+        :param csv_dir: the directory of where to save the data
 
         :param yaml_dir: the directory of where to save the YAML files
 
-        :param include_excel: whether to also write the Excel file to its
-                              default output file name
+        :param excel_path: where to write the Excel file if not ``None`` or
+                           ``False``, otherwise create in a new ``results``
+                           directory with :obj:`name`
 
         :see: :meth:`save_csv`
 
-        :see :meth:`save_yaml`
+        :see: :meth:`save_yaml`
 
         """
-        paths: List[Path] = self.save_csv(output_dir)
-        paths = paths + self.save_yaml(output_dir, yaml_dir)
-        if include_excel:
-            paths.append(self.save_excel())
+        paths: List[Path] = self.save_csv(csv_dir)
+        paths = paths + self.save_yaml(csv_dir, yaml_dir)
+        if excel_path is None or excel_path is False:
+            pass
+        elif excel_path is True:
+            excel_path = Path(f'results/{self.name}')
+            paths.append(self.save_excel(excel_path))
         return paths
 
     @classmethod
+    def from_describer(cls, dfd: DataFrameDescriber) -> DataDescriber:
+        """Create a singleton describer.  The :obj:`name` is taken from the
+        ``dfd`` :obj:`.DataFrameDescriber.name`.
+
+        """
+        return DataDescriber(describers=(dfd,), name=dfd.name)
+
+    @classmethod
     def from_yaml_file(cls, path: Path) -> DataDescriber:
+
         """Create a data descriptor from a previously written YAML/CSV files
         using :meth:`save`.
 
@@ -694,15 +682,11 @@ class DataDescriber(PersistableContainer, Dictable):
         :see: :meth:`DataFrameDescriber.from_table`
 
         """
-        par: Path = path.parent
         fac: TableFactory = TableFactory.default_instance()
         tables: Table[Table, ...] = tuple(fac.from_file(path))
         return DataDescriber(
             describers=tuple(map(DataFrameDescriber.from_table, tables)),
-            name=path.name,
-            output_dir=par / 'results',
-            csv_dir=par / 'csv',
-            yaml_dir=par / 'config')
+            name=path.name)
 
     def format_tables(self):
         """See :meth:`.DataFrameDescriber.format_table`."""

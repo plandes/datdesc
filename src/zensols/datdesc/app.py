@@ -365,6 +365,12 @@ class PrototypeApplication(object):
         with open(ofile) as f:
             print(f.read().strip())
 
+    def _create_save_example(self):
+        TableFactory.reset_default_instance()
+        dfd: DataFrameDescriber = self.app._get_example()
+        dd = DataDescriber.from_describer(dfd)
+        dd.save()
+
     def _create_figure_example(self):
         from .figure import FigureFactory, Figure
         FigureFactory.reset_default_instance()
@@ -381,5 +387,6 @@ class PrototypeApplication(object):
         #self._create_example()
         #self._create_write_example()
         #self._from_file_example()
-        self.app.list_figures(Path('test-resources/fig'))
+        self._create_save_example()
+        #self.app.list_figures(Path('test-resources/fig'))
         #self._create_figure_example()
