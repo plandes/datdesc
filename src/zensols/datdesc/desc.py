@@ -682,7 +682,7 @@ class DataDescriber(PersistableContainer, Dictable):
         paths = paths + self.save_yaml(output_dir, yaml_dir)
         if include_excel:
             paths.append(self.save_excel())
-            return paths
+        return paths
 
     @classmethod
     def from_yaml_file(cls, path: Path) -> DataDescriber:
