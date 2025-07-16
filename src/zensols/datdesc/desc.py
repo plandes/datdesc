@@ -349,7 +349,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             caption=self.desc,
             column_renames=dict(filter(
                 lambda x: x[1] is not None,
-                self._get_column_desc().items())))
+                self.column_descriptions.items())))
         params.update(self.table_kwargs)
         params.update(kwargs)
         table: Table = fac.create(**params)
@@ -414,7 +414,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         dfs: str = self.df.to_string(**df_params)
         self._write_block(dfs, depth + 1, writer)
         self._write_line('columns:', depth, writer)
-        self._write_dict(self._get_column_desc(), depth + 1, writer)
+        self._write_dict(self.column_descriptions, depth + 1, writer)
         if self.index_meta is not None:
             self._write_line('index:', depth, writer)
             self._write_dict(self.index_meta, depth + 1, writer)
@@ -428,7 +428,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         """
         if 'showindex' not in tabulate_params:
             tabulate_params['showindex'] = False
-        cols: Dict[str, Any] = self._get_column_desc()
+        cols: Dict[str, Any] = self.column_descriptions
         title_meta: Dict[str, Any] = dict(
             name=self.name, desc=self.desc, columns=cols)
         title: str = title_format.format(**title_meta)
@@ -442,7 +442,13 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             self._write_dict(cols, depth + 1, writer)
         self._write_block(table, depth, writer)
 
-    def _get_column_desc(self) -> Dict[str, str]:
+    @property
+    def column_descriptions(self) -> Dict[str, str]:
+        """A dictionary of name to Descriptions of the column metadata created
+        from :obj:`meta`.  Any missing column metadata will result in ``None``
+        dictionary values.
+
+        """
         dfm: pd.DataFrame = self.meta
         descs: Dict[str, str] = {}
         col: str
