@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class TestApplication(unittest.TestCase):
+    # set to 'w' to write tests
     DEBUG: bool = 0
 
     def setUp(self):
@@ -38,13 +39,13 @@ class TestApplication(unittest.TestCase):
         if self.DEBUG is True:
             print(out)
             return
-        elif self.DEBUG == 'w':
-            with open(gold_file, 'w') as f:
-                f.write(out)
         with open(gold_file) as f:
             gold: str = f.read().strip()
         today: str = self._today_date()
         gold = gold.replace('{{DATE}}', today)
+        if self.DEBUG == 'w' and gold != out:
+            with open(gold_file, 'w') as f:
+                f.write(out)
         if 0:
             print(out)
         self.assertEqual(gold, out, f'\n\ndiff in file {out_file}')

@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - `DataDescriber` `save*` methods expect specific paths of where data is saved.
 
+### Added
+- Add `DataDescriptor` JSON serialization.
+
 
 ## [1.2.3] - 2025-07-15
 ### Changed

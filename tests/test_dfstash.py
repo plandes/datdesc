@@ -1,53 +1,9 @@
 from typing import Iterable
 import unittest
-from pathlib import Path
-import shutil
 import pandas as pd
 from zensols.persist import PersistableError
 from zensols.datdesc.dfstash import DataFrameStash
-
-
-class TestUtil(object):
-    DEBUG: bool = False
-
-    def setUp(self):
-        targ = Path('target')
-        self.dfs_path = targ / 'dfs.csv'
-        if targ.is_dir():
-            shutil.rmtree(targ)
-        if self.DEBUG:
-            print()
-            print('_' * 80)
-
-    def _get_example(self) -> pd.DataFrame:
-        return pd.DataFrame(
-            data={'age': [16, 20, 19, 18],
-                  'cool': [True, True, False, True]},
-            index=['Stan', 'Kyle', 'Cartman', 'Kenny'])
-
-    def _create_dfs(self, **kwargs):
-        if 'single_column_index' not in kwargs:
-            kwargs['single_column_index'] = None
-        if 'auto_commit' not in kwargs:
-            kwargs['auto_commit'] = False
-        return DataFrameStash(path=self.dfs_path, **kwargs)
-
-    def _assertFile(self, dfs: DataFrameStash):
-        self.assertFalse(self.dfs_path.exists())
-
-    def _test_df_equal(self):
-        # df from test just ran
-        dfi = self._dfs
-        self.assertEqual('key', dfi.key_column)
-        self.assertEqual('key', dfi.dataframe.index.name)
-
-        # restored from file system
-        dfs = self._create_dfs()
-        self.assertEqual('key', dfs.key_column)
-        self.assertEqual('key', dfs.dataframe.index.name)
-
-        self.assertEqual(dfi.dataframe.astype(str).to_string(),
-                         dfs.dataframe.astype(str).to_string())
+from util import TestUtil
 
 
 class TestBase(TestUtil):
@@ -80,7 +36,7 @@ class TestBase(TestUtil):
         self._assertFile(dfs)
 
     def test_append(self):
-        df = self._get_example()
+        df = self._get_example_df()
         df.index.name = 'key'
         dfs = self._create_dfs(dataframe=df)
         self.assertEqual(4, len(df))
@@ -101,7 +57,7 @@ class TestDFStashOp(TestBase, unittest.TestCase):
         return super()._create_dfs(auto_commit=False, **kwargs)
 
     def test_create_with_df(self):
-        df = self._get_example()
+        df = self._get_example_df()
         dfs = self._create_dfs(dataframe=df)
         self.assertEqual(id(df), id(dfs.dataframe))
         self._assertFile(dfs)
@@ -113,7 +69,7 @@ class TestDFStashOp(TestBase, unittest.TestCase):
         self._assertFile(dfs)
 
     def test_read(self):
-        df = self._get_example()
+        df = self._get_example_df()
         dfs = self._create_dfs(dataframe=df)
         self.assertEqual(4, len(dfs))
         self.assertEqual(4, len(dfs.dataframe))
@@ -128,7 +84,7 @@ class TestDFStashOp(TestBase, unittest.TestCase):
         self._assertFile(dfs)
 
     def test_bad_append(self):
-        df = self._get_example()
+        df = self._get_example_df()
         dfs = self._create_dfs(dataframe=df)
         self.assertEqual(4, len(df))
         s = r'^Expecting input length \(3\) alignment with columns length \(2\)$'
@@ -149,7 +105,7 @@ class TestDFStashOp(TestBase, unittest.TestCase):
         self._assertFile(dfs)
 
     def test_load(self):
-        df = self._get_example()
+        df = self._get_example_df()
         dfs = self._create_dfs(dataframe=df)
         self.assertEqual((16, True), dfs.load('Stan'))
         self.assertEqual((16, True), dfs['Stan'])
@@ -161,7 +117,7 @@ class TestDFStashOp(TestBase, unittest.TestCase):
         self._assertFile(dfs)
 
     def test_nascent_remove(self):
-        df = self._get_example()
+        df = self._get_example_df()
         dfs = self._create_dfs(dataframe=df)
         self.assertEqual(4, len(df))
         self.assertTrue('Stan' in dfs)
@@ -172,7 +128,7 @@ class TestDFStashOp(TestBase, unittest.TestCase):
         self._assertFile(dfs)
 
     def test_update(self):
-        df = self._get_example()
+        df = self._get_example_df()
         dfs = self._create_dfs(dataframe=df)
         dfs.dump('Stan', (55, False))
         self.assertFalse(self.dfs_path.exists())
@@ -185,7 +141,7 @@ class TestDFStashOp(TestBase, unittest.TestCase):
         self._assertFile(dfs)
 
     def test_clear(self):
-        dfs = self._create_dfs(dataframe=self._get_example())
+        dfs = self._create_dfs(dataframe=self._get_example_df())
         self.assertFalse(self.dfs_path.exists())
         dfs.dump('Makey', (55, False))
         self.assertFalse(self.dfs_path.exists())

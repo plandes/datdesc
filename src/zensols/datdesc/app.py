@@ -387,6 +387,20 @@ class PrototypeApplication(object):
         #self._create_example()
         #self._create_write_example()
         #self._from_file_example()
-        self._create_save_example()
+        #self._create_save_example()
         #self.app.list_figures(Path('test-resources/fig'))
         #self._create_figure_example()
+        TableFactory.reset_default_instance()
+        dfd: DataFrameDescriber = self.app._get_example()
+        if 1:
+            from pprint import pprint
+            #pprint(dict(dfd.asdict()))
+            pprint(dfd.asflatdict())
+            return
+        df = dfd.df
+        json = df.to_json()
+        print(json)
+        import pandas as pd
+        from io import StringIO
+        df = pd.read_json(StringIO(json))
+        print(df)

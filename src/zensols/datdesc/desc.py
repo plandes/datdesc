@@ -11,11 +11,11 @@ from dataclasses import dataclass, field
 import logging
 import sys
 from frozendict import frozendict
-from collections import OrderedDict
 import itertools as it
 import textwrap as tw
 import parse
-from io import TextIOBase, StringIO
+from io import StringIO, TextIOBase, TextIOWrapper
+import json
 from pathlib import Path
 import pandas as pd
 from tabulate import tabulate
@@ -348,7 +348,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             path=self.csv_path,
             caption=self.desc,
             column_renames=dict(filter(lambda x: x[1] is not None,
-                                       self.asdict().items())))
+                                       self._get_column_desc().items())))
         params.update(self.table_kwargs)
         params.update(kwargs)
         table: Table = fac.create(**params)
@@ -358,7 +358,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         return table
 
     @classmethod
-    def from_table(cls, tab: Table) -> DataFrameDescriber:
+    def from_table(cls: Type, tab: Table) -> DataFrameDescriber:
         """Create a frame descriptor from a :class:`.Table`."""
         def filter_kwargs(t: Tuple[str, Any]) -> bool:
             k, v = t
@@ -413,7 +413,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         dfs: str = self.df.to_string(**df_params)
         self._write_block(dfs, depth + 1, writer)
         self._write_line('columns:', depth, writer)
-        self._write_dict(self.asdict(), depth + 1, writer)
+        self._write_dict(self._get_column_desc(), depth + 1, writer)
         if self.index_meta is not None:
             self._write_line('index:', depth, writer)
             self._write_dict(self.index_meta, depth + 1, writer)
@@ -427,7 +427,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         """
         if 'showindex' not in tabulate_params:
             tabulate_params['showindex'] = False
-        cols: Dict[str, Any] = self.asdict()
+        cols: Dict[str, Any] = self._get_column_desc()
         title_meta: Dict[str, Any] = dict(
             name=self.name, desc=self.desc, columns=cols)
         title: str = title_format.format(**title_meta)
@@ -441,9 +441,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             self._write_dict(cols, depth + 1, writer)
         self._write_block(table, depth, writer)
 
-    def _from_dictable(self, *args, **kwargs) -> Dict[str, str]:
+    def _get_column_desc(self) -> Dict[str, str]:
         dfm: pd.DataFrame = self.meta
-        descs: Dict[str, str] = OrderedDict()
+        descs: Dict[str, str] = {}
         col: str
         for col in self.df.columns:
             if col in dfm.index:
@@ -451,6 +451,23 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             else:
                 descs[col] = None
         return descs
+
+    def _from_dictable(self, *args, **kwargs) -> Dict[str, str]:
+        dct: Dict[str, Any] = super()._from_dictable(*args, **kwargs)
+        dct.pop('df')
+        dct.pop('meta')
+        dct['df'] = json.loads(self.df.to_json())
+        dct['meta'] = json.loads(self.meta.to_json())
+        return dct
+
+    @classmethod
+    def _from_json(cls: Type, data: Dict[str, Any]):
+        df: Dict[str, Any] = data.pop('df')
+        meta: Dict[str, Any] = data.pop('meta')
+        return DataFrameDescriber(
+            df=pd.read_json(StringIO(json.dumps(df))),
+            meta=pd.read_json(StringIO(json.dumps(meta))),
+            **data)
 
     def __str__(self) -> str:
         return self.name
@@ -664,7 +681,7 @@ class DataDescriber(PersistableContainer, Dictable):
         return paths
 
     @classmethod
-    def from_describer(cls, dfd: DataFrameDescriber) -> DataDescriber:
+    def from_describer(cls: Type, dfd: DataFrameDescriber) -> DataDescriber:
         """Create a singleton describer.  The :obj:`name` is taken from the
         ``dfd`` :obj:`.DataFrameDescriber.name`.
 
@@ -672,7 +689,7 @@ class DataDescriber(PersistableContainer, Dictable):
         return DataDescriber(describers=(dfd,), name=dfd.name)
 
     @classmethod
-    def from_yaml_file(cls, path: Path) -> DataDescriber:
+    def from_yaml_file(cls: Type, path: Path) -> DataDescriber:
 
         """Create a data descriptor from a previously written YAML/CSV files
         using :meth:`save`.
@@ -687,6 +704,30 @@ class DataDescriber(PersistableContainer, Dictable):
         return DataDescriber(
             describers=tuple(map(DataFrameDescriber.from_table, tables)),
             name=path.name)
+
+    def to_json(self, writer: TextIOBase):
+        """Serialize the object to JSON that can be re-instantiated using
+        :meth:`from_json`.
+
+        :param writer: the data sink
+
+        :param kwargs: the key word arguments to give to :func:`json.dump`
+
+        """
+        self.asjson(writer)
+
+    @classmethod
+    def from_json(cls: Type, reader: TextIOWrapper) -> DataDescriber:
+        """Unserialize a JSON stream into a data descriptor.
+
+        :param reader: the file / data stream
+
+        """
+        data: Dict[str, Any] = json.load(reader)
+        describers: List[Dict[str, Any]] = data.pop('describers')
+        return DataDescriber(
+            describers=tuple(map(DataFrameDescriber._from_json, describers)),
+            **data)
 
     def format_tables(self):
         """See :meth:`.DataFrameDescriber.format_table`."""
