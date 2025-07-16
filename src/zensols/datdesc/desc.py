@@ -347,8 +347,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             head=self.head,
             path=self.csv_path,
             caption=self.desc,
-            column_renames=dict(filter(lambda x: x[1] is not None,
-                                       self._get_column_desc().items())))
+            column_renames=dict(filter(
+                lambda x: x[1] is not None,
+                self._get_column_desc().items())))
         params.update(self.table_kwargs)
         params.update(kwargs)
         table: Table = fac.create(**params)
@@ -491,6 +492,10 @@ class DataDescriber(PersistableContainer, Dictable):
     saves their instances as CSV data files and YAML configuration files.
 
     """
+    DEFAULT_CSV_DIR: ClassVar[Path] = Path('config/csv')
+    DEFAULT_YAML_DIR: ClassVar[Path] = Path('results/config')
+    DEFAULT_EXCEL_DIR: ClassVar[Path] = Path('results')
+
     SHEET_NAME_MAXLEN: ClassVar[int] = 31
     """Maximum allowed characters in an Excel spreadsheet's name."""
 
@@ -599,7 +604,7 @@ class DataDescriber(PersistableContainer, Dictable):
                 cdesc: Dict[str, str] = desc.asdict()
                 col: str
                 for cix, col in enumerate(desc.df.columns):
-                    comment: str = cdesc[col]
+                    comment: str = cdesc.get(col)
                     if comment is None:
                         if logger.isEnabledFor(logging.WARNING):
                             logger.warning(f"missing comment in '{col}' " +
@@ -653,8 +658,7 @@ class DataDescriber(PersistableContainer, Dictable):
             paths.append(out_file)
         return paths
 
-    def save(self, csv_dir: Path = Path('config/csv'),
-             yaml_dir: Path = Path('results/config'),
+    def save(self, csv_dir: Path = None, yaml_dir: Path = None,
              excel_path: Union[bool, Path] = None) -> List[Path]:
         """Save both the CSV and YAML configuration file.
 
@@ -671,12 +675,15 @@ class DataDescriber(PersistableContainer, Dictable):
         :see: :meth:`save_yaml`
 
         """
+        csv_dir = self.DEFAULT_CSV_DIR if csv_dir is None else csv_dir
+        yaml_dir = self.DEFAULT_YAML_DIR if yaml_dir is None else yaml_dir
         paths: List[Path] = self.save_csv(csv_dir)
         paths = paths + self.save_yaml(csv_dir, yaml_dir)
-        if excel_path is None or excel_path is False:
-            pass
+        if excel_path is False:
+            excel_path = None
         elif excel_path is True:
-            excel_path = Path(f'results/{self.name}')
+            excel_path = self.DEFAULT_EXCEL_DIR / self.name
+        if excel_path is not None:
             paths.append(self.save_excel(excel_path))
         return paths
 

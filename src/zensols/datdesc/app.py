@@ -51,11 +51,15 @@ class Application(object):
 
     data_file_regex: re.Pattern = field(
         default=re.compile(r'^.+-table\.yml$'))
-    """Matches file names of table definitions process in the LaTeX output."""
+    """Matches file names of table definitions."""
+
+    serial_file_regex: re.Pattern = field(
+        default=re.compile(r'^.+-table\.json$'))
+    """Matches file names of serialized dataframe."""
 
     figure_file_regex: re.Pattern = field(
         default=re.compile(r'^.+-figure\.yml$'))
-    """Matches file names of figure definitions process in the LaTeX output."""
+    """Matches file names of figure definitions."""
 
     hyperparam_file_regex: re.Pattern = field(
         default=re.compile(r'^.+-hyperparam\.yml$'))
@@ -92,6 +96,14 @@ class Application(object):
             tab = CsvToLatexTable(tables, package_name)
             tab.write(writer=f)
         logger.info(f'wrote {output_file}')
+
+    def _process_serial_file(self, data_file: Path, output_file: Path):
+        with open(data_file) as f:
+            dd: DataDescriber = DataDescriber.from_json(f)
+        dd.save(
+            csv_dir=output_file / DataDescriber.DEFAULT_CSV_DIR,
+            yaml_dir=output_file / DataDescriber.DEFAULT_YAML_DIR,
+            excel_path=output_file / DataDescriber.DEFAULT_EXCEL_DIR / dd.name)
 
     def _write_hyper_table(self, hset: 'HyperparamSet', table_file: Path):
         from .hyperparam import HyperparamModel
@@ -136,6 +148,8 @@ class Application(object):
         try:
             if file_type == 'd':
                 return self._process_data_file(input_file, output_file)
+            elif file_type == 's':
+                return self._process_serial_file(input_file, output_file)
             elif file_type == 'h':
                 return self._process_hyper_file(
                     input_file, output_file, _OutputFormat.table)
@@ -189,8 +203,10 @@ class Application(object):
             t: str = None
             if self.data_file_regex.match(path.name) is not None:
                 t = 'd'
-            if self.figure_file_regex.match(path.name) is not None:
+            elif self.figure_file_regex.match(path.name) is not None:
                 t = 'f'
+            elif self.serial_file_regex.match(path.name) is not None:
+                t = 's'
             elif self.hyperparam_file_regex.match(path.name) is not None:
                 t = 'h'
             return (t, path)
@@ -234,13 +250,13 @@ class Application(object):
     def generate_tables(self, input_path: Path, output_path: Path):
         """Create LaTeX tables.
 
-        :param input_path: definitions YAML path location or directory
+        :param input_path: YAML definitions or JSON serialized file
 
         :param output_path: output file or directory
 
         """
         paths: Iterable[str, Path] = self._get_paths(input_path, output_path)
-        table_types: Set[str] = {'h', 'd'}
+        table_types: Set[str] = {'h', 'd', 's'}
         file_type: str
         path: Path
         for file_type, path in filter(lambda x: x[0] in table_types, paths):
@@ -254,7 +270,7 @@ class Application(object):
                             output_format: _OutputFormat = _OutputFormat.short):
         """Write hyperparameter formatted data.
 
-        :param input_path: definitions YAML path location or directory
+        :param input_path: YAML definitions or JSON serialized file
 
         :param output_path: output file or directory
 
@@ -270,7 +286,7 @@ class Application(object):
                          output_image_format: str = None):
         """Generate figures.
 
-        :param input_path: definitions YAML path location or directory
+        :param input_path: YAML definitions or JSON serialized file
 
         :param output_path: output file or directory
 
@@ -285,7 +301,7 @@ class Application(object):
     def list_figures(self, input_path: Path):
         """Generate figures.
 
-        :param input_path: definitions YAML path location or directory
+        :param input_path: YAML definitions or JSON serialized file
 
         :param output_path: output file or directory
 
@@ -306,7 +322,7 @@ class Application(object):
                     output_latex_format: bool = False):
         """Create an Excel file from table data.
 
-        :param input_path: definitions YAML path location or directory
+        :param input_path: YAML definitions or JSON serialized file
 
         :param output_file: the output file, which defaults to the input prefix
                             with the approproate extension
@@ -314,22 +330,29 @@ class Application(object):
         :param output_latex_format: whether to output with LaTeX commands
 
         """
-        paths: Tuple[Path] = (input_path,)
-        descs: List[DataDescriber] = []
-        name: str = input_path.name
-        if output_file is None:
-            output_file = Path(f'{input_path.stem}.xlsx')
-        if input_path.is_dir():
-            paths = tuple(filter(lambda p: p.suffix == '.yml',
-                                 input_path.iterdir()))
-        descs: Tuple[DataDescriber] = tuple(map(
-            DataDescriber.from_yaml_file, paths))
-        if len(descs) == 1:
-            name = descs[0].name
-        desc = DataDescriber(
-            describers=tuple(chain.from_iterable(
-                map(lambda d: d.describers, descs))),
-            name=name)
+        if input_path.is_file() and \
+           self.serial_file_regex.match(input_path.name):
+            with open(input_path) as f:
+                desc = DataDescriber.from_json(f)
+            if output_file is None:
+                output_file = Path(desc.name)
+        else:
+            paths: Tuple[Path] = (input_path,)
+            descs: List[DataDescriber] = []
+            name: str = input_path.name
+            if output_file is None:
+                output_file = Path(f'{input_path.stem}.xlsx')
+            if input_path.is_dir():
+                paths = tuple(filter(lambda p: p.suffix == '.yml',
+                                     input_path.iterdir()))
+            descs: Tuple[DataDescriber] = tuple(map(
+                DataDescriber.from_yaml_file, paths))
+            if len(descs) == 1:
+                name = descs[0].name
+            desc = DataDescriber(
+                describers=tuple(chain.from_iterable(
+                    map(lambda d: d.describers, descs))),
+                name=name)
         if output_latex_format:
             desc.format_tables()
         desc.save_excel(output_file)
@@ -371,6 +394,13 @@ class PrototypeApplication(object):
         dd = DataDescriber.from_describer(dfd)
         dd.save()
 
+    def _create_write_json_example(self):
+        TableFactory.reset_default_instance()
+        dfd: DataFrameDescriber = self.app._get_example()
+        dd = DataDescriber.from_describer(dfd)
+        with open('dd-table.json', 'w') as f:
+            dd.to_json(f)
+
     def _create_figure_example(self):
         from .figure import FigureFactory, Figure
         FigureFactory.reset_default_instance()
@@ -388,19 +418,8 @@ class PrototypeApplication(object):
         #self._create_write_example()
         #self._from_file_example()
         #self._create_save_example()
+        #self._create_write_json_example()
+        #self.app.generate_tables(Path('dd-table.json'), Path('target'))
         #self.app.list_figures(Path('test-resources/fig'))
         #self._create_figure_example()
-        TableFactory.reset_default_instance()
-        dfd: DataFrameDescriber = self.app._get_example()
-        if 1:
-            from pprint import pprint
-            #pprint(dict(dfd.asdict()))
-            pprint(dfd.asflatdict())
-            return
-        df = dfd.df
-        json = df.to_json()
-        print(json)
-        import pandas as pd
-        from io import StringIO
-        df = pd.read_json(StringIO(json))
-        print(df)
+        self.app.write_excel(Path('dd-table.json'))
