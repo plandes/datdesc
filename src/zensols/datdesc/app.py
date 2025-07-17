@@ -392,7 +392,9 @@ class PrototypeApplication(object):
         TableFactory.reset_default_instance()
         dfd: DataFrameDescriber = self.app._get_example()
         dd = DataDescriber.from_describer(dfd)
-        dd.save()
+        dfd.write()
+        dd.save_excel(Path('/d'))
+        #dd.save()
 
     def _create_write_json_example(self):
         TableFactory.reset_default_instance()
@@ -417,9 +419,8 @@ class PrototypeApplication(object):
         #self._create_example()
         #self._create_write_example()
         #self._from_file_example()
-        #self._create_save_example()
+        self._create_save_example()
         #self._create_write_json_example()
         #self.app.generate_tables(Path('dd-table.json'), Path('target'))
         #self.app.list_figures(Path('test-resources/fig'))
         #self._create_figure_example()
-        self.app.write_excel(Path('dd-table.json'))

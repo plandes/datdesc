@@ -319,8 +319,8 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         return out_file
 
     def save_excel(self, output_dir: Path = Path('.')) -> Path:
-        """Save as an Excel file using :obj:`csv_path`.  The same file naming
-        semantics are used as with :meth:`.DataDescriber.save_excel`.
+        """Save as an Excel file using :obj:`csv_path`.  To add column labels
+        use instances of this object with :meth:`.DataDescriber.save_excel`.
 
         :see: :meth:`.DataDescriber.save_excel`
 
@@ -586,6 +586,8 @@ class DataDescriber(PersistableContainer, Dictable):
 
         """
         from xlsxwriter.worksheet import Worksheet
+        if output_file.is_dir():
+            output_file = output_file / self.name
         if len(output_file.suffix) == 0:
             output_file = output_file.parent / f'{output_file.name}.xlsx'
         # create a Pandas Excel writer using XlsxWriter as the engine.
@@ -607,7 +609,7 @@ class DataDescriber(PersistableContainer, Dictable):
                 desc.df.to_excel(writer, sheet_name=sheet_name, index=False)
                 # set comments of header cells to descriptions
                 worksheet: Worksheet = writer.sheets[sheet_name]
-                cdesc: Dict[str, str] = desc.asdict()
+                cdesc: Dict[str, str] = desc.column_descriptions
                 col: str
                 for cix, col in enumerate(desc.df.columns):
                     comment: str = cdesc.get(col)
