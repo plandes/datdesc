@@ -288,7 +288,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
                 x = int(x)
         if x > 10000:
             if apply_k:
-                x = round(x / 1000)
+                x = _round(x / 1000)
                 add_k = True
         if add_comma:
             x = f'{x:,}'

@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changed
+- Bug fix `None not callable` when formatting a column with thousands comma.
+
+
 ## [1.3.2] - 2025-07-16
 ### Changed
 - Fix Excel column labeling bug.
