@@ -30,7 +30,7 @@ class DataFrameStash(CloseableStash):
 
     """
     key_column: str = field(default='key')
-    """The spreadsheet column name used to store stash keeys."""
+    """The spreadsheet column name used to store stash keys."""
 
     columns: Tuple[str, ...] = field(default=('value',))
     """The columns to create in the spreadsheet.  These must be consistent when
