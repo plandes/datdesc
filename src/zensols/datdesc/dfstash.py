@@ -133,6 +133,7 @@ class DataFrameStash(CloseableStash):
                 f'Expecting input length ({len(inst)}) ' +
                 f'alignment with columns length ({len(df.columns)})')
         row = pd.DataFrame([inst], columns=df.columns)
+        row = row.astype(df.dtypes.to_dict())
         row.index = [name]
         self._dataframe_val = pd.concat((df, row))
         self._dataframe_val.index.name = df.index.name

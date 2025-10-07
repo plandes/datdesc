@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.3.3] - 2025-10-07
 ### Changed
 - Bug fix `None not callable` when formatting a column with thousands comma.
+- Fix Pandas "empty or all-NA" warning.
 
 
 ## [1.3.2] - 2025-07-16
@@ -204,7 +206,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.3.2...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.3.3...HEAD
+[1.3.3]: https://github.com/plandes/datdesc/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/plandes/datdesc/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/plandes/datdesc/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/plandes/datdesc/compare/v1.2.3...v1.3.0
