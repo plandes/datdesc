@@ -1,6 +1,7 @@
 from typing import Iterable
 import unittest
 import pandas as pd
+from datetime import datetime
 from zensols.persist import PersistableError
 from zensols.datdesc.dfstash import DataFrameStash
 from util import TestUtil
@@ -50,6 +51,28 @@ class TestBase(TestUtil):
             tuple(dfs.values()))
         self._dfs = dfs
         self._assertFile(dfs)
+
+    def _create_update_df(self):
+        df = pd.DataFrame(
+            data={'event': ['purchase'],
+                  'val1': [1],
+                  'time': [datetime.now()]},
+            index=[1])
+        df.index.name = 'key'
+        return df
+
+    def test_add_update_missing(self):
+        df = self._create_update_df()
+        dfs = self._create_dfs(dataframe=df)
+        dfs.check_types = True
+        with self.assertRaisesRegex(TypeError, r"^int\(\) argument.*"):
+            dfs[2] = (None, None, None)
+
+        df = self._create_update_df()
+        dfs = self._create_dfs(dataframe=df)
+        # change to assert raise in future Pandas version
+        with self.assertWarns(FutureWarning):
+            dfs[1] = (None, 'wrong type', None)
 
 
 class TestDFStashOp(TestBase, unittest.TestCase):
