@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Added
+- Radar (a.k.a. spider) plot for figure generation.
+- More booktabs generated tables control:
+  - configurable rules for booktabs tables
+  - configurable by line generated table line removal for more control
+
+
 ## [1.3.3] - 2025-10-07
 ### Changed
 - Bug fix `None not callable` when formatting a column with thousands comma.

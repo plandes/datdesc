@@ -25,7 +25,10 @@ class LatexTable(Table):
 
     """
     row_range: Tuple[int, int] = field(default=(1, -1))
-    """The range of rows to add to output proeduced by :obj:`tabulate`."""
+    """The range of rows to add to output produced by :obj:`tabulate`."""
+
+    row_deletes: Set[int] = field(default=frozenset())
+    """Rows to delete in the output produced by :obj:`tabulate`."""
 
     booktabs: bool = field(default=False)
     """Whether or not to use the ``booktabs`` style table and to format using
@@ -36,6 +39,8 @@ class LatexTable(Table):
         super().__post_init__()
         if self.booktabs:
             self.uses.append('booktabs')
+        if not isinstance(self.row_deletes, Set):
+            self.row_deletes = set(self.row_deletes)
 
     def format_scientific(self, x: float, sig_digits: int = 1) -> str:
         nstr: str = f'{{0:.{sig_digits}e}}'.format(x)
@@ -77,15 +82,20 @@ class LatexTable(Table):
             1: r'\midrule',
             2: r'\bottomrule'}
         for lix, ln in enumerate(content[self.row_range[0]:self.row_range[1]]):
+            if lix in self.row_deletes:
+                continue
             if self.booktabs:
                 if ln == r'\hline':
                     ln = hl_map.get(n_hlines, ln)
                     n_hlines += 1
             self._write_line(ln.strip(), depth, writer)
-            if (lix - 2) in self.hlines:
-                self._write_line('\\hline', depth, writer)
-            if (lix - 2) in self.double_hlines:
-                self._write_line('\\hline \\hline', depth, writer)
+            lkey: int = (lix - 2)
+            if lkey in self.hlines:
+                self._write_line(r'\hline', depth, writer)
+            if lkey in self.double_hlines:
+                self._write_line(r'\hline \hline', depth, writer)
+            if lkey in self.rules:
+                self._write_line(self.rules[lkey], depth, writer)
 
 
 @dataclass

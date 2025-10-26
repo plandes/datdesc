@@ -16,3 +16,6 @@ datdesc_figure:
 
 datdesc_plot_bar:
   class_name: zensols.datdesc.plots.BarPlot
+
+datdesc_plot_radar:
+  class_name: zensols.datdesc.plots.RadarPlot

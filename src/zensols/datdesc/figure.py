@@ -56,6 +56,9 @@ class Plot(Dictable, metaclass=ABCMeta):
     post_hooks: List[Callable] = field(default_factory=list)
     """Methods to invoke after rendering."""
 
+    legend_params: Dict[str, Any] = field(default_factory=dict)
+    """Parameters given to :meth:`~matplotlib.pyplot.Axes.legend`."""
+
     def __post_init__(self):
         pass
 
@@ -85,7 +88,7 @@ class Plot(Dictable, metaclass=ABCMeta):
             if title is None:
                 axes.legend_.set_title(None)
             else:
-                axes.legend(title=title)
+                axes.legend(title=title, **self.legend_params)
 
     def _set_axis_labels(self, axes: Axes, x_label: str = None,
                          y_label: str = None):
@@ -152,6 +155,10 @@ class Figure(Deallocatable, Dictable):
       * ``context``: parameters used with :function:`sns.set_context`
 
     """
+    subplot_params: Dict[str, Any] = field(default_factory=dict)
+    """Additional parameters given to :func:`matplotlib.pyplot.subplots`.
+
+    """
     def __post_init__(self):
         super().__init__()
         self._subplots = PersistedWork('_subplots', self)
@@ -196,6 +203,7 @@ class Figure(Deallocatable, Dictable):
             ncols=max(map(lambda p: p.column, self.plots)) + 1,
             nrows=max(map(lambda p: p.row, self.plots)) + 1,
             figsize=(self.width, self.height))
+        params.update(self.subplot_params)
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(f'creating subplots: {params}')
         fig, axs = plt.subplots(**params)
@@ -339,15 +347,21 @@ class Figure(Deallocatable, Dictable):
 
 @dataclass
 class _FigureSerializer(Serializer):
-    DATAFRAME_REGEXP = re.compile(r'^dataframe:\s*(.+)$')
+    DATAFRAME_REGEXP = re.compile(r'^dataframe(?:\((.+)\))?:\s*(.+)$')
 
     def parse_object(self, v: str) -> Any:
         v = super().parse_object(v)
         if isinstance(v, str):
             m: re.Pattern = self.DATAFRAME_REGEXP.match(v)
             if m is not None:
-                path = Path(m.group(1)).expanduser()
-                v = pd.read_csv(path)
+                params: Dict[str, Any] = {}
+                pconfig, path = m.groups()
+                path = Path(path, **params)
+                if pconfig is not None:
+                    pconfig = eval(pconfig)
+                    v = pd.read_csv(path, **pconfig)
+                else:
+                    v = pd.read_csv(path)
         return v
 
 
@@ -457,7 +471,9 @@ class FigureFactory(Dictable):
         if figure_type is None:
             raise_fn(f"No '{self._TYPE_NAME}' given <{pdef}>")
         if data is not None and code is not None:
-            assert isinstance(data, pd.DataFrame)
+            if not isinstance(data, pd.DataFrame):
+                raise FigureError(
+                    f'Expecting a dataframe but got <{data}> ({type(data)})')
             pdef['data'] = self._apply_df_eval(data, code)
         return self.create(figure_type, **pdef)
 
@@ -476,24 +492,38 @@ class FigureFactory(Dictable):
         trav(data)
 
     def from_file(self, figure_path: Path) -> Iterable[Figure]:
-        """Return figures parsed from a YAML file (see class documentation).
+        """Like :meth:`from_dict` but read from a YAML file.
 
         :param figure_path: the file containing the figure configurations
 
         """
+        with open(figure_path) as f:
+            content = f.read()
+            defs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
+        self._unserialize(defs)
+        return self._from_dict(defs, str(figure_path))
+
+    def from_dict(self, figure_config: Dict[str, Any]) -> Iterable[Figure]:
+        """Return figures parsed from nested :class:`builtins.dict` (see class
+        documentation).
+
+        :param figure_config: the same structure as what comes in a YAML file
+
+        """
+        self._unserialize(figure_config)
+        return self._from_dict(figure_config, '<inline dict>')
+
+    def _from_dict(self, figure_config: Dict[str, Any], figure_path: str) -> \
+            Iterable[Figure]:
         def raise_fn(msg: str):
             msg = f"{msg} in figure '{fig_name}' in file '{figure_path}'"
             raise FigureError(msg)
 
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'reading figure definitions file {figure_path}')
-        with open(figure_path) as f:
-            content = f.read()
-            defs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
-        self._unserialize(defs)
         fig_name: str
         fdef: Dict[str, Any]
-        for fig_name, fdef in defs.items():
+        for fig_name, fdef in figure_config.items():
             pdefs: List[Dict[str, Any]] = fdef.pop(self._PLOTS_NAME, None)
             fig: Figure = self.config_factory.new_instance(
                 self._FIGURE_SEC_NAME, **fdef)

@@ -403,24 +403,23 @@ class PrototypeApplication(object):
         with open('dd-table.json', 'w') as f:
             dd.to_json(f)
 
-    def _create_figure_example(self):
+    def _restore_figure_example(self):
         from .figure import FigureFactory, Figure
         FigureFactory.reset_default_instance()
         fig_file = Path('test-resources/fig/iris-figure.yml')
         fac = FigureFactory.default_instance()
         fig: Figure = next(fac.from_file(fig_file))
         fig.image_file_norm = False
-        #fig.write()
-        #print(type(fig.image_dir))
+        fig.save()
+
+    def _create_radar_figure_example(self):
+        from .figure import FigureFactory, Figure
+        fig_file = Path('test-resources/fig/iris-radar-figure.yml')
+        fac = FigureFactory.default_instance()
+        fig: Figure = next(fac.from_file(fig_file))
+        fig.image_file_norm = False
         fig.save()
 
     def proto(self):
         """Prototype test."""
-        #self._create_example()
-        #self._create_write_example()
-        #self._from_file_example()
-        self._create_save_example()
-        #self._create_write_json_example()
-        #self.app.generate_tables(Path('dd-table.json'), Path('target'))
-        #self.app.list_figures(Path('test-resources/fig'))
-        #self._create_figure_example()
+        self._create_radar_figure_example()

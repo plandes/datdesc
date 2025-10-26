@@ -5,12 +5,15 @@ __author__ = 'Paul Landes'
 
 from typing import Tuple, List, Dict, Sequence, Iterable, Any, Union, Callable
 from dataclasses import dataclass, field
+import logging
 import itertools as it
 import math
 from matplotlib.pyplot import Axes
 import pandas as pd
 from zensols.util import APIError
 from .figure import Plot
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -144,6 +147,9 @@ class PointPlot(PaletteContainerPlot):
 
 @dataclass
 class DataFramePlot(Plot):
+    """A base class for plots that render data from a Pandas dataframe.
+
+    """
     data: pd.DataFrame = field(default=None, repr=False)
     """The data to plot."""
 
@@ -331,3 +337,155 @@ class HeatMapPlot(PaletteContainerPlot, DataFramePlot):
             axes.set_xticklabels(
                 chart.get_xticklabels(),
                 rotation=self.x_label_rotation)
+
+
+@dataclass
+class RadarPlot(DataFramePlot):
+    """A radar plot (a.k.a. spider plolt).
+
+    """
+    key_title: str = field(default=None)
+    """The title that goes in the key."""
+
+    frame: str = field(default='circle')
+    """Shape of frame surrounding axes (``circle`` or ``polygon``).
+
+    """
+    render_value_font_size: int = field(default=None)
+    """Whether to add Y-axis values to the bars."""
+
+    label_gap: int = field(default=None)
+    """The spacing of the labels from the center of the plot."""
+
+    alpha: float = field(default=0.25)
+    """The fill alpha for each row of the dataframe.
+
+    """
+    def __post_init__(self):
+        super().__post_init__()
+        self._register_projection(len(self.data.columns), self.frame)
+
+    def _register_projection(self, num_vars: int, frame: str):
+        """Create a radar chart with `num_vars` axes.
+
+        This function creates a RadarAxes projection and registers it.
+
+        Parameters
+        ----------
+        num_vars : int
+            Number of variables for radar chart.
+        frame : {'circle' | 'polygon'}
+            Shape of frame surrounding axes.
+
+        :link: https://stackoverflow.com/questions/52910187/how-to-make-a-polygon-radar-spider-chart-in-python
+
+        """
+        import numpy as np
+        from matplotlib.projections import register_projection
+        from matplotlib.patches import Circle, RegularPolygon
+        from matplotlib.path import Path
+        from matplotlib.projections.polar import PolarAxes
+        from matplotlib.spines import Spine
+        from matplotlib.transforms import Affine2D
+
+        # calculate evenly-spaced axis angles
+        theta = np.linspace(0, 2 * np.pi, num_vars, endpoint=False)
+        self._theta = theta
+
+        class RadarAxes(PolarAxes):
+            name = 'radar'
+
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                # rotate plot such that the first axis is at the top
+                self.set_theta_zero_location('N')
+
+            def fill(self, *args, closed=True, **kwargs):
+                """Override fill so that line is closed by default"""
+                return super().fill(closed=closed, *args, **kwargs)
+
+            def plot(self, *args, **kwargs):
+                """Override plot so that line is closed by default"""
+                lines = super().plot(*args, **kwargs)
+                for line in lines:
+                    self._close_line(line)
+
+            def _close_line(self, line):
+                x, y = line.get_data()
+                # FIXME: markers at x[0], y[0] get doubled-up
+                if x[0] != x[-1]:
+                    x = np.concatenate((x, [x[0]]))
+                    y = np.concatenate((y, [y[0]]))
+                    line.set_data(x, y)
+
+            def set_varlabels(self, labels):
+                self.set_thetagrids(np.degrees(theta), labels)
+
+            def _gen_axes_patch(self):
+                # The Axes patch must be centered at (0.5, 0.5) and of radius
+                # 0.5 in axes coordinates.
+                if frame == 'circle':
+                    return Circle((0.5, 0.5), 0.5)
+                elif frame == 'polygon':
+                    return RegularPolygon((0.5, 0.5), num_vars,
+                                          radius=.5, edgecolor="k")
+                else:
+                    raise ValueError("unknown value for 'frame': %s" % frame)
+
+            def draw(self, renderer):
+                """ Draw. If frame is polygon, make gridlines polygon-shaped """
+                if frame == 'polygon':
+                    gridlines = self.yaxis.get_gridlines()
+                    for gl in gridlines:
+                        gl.get_path()._interpolation_steps = num_vars
+                super().draw(renderer)
+
+            def _gen_axes_spines(self):
+                if frame == 'circle':
+                    return super()._gen_axes_spines()
+                elif frame == 'polygon':
+                    # spine_type must be 'left'/'right'/'top'/'bottom'/'circle'.
+                    spine = Spine(axes=self,
+                                  spine_type='circle',
+                                  path=Path.unit_regular_polygon(num_vars))
+                    # unit_regular_polygon gives a polygon of radius 1 centered
+                    # at (0, 0) but we want a polygon of radius 0.5 centered at
+                    # (0.5, 0.5) in axes coordinates.
+                    spine.set_transform(Affine2D().scale(.5).translate(.5, .5) +
+                                        self.transAxes)
+                    return {'polar': spine}
+                else:
+                    raise ValueError("unknown value for 'frame': %s" % frame)
+
+        register_projection(RadarAxes)
+
+    def _set_legend_title(self, axes: Axes, title: str = None):
+        super()._set_legend_title(axes, title)
+        if title is not None or len(self.legend_params) > 0:
+            # needed to display prompt
+            axes.legend(title=title, **self.legend_params)
+
+    def _render(self, axes: Axes):
+        import math
+        import pandas as pd
+        axes.set_theta_offset(math.pi / 2)
+        axes.set_theta_direction(-1)
+        cats: List[str] = self.data.columns.to_list()
+        theta = self._theta
+        rid: Any
+        row: pd.Series
+        for rid, row in self.data.iterrows():
+            data: List[int] = row.to_list()
+            axes.plot(theta, data, label=str(rid))
+            axes.fill(theta, data, alpha=self.alpha)
+        axes.set_varlabels(cats)
+        self._set_legend_title(axes, self.key_title)
+        params: Dict[str, Any] = {}
+        if self.label_gap is not None:
+            params['pad'] = self.label_gap
+        if self.render_value_font_size:
+            params['labelsize'] = self.render_value_font_size
+        if len(params) > 0:
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f'setting params: {params}')
+            axes.tick_params(**params)

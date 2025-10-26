@@ -1,0 +1,13 @@
+irisFig:
+  image_dir: 'path: target'
+  subplot_params:
+    subplot_kw:
+      projection: radar
+  plots:
+    - type: radar
+      data: "dataframe({'index_col': 'species'}): test-resources/fig/iris.csv"
+      title: 'Iris Data'
+      key_title: 'Key'
+      code: |
+        df = df.loc[~df.index.duplicated(keep='first'), :]
+        df = df[df.columns[:-1]]

@@ -97,6 +97,11 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     double_hlines: Sequence[int] = field(default_factory=set)
     """Indexes of rows to put double horizontal line breaks."""
 
+    rules: Dict[int, str] = field(default_factory=dict)
+    """Like :obj:`hlines` but allows other horizontal lines such as ``toprule`.
+    Each key/value is a tuple of row and the verbatim text to add at that place.
+
+    """
     column_keeps: Optional[List[str]] = field(default=None)
     """If provided, only keep the columns in the list"""
 
@@ -119,16 +124,27 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     table.
 
     """
-    round_column_names: Dict[str, int] = field(default_factory=dict)
-    """Each column in the map will get rounded to their respective values."""
+    round_column_names: Dict[str, Union[Tuple[int, int], int]] = field(
+        default_factory=dict)
+    """Each column in the map will get rounded to their respective values.
 
+    For tuple values the number will be rounded as an integer if higher than a
+    cutoff (second element), otherwise it is rounded to the decimal (first
+    element).
+
+    """
     percent_column_names: Sequence[str] = field(default=())
     """Column names that have a percent sign to be escaped."""
 
-    make_percent_column_names: Dict[str, int] = field(default_factory=dict)
+    make_percent_column_names: Dict[str, Union[int, str]] = field(
+        default_factory=dict)
     """Each columnn in the map will get rounded to the value * 100 of the name.
     For example, ``{'ann_per': 3}`` will round column ``ann_per`` to 3 decimal
     places.
+
+    If the values are strings then it is interpreted as a Python f-string using
+    ``v`` as the value.  For example, ``{'ann_per': '{v:.1f}'}`` gives a
+    percentage to the first decimal without the percentage sign (``%``).
 
     """
     format_thousands_column_names: Dict[str, Optional[Dict[str, Any]]] = \
@@ -319,12 +335,18 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     def _apply_df_number_format(self, df: pd.DataFrame) -> pd.DataFrame:
         def round_val(v: Any):
             if not pd.isna(v):
-                v = fmt.format(v=round(v, rnd), rnd=rnd)
+                if cutoff is not None and v > cutoff:
+                    v = str(round(v))
+                else:
+                    v = fmt.format(v=round(v, rnd), rnd=rnd)
             return v
 
         def make_per(v: Any):
             if not pd.isna(v):
-                v = fmt.format(v=round(v * 100, rnd), rnd=rnd)
+                v = v * 100
+                if not isinstance(rnd, str):
+                    v = round(v, rnd)
+                v = fmt.format(v=v, rnd=rnd)
             return v
 
         col: str
@@ -338,10 +360,16 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
             mlen = 1 if mlen is None else mlen
             df[col] = df[col].apply(lambda x: self.format_scientific(x, mlen))
         for col, rnd in self.round_column_names.items():
+            cutoff: int = None
+            if isinstance(rnd, (tuple, list)):
+                rnd, cutoff = rnd
             fmt = f'{{v:.{rnd}f}}'
             df[col] = df[col].apply(round_val)
         for col, rnd in self.make_percent_column_names.items():
-            fmt = f'{{v:.{rnd}f}}\\%'
+            if isinstance(rnd, str):
+                fmt = rnd
+            else:
+                fmt = f'{{v:.{rnd}f}}\\%'
             df[col] = df[col].apply(make_per)
         return df
 
