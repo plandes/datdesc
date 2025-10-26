@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Radar (a.k.a. spider) plot for figure generation.
+- Add configuration to figure legend and subplot parameters.
 - More booktabs generated tables control:
   - configurable rules for booktabs tables
   - configurable by line generated table line removal for more control
