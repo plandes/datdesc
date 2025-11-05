@@ -318,16 +318,28 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             logger.info(f'wrote: {out_file}')
         return out_file
 
-    def save_excel(self, output_dir: Path = Path('.')) -> Path:
-        """Save as an Excel file using :obj:`csv_path`.  To add column labels
-        use instances of this object with :meth:`.DataDescriber.save_excel`.
+    def save_excel(self, output_path: Path = Path('.'),
+                   is_dir: bool = True) -> Path:
+        """Save as an Excel file.  To add column labels use instances of this
+        object with :meth:`.DataDescriber.save_excel`.
+
+        :param output_path: where to write the Excel file
+
+        :param is_dir: whether ``output_path`` should be treated as a file or
+                       directory; if a directory use :obj:`csv_path` as the file
+                       name
 
         :see: :meth:`.DataDescriber.save_excel`
 
         """
-        out_file: Path = output_dir / self.name
-        dd = DataDescriber((self,), name=self.name)
-        return dd.save_excel(out_file)
+        parent: Path
+        name: str
+        if is_dir:
+            parent, name = output_path, self.name
+        else:
+            parent, name = output_path.parent, output_path.name
+        dd = DataDescriber((self,), name=name)
+        return dd.save_excel(Path(parent, name))
 
     def create_table(self, **kwargs) -> Table:
         """Create a table from the metadata using:

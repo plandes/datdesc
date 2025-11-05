@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## Changed
+- `DataFrameDescriber.save_excel` allows specific file name saves.
+
+
 ## [1.3.4] - 2025-10-26
 Minor feature release: radar plots and more booktabs config.
 ### Added
