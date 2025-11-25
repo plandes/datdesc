@@ -1,0 +1,28 @@
+irisPointFig:
+  image_dir: 'path: target'
+  height: 6
+  width: 6
+  seaborn:
+    style:
+      style: darkgrid
+      rc:
+        axes.facecolor: 'str: .9'
+    context:
+      context: 'paper'
+      font_scale: 1.3
+  plots:
+    - type: point
+      data: "dataframe({'index_col': 'species'}): test-resources/fig/iris.csv"
+      plot_params:
+        marker: o
+      x_column_name: type
+      y_column_name:
+        - ['sepal_length', 'Sepal length']
+        - ['sepal_width', 'Sepal width']
+# takes too long
+#        - ['petal_length', 'Petal length']
+#        - ['petal_width', 'Petal width']
+      x_axis_name: Type
+      y_axis_name: Value
+      code_pre: |
+        plot.data['type'] = plot.data.index

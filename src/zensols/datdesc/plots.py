@@ -52,13 +52,21 @@ class PaletteContainerPlot(Plot):
 
 
 @dataclass
-class PointPlot(PaletteContainerPlot):
+class DataFramePlot(Plot):
+    """A base class for plots that render data from a Pandas dataframe.
+
+    """
+    data: pd.DataFrame = field(default=None, repr=False)
+    """The data to plot."""
+
+
+@dataclass
+class PointPlot(PaletteContainerPlot, DataFramePlot):
     """An abstract base class that renders overlapping lines that uses a
     :mod:`seaborn` ``pointplot``.
 
     """
-    data: List[Tuple[str, pd.DataFrame]] = field(
-        default_factory=list, repr=False)
+    point_data: List[Tuple[str, pd.DataFrame]] = field(default=None, repr=False)
     """The data to plot.  Each element is tuple first components with the plot
     name.  The second component is a dataframe with columns:
 
@@ -76,11 +84,11 @@ class PointPlot(PaletteContainerPlot):
     y_axis_name: str = field(default=None)
     """The axis name with the Y label."""
 
-    x_column_name: str = field(default=None)
+    x_column_name: str = field(default='x')
     """The :obj:`data` column with the X values."""
 
-    y_column_name: str = field(default=None)
-    """The :obj:`data` column with the Y values."""
+    y_column_name: Union[str, Sequence[Tuple[str, str]]] = field(default='y')
+    """The :obj:`data` column(s) with the Y values."""
 
     key_title: str = field(default=None)
     """The title that goes in the key."""
@@ -94,7 +102,36 @@ class PointPlot(PaletteContainerPlot):
     decorative parameters for the marker size and line width.
 
     """
-    def add(self, name: str, line: Iterable[float]):
+    hue_name: str = field(default=None, repr=False)
+    """The name of the heu given to :mod:`seaborn.pointplot`."""
+
+    hue_names: Tuple[str, ...] = field(default=None, repr=False)
+    """Hue names give to :mod:`seaborn.pointplot`."""
+
+    def __post_init__(self):
+        super().__post_init__()
+        df: pd.DataFrame = self.data
+        if self.title is None:
+            self.title = ''
+        if df is not None and self.point_data is None and \
+           self.x_column_name is not None and \
+           self.y_column_name is not None and \
+           isinstance(self.y_column_name, (Tuple, List)) and \
+           self.x_column_name in df.columns:
+            x_vals: List
+            if self.x_column_name is None:
+                x_vals = tuple(range(len(df)))
+            else:
+                x_vals = df[self.x_column_name]
+            col_map: Sequence[Tuple[str, str]] = self.y_column_name
+            self.y_column_name = 'y_column'
+            col: str
+            name: str
+            for col, name in col_map:
+                self.add(name, df[col], x_vals)
+        self.data = None
+
+    def add(self, name: str, line: Iterable[float], x_vals: Sequence = None):
         """Add the losses of a dataset by adding X values as incrementing
         integers the size of ``line``.
 
@@ -102,18 +139,22 @@ class PointPlot(PaletteContainerPlot):
 
         :param line: the Y values for the line
 
+        :param x_vals: the values used for the X axes, which defaults to
+                       `range(1, n+ 1)`
+
         """
         line = tuple(line)
         n: int = len(line)
         df = pd.DataFrame(
-            data=tuple(range(1, n + 1)),
+            data=tuple(range(1, n + 1)) if x_vals is None else x_vals,
             columns=[self.x_column_name])
         df[self.y_column_name] = line
-        self.data.append((name, df))
+        if self.point_data is None:
+            self.point_data = []
+        self.point_data.append((name, df))
 
-    def _render(self, axes: Axes):
-        import seaborn as sns
-        data: Sequence[Tuple[str, pd.DataFrame]] = self.data
+    def _point_data_to_meld(self) -> pd.DataFrame:
+        data: Sequence[Tuple[str, pd.DataFrame]] = self.point_data
         hue_name: str = self.title
         x_axis_name: str = self.x_axis_name
         y_axis_name: str = self.y_axis_name
@@ -136,22 +177,22 @@ class PointPlot(PaletteContainerPlot):
             df = df[(df.index % self.sample_rate) == 0]
         df = df.rename(columns={x_column_name: x_axis_name})
         df = df.melt(x_axis_name, var_name=hue_name, value_name=y_axis_name)
-        hue_names: List[str] = df[hue_name].drop_duplicates().to_list()
+        self.hue_names = tuple(df[hue_name].drop_duplicates().to_list())
+        return df
+
+    def _render(self, axes: Axes):
+        import seaborn as sns
+        x_axis_name: str = self.x_axis_name
+        y_axis_name: str = self.y_axis_name
+        df: pd.DataFrame = self.data
+        if df is None:
+            df = self._point_data_to_meld()
         params: Dict[str, Any] = dict(
-            ax=axes, data=df, x=x_axis_name, y=y_axis_name, hue=hue_name,
-            palette=self._get_palette(hue_names))
+            ax=axes, data=df, x=x_axis_name, y=y_axis_name, hue=self.title,
+            palette=self._get_palette(self.hue_names))
         params.update(self.plot_params)
         sns.pointplot(**params)
         self._set_legend_title(axes, self.key_title)
-
-
-@dataclass
-class DataFramePlot(Plot):
-    """A base class for plots that render data from a Pandas dataframe.
-
-    """
-    data: pd.DataFrame = field(default=None, repr=False)
-    """The data to plot."""
 
 
 @dataclass

@@ -1,4 +1,4 @@
-irisFig:
+irisBarFig:
   image_dir: 'path: target'
   seaborn:
     style:
@@ -14,6 +14,6 @@ irisFig:
       title: 'Iris Splits'
       x_column_name: ds_type
       y_column_name: count
-      code: |
-        df = df.groupby('ds_type').agg({'ds_type': 'count'}).\
+      code_pre: |
+        plot.data = plot.data.groupby('ds_type').agg({'ds_type': 'count'}).\
           rename(columns={'ds_type': 'count'}).reset_index()

@@ -14,6 +14,9 @@ datdesc_figure_factory:
 datdesc_figure:
   class_name: zensols.datdesc.figure.Figure
 
+datdesc_plot_point:
+  class_name: zensols.datdesc.plots.PointPlot
+
 datdesc_plot_bar:
   class_name: zensols.datdesc.plots.BarPlot
 

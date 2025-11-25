@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import Axes
 from matplotlib.figure import Figure as MatplotFigure
 from zensols.util import Failure
+from zensols.config import Settings
 from zensols.persist import (
     persisted, PersistedWork, FileTextUtil, Deallocatable
 )
@@ -394,9 +395,16 @@ class FigureFactory(Dictable):
     _PATH_NAME: ClassVar[str] = 'path'
     """The name of the key of the path to a CSV file of the plot data."""
 
-    _CODE_NAME: ClassVar[str] = 'code'
-    """The name of the key of the plots in figure definitions."""
+    _CODE_PRE_NAME: ClassVar[str] = 'code_pre'
+    """The name of the key containing code to be executed before the
+    :class:`.Plot` instance.
 
+    """
+    _CODE_POST_NAME: ClassVar[str] = 'code_post'
+    """The name of the key containing code to be executed after the
+    :class:`.Plot` instance.
+
+    """
     config_factory: ConfigFactory = field(repr=False)
     """The configuration factory used to create :class:`.Table` instances."""
 
@@ -457,25 +465,20 @@ class FigureFactory(Dictable):
         sec: str = self._get_section_by_name(type)
         return self.config_factory.new_instance(sec, **params)
 
-    def _apply_df_eval(self, df: pd.DataFrame, code: str):
-        if code is not None:
-            _locs = locals()
-            exec(code)
-            df = _locs['df']
-        return df
-
     def _parse_plot(self, pdef: Dict[str, Any], raise_fn: Callable) -> Plot:
         figure_type: str = pdef.pop(self._TYPE_NAME, None)
-        data: pd.DataFrame = pdef.pop('data', None)
-        code: str = pdef.pop(self._CODE_NAME, None)
+        code_pre: str = pdef.pop(self._CODE_PRE_NAME, None)
+        code_post: str = pdef.pop(self._CODE_POST_NAME, None)
         if figure_type is None:
             raise_fn(f"No '{self._TYPE_NAME}' given <{pdef}>")
-        if data is not None and code is not None:
-            if not isinstance(data, pd.DataFrame):
-                raise FigureError(
-                    f'Expecting a dataframe but got <{data}> ({type(data)})')
-            pdef['data'] = self._apply_df_eval(data, code)
-        return self.create(figure_type, **pdef)
+        if code_pre is not None:
+            plot = Settings(**pdef)
+            exec(code_pre)
+            pdef = plot.asdict()
+        plot = self.create(figure_type, **pdef)
+        if code_post is not None:
+            exec(code_post)
+        return plot
 
     def _unserialize(self, data: Dict[str, Any]) -> Dict[str, Any]:
         def trav(node):

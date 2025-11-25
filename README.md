@@ -28,7 +28,6 @@ Features:
 - [Usage](#usage)
     - [Tables](#tables)
     - [Figures](#figures)
-    - [Hyperparameters](#hyperparameters)
 - [Changelog](#changelog)
 - [Community](#community)
 - [License](#license)
@@ -63,9 +62,7 @@ and figures are generated as Encapsulated Postscript (`.eps`) files.
 
 The YAML file format is used to create both tables and figures.  Parameters are
 both files or both directories when using directories, only files that match
-`*-table.yml` are considered on the command line.  In addition, the described
-data can be hyperparameter metadata, which can be optimized with the
-[hyperparameter module](#hyperparameters).
+`*-table.yml` are considered on the command line.
 
 
 ### Tables
@@ -129,8 +126,8 @@ irisFig:
       title: 'Iris Splits'
       x_column_name: ds_type
       y_column_name: count
-      code: |
-        df = df.groupby('ds_type').agg({'ds_type': 'count'}).\
+      core_pre: |
+        plot.data = plot.data.groupby('ds_type').agg({'ds_type': 'count'}).\
           rename(columns={'ds_type': 'count'}).reset_index()
 ```
 This configuration meaning:
@@ -145,76 +142,9 @@ This configuration meaning:
 * The `code` (optionally) allows the massaging of the [Pandas] dataframe
   (pointed to by `data`).  This feature also exists for [Table].
 
-See the [Figure] and [Plot] classes for a full listing of options.
-
-
-
-### Hyperparameters
-
-Hyperparameter metadata is largely isomorphic to `datdesc` tables.  This
-package was designed for the following purposes:
-
-* Provide a basic scaffolding to update model hyperparameters such as
-  [hyperopt].
-* Generate LaTeX tables of the hyperparamers and their descriptions for
-  academic papers.
-
-Access to the hyperparameters via the API is done by calling the *set* or
-*model* levels with a *dotted path notation* string.  For example, `svm.C`
-first navigates to model `svm`, then to the hyperparameter named `C`.
-
-A command line access to create LaTeX tables from the hyperparameter
-definitions is available with the `hyper` action.  An example of a
-hyperparameter set (a grouping of models that in turn have hyperparameters)
-follows:
-```yaml
-svm:
-  doc: 'support vector machine'
-  params:
-    kernel:
-      type: choice
-      choices: [radial, linear]
-      doc: 'maps the observations into some feature space'
-    C:
-      type: float
-      doc: 'regularization parameter'
-    max_iter:
-      type: int
-      doc: 'number of iterations'
-      value: 20
-      interval: [1, 30]
-```
-In the example, the `svm` model has hyperparameters `kernel`, `C` and
-`max_iter`.  The `kernel` type is set as a choice, which is a string that has
-the constraints of matching a string in the list.  The `C` hyperparameter is a
-floating point number, and the `max_iter` is an integer that must be between 1
-and 30.
-
-In this next example, the `k_means` model uses the string `k-means` in human
-readable documentation, which can be Python generated code in a `dataclass`.
-```yaml
-k_means:
-  desc: k-means
-  doc: 'k-means clustering'
-  params:
-    n_clusters:
-      type: int
-      doc: 'number of clusters'
-    copy_x:
-      type: bool
-      value: True
-      doc: 'When pre-computing distances it is more numerically accurate to center the data first'
-    strata:
-      type: list
-      doc: 'An array of stratified hyperparameters (made up for test cases).'
-      value: [1, 2]
-    kwargs:
-      type: dict
-      doc: 'Model keyword arguments (made up for test cases).'
-      value:
-        learning_rate: 0.01
-        epochs: 3
-```
+Other plot configuration examples are given in the [test
+cases](test-resources/fig) directory.  See the [Figure] and [Plot] classes for
+a full listing of options.
 
 
 ## Changelog

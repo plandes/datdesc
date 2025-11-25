@@ -403,18 +403,18 @@ class PrototypeApplication(object):
         with open('dd-table.json', 'w') as f:
             dd.to_json(f)
 
-    def _restore_figure_example(self):
+    def _restore_bar_figure_example(self):
         from .figure import FigureFactory, Figure
         FigureFactory.reset_default_instance()
-        fig_file = Path('test-resources/fig/iris-figure.yml')
+        fig_file = Path('test-resources/fig/iris-bar-figure.yml')
         fac = FigureFactory.default_instance()
         fig: Figure = next(fac.from_file(fig_file))
         fig.image_file_norm = False
         fig.save()
 
-    def _create_radar_figure_example(self):
+    def _create_figure_example(self, name: str):
         from .figure import FigureFactory, Figure
-        fig_file = Path('test-resources/fig/iris-radar-figure.yml')
+        fig_file = Path(f'test-resources/fig/iris-{name}-figure.yml')
         fac = FigureFactory.default_instance()
         fig: Figure = next(fac.from_file(fig_file))
         fig.image_file_norm = False
@@ -422,4 +422,6 @@ class PrototypeApplication(object):
 
     def proto(self):
         """Prototype test."""
-        self._create_radar_figure_example()
+        self._restore_bar_figure_example()
+        self._create_figure_example('radar')
+        self._create_figure_example('point')

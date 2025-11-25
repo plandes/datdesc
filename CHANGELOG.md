@@ -8,9 +8,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
-## Changed
-- `DataFrameDescriber.save_excel` allows specific file name saves.
+## [1.3.5] - 2025-11-24
+### Removed
+- Hyperparameter (removed earlier) and now doc.
+- The `code` plot attribute.  This has been replaced `code_pre` and
+  `code_post`.
 
+### Added
+- Add configuration for `PointPlot` and make it easier to configure.
+
+### Changed
+- `DataFrameDescriber.save_excel` allows specific file name saves.
 
 ## [1.3.4] - 2025-10-26
 Minor feature release: radar plots and more booktabs config.
@@ -220,7 +228,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.3.4...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.3.5...HEAD
+[1.3.5]: https://github.com/plandes/datdesc/compare/v1.3.4...v1.3.5
 [1.3.4]: https://github.com/plandes/datdesc/compare/v1.3.3...v1.3.4
 [1.3.3]: https://github.com/plandes/datdesc/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/plandes/datdesc/compare/v1.3.1...v1.3.2

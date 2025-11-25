@@ -1,4 +1,4 @@
-irisFig:
+irisRadarFig:
   image_dir: 'path: target'
   subplot_params:
     subplot_kw:
@@ -8,6 +8,8 @@ irisFig:
       data: "dataframe({'index_col': 'species'}): test-resources/fig/iris.csv"
       title: 'Iris Data'
       key_title: 'Key'
-      code: |
+      code_pre: |
+        df = plot.data
         df = df.loc[~df.index.duplicated(keep='first'), :]
         df = df[df.columns[:-1]]
+        plot.data = df
