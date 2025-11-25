@@ -139,8 +139,13 @@ This configuration meaning:
 * The `seaborn` section configures the [seaborn] module.
 * The plots are a *list* of [Plot] instances that, like the [Figure] level, are
   populated with all the values.
-* The `code` (optionally) allows the massaging of the [Pandas] dataframe
-  (pointed to by `data`).  This feature also exists for [Table].
+* The `code_pre` (optionally) allows the massaging of the plot (bound to
+  variable `data`) and/or [Pandas] dataframe accessible with `plot.dataframe`
+  with all other properties and attributes.
+
+If `code_post` is given, it is called after the plot is created and accessible
+with variable ``plot``.  If `code_post_render` it is executed after the plot is
+rendered by `matplotlib`.
 
 Other plot configuration examples are given in the [test
 cases](test-resources/fig) directory.  See the [Figure] and [Plot] classes for

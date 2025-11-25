@@ -16,9 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Add configuration for `PointPlot` and make it easier to configure.
+- Configuration-based source code that can execute before and after creating
+  the plot and after the plot is rendered.
 
 ### Changed
 - `DataFrameDescriber.save_excel` allows specific file name saves.
+
 
 ## [1.3.4] - 2025-10-26
 Minor feature release: radar plots and more booktabs config.

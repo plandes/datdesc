@@ -60,6 +60,13 @@ class Plot(Dictable, metaclass=ABCMeta):
     legend_params: Dict[str, Any] = field(default_factory=dict)
     """Parameters given to :meth:`~matplotlib.pyplot.Axes.legend`."""
 
+    code_post_render: str = field(default=None)
+    """If provided, execute code after the plot has been created.  The code is
+    executed with variable ``ax`` set the :class:`~matplotlib.pyplot.Axes`,
+    ``fig`` set to :class:`matplotlib.figure.Figure` and ``plot`` set to this
+    instance.
+
+    """
     def __post_init__(self):
         pass
 
@@ -301,6 +308,9 @@ class Figure(Deallocatable, Dictable):
                         ax = axes[plot.row, plot.column]
                 assert ax is not None
                 plot.render(ax)
+                if plot.code_post_render is not None:
+                    fig: MatplotFigure = self._get_figure()
+                    exec(plot.code_post_render)
             self._rendered = True
 
     def save(self) -> Path:
@@ -397,12 +407,15 @@ class FigureFactory(Dictable):
 
     _CODE_PRE_NAME: ClassVar[str] = 'code_pre'
     """The name of the key containing code to be executed before the
-    :class:`.Plot` instance.
+    :class:`.Plot` instance.  The variable ``plot`` is set to an instance of
+    :class:`~zensols.config.serial.Settings` that allow updating using object
+    dot (``.``) notation.
 
     """
     _CODE_POST_NAME: ClassVar[str] = 'code_post'
     """The name of the key containing code to be executed after the
-    :class:`.Plot` instance.
+    :class:`.Plot` instance.  The variable ``plot`` is set to the new instance
+    of :class:`.Plot`.
 
     """
     config_factory: ConfigFactory = field(repr=False)
