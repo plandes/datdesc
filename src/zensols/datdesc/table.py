@@ -450,6 +450,10 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     def _get_formatted_dataframe_stages(self) -> Dict[str, pd.DataFrame]:
         """Return named stages of the table formatting.  The entries returned:
 
+          * ``unformatted``: before any formatting (i.e. number format) applied
+          * ``postformat``: after initial formatting applied
+          * ``formatted``: after style formatting (i.e. bold cells) applied
+
         """
         df: pd.DataFrame = self.dataframe
         stages: Dict[str, pd.DataFrame] = {'nascent': df}
