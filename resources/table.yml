@@ -39,7 +39,9 @@ datdesc_table_one_column:
       {% if head is not none -%}
       \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
       {% else -%}
+      {% if caption is not none and (caption|length > 0) -%}
       \caption{ {{-caption-}} }
+      {% endif -%}
       {% endif -%}
       \label{tab:{{ name }}}
       \end{table}}
@@ -68,7 +70,9 @@ datdesc_table_two_column:
       {% if head is not none -%}
       \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
       {% else -%}
+      {% if caption is not none and (caption|length > 0) -%}
       \caption{ {{-caption-}} }
+      {% endif -%}
       {% endif -%}
       \label{tab:{{ name }}}
       \end{table*}}
@@ -95,7 +99,11 @@ datdesc_table_one_column_slack:
       {% if head is not none -%}
       \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
       {% else -%}
+      {% if caption is not none and (caption|length > 0) -%}
+      {% if caption is not none and (caption|length > 0) -%}
       \caption{ {{-caption-}} }
+      {% endif -%}
+      {% endif -%}
       {% endif -%}
       \label{tab:{{ name }}}
       \end{table}}
@@ -122,7 +130,9 @@ datdesc_table_two_column_slack:
       {% if head is not none -%}
       \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
       {% else -%}
+      {% if caption is not none and (caption|length > 0) -%}
       \caption{ {{-caption-}} }
+      {% endif -%}
       {% endif -%}
       \label{tab:{{ name }}}
       \end{table*}}

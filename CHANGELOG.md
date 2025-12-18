@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Added
+- Provide a way to modify the rendered table by executing Python code attribute
+  `Table.code_render`.
+### Changed
+- Make caption insertion optional in table Jinja2 rendering.
+
+
 ## [1.3.5] - 2025-11-24
 ### Removed
 - Hyperparameter (removed earlier) and now doc.

@@ -248,6 +248,13 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     formatting of the table (including those applied by this class).
 
     """
+    code_render: str = field(default=None)
+    """Like :obj:`code_format` but modifies the rendered table as a
+    :class:`typing.List` of lines with variable name ``table``.  Modify this
+    list to change the final rendered output of the table, such as applying
+    Latex `multicolumn` lines.
+
+    """
     def __post_init__(self):
         super().__init__()
         if isinstance(self.uses, str):
@@ -600,6 +607,10 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
             self.template)
         return template.render(params)
 
+    def _apply_rendered_table(self, table: List[str], code: str):
+        if code is not None:
+            exec(code)
+
     def _write_table(self, depth: int = 0, writer: TextIOBase = sys.stdout):
         """Write the formatted table."""
         df: pd.DataFrame = self.formatted_dataframe
@@ -608,6 +619,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
         tab_lines: List[str] = tabulate(table_rows, **table_params).split('\n')
         cmd_params: Dict[str, str] = self._get_command_params()
         template_params: Dict[str, Any] = dict(self.asdict())
+        self._apply_rendered_table(tab_lines, self.code_render)
         table_rows_flat = StringIO()
         self._write_table_content(1, table_rows_flat, tab_lines)
         template_params['table'] = table_rows_flat.getvalue().rstrip()
