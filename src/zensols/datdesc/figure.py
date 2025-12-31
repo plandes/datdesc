@@ -159,8 +159,8 @@ class Figure(Deallocatable, Dictable):
     """Seaborn (:mod:`seaborn`) rendering configuration.  It has the following
     optional keys:
 
-      * ``style``: parameters used with :function:`sns.set_style`
-      * ``context``: parameters used with :function:`sns.set_context`
+      * ``style``: parameters used with :func:`sns.set_style`
+      * ``context``: parameters used with :func:`sns.set_context`
 
     """
     subplot_params: Dict[str, Any] = field(default_factory=dict)
@@ -441,7 +441,7 @@ class FigureFactory(Dictable):
 
     @classmethod
     def reset_default_instance(cls: FigureFactory):
-        """Force :meth:`default_instance' to re-instantiate a new instance on a
+        """Force :meth:`default_instance` to re-instantiate a new instance on a
         subsequent call.
 
         """

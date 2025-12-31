@@ -7,12 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Removed
+- Support for Python 3.11.
 
 ### Added
 - Provide a way to modify the rendered table by executing Python code attribute
   `Table.code_render`.
+- Support for Python 3.13.
+
 ### Changed
 - Make caption insertion optional in table Jinja2 rendering.
+- Upgrade to `matplotlib` 3.10.
+- Upgrade [zensols.util] to v1.16.2.
 
 
 ## [1.3.5] - 2025-11-24

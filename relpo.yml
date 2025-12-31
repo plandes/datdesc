@@ -24,32 +24,35 @@ project:
     # Python interpreter versions
     version:
       # constraint on install eligibility
-      required: '>=3.11,<3.13'
+      required: '>=3.11,<3.15'
       # last supported version of Python supported for the project
-      previous: '3.11.12'
+      previous: '3.12.10'
       # Python version supported for current development
-      current: '3.12.10'
+      current: '3.13.11'
       # version of Python used to build/link specific to the host
-      package_host: '3.11.6'
+      package_host: '3.12.10'
     # pypi dependencies added to 'project'
     dependencies:
       - 'xlsxwriter~=3.0.3'
-      - 'numpy~=1.26.4'
+      - 'numpy~=2.4.0'
       - 'pandas~=2.3.0'
       - 'tabulate~=0.9.0'
       - 'hyperopt~=0.2.7'
       - 'jinja2>=3.1'
-      - 'matplotlib~=3.8.2'
+      - 'matplotlib~=3.10.8'
       - 'seaborn~=0.13.2'
-      - 'zensols.util~=1.15.11'
+      - 'zensols.util~=1.16.2'
   # the program is called on the command line
   has_entry_points: true
 doc:
   api_config:
     intersphinx_mapping:
       util:
-        modules: [zensols.util, zensols.persist, zensols.config, zensols.cli, zensols.multi]
-        url: '{RP_DOC_IM_URL}/{package}/'
+        modules: ['zensols.util']
+        url: "{RP_DOC_IM_URL}/{package}/"
+      numpy:
+        modules: ['numpy']
+        url: 'https://numpy.org/doc/stable'
       pandas:
         modules: ['pandas']
         url: 'https://pandas.pydata.org/pandas-docs/stable'

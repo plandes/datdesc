@@ -335,7 +335,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     def _apply_df_eval(self, df: pd.DataFrame, code: str) -> pd.DataFrame:
         if code is not None:
             _locs = locals()
-            exec(code)
+            exec(code, None, _locs)
             df = _locs['df']
         return df
 
@@ -589,7 +589,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
                 locs: Dict[str, Any] = locals()
                 s: Dict[str, pd.DataFrame] = stages
                 try:
-                    exec(code)
+                    exec(code, None, locs)
                 except Exception as e:
                     msg: str = f"could not write variable '{name}'"
                     v = f"{msg}: <{e}>"

@@ -46,8 +46,6 @@ class TestApplication(unittest.TestCase):
         if self.DEBUG == 'w' and gold != out:
             with open(gold_file, 'w') as f:
                 f.write(out)
-        if 0:
-            print(out)
         self.assertEqual(gold, out, f'\n\ndiff in file {out_file}')
 
     def test_table(self):
