@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
+## [1.4.0] - 2025-12-31
 ### Removed
 - Support for Python 3.11.
 
@@ -244,7 +246,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.3.5...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/plandes/datdesc/compare/v1.3.5...v1.4.0
 [1.3.5]: https://github.com/plandes/datdesc/compare/v1.3.4...v1.3.5
 [1.3.4]: https://github.com/plandes/datdesc/compare/v1.3.3...v1.3.4
 [1.3.3]: https://github.com/plandes/datdesc/compare/v1.3.2...v1.3.3
