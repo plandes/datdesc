@@ -160,7 +160,8 @@ An extensive changelog is available [here](CHANGELOG.md).
 ## Community
 
 Please star this repository and let me know how and where you use this API.
-Contributions as pull requests, feedback and any input is welcome.
+[Contributions](CONTRIBUTING.md) as pull requests, feedback, and any input is
+welcome.
 
 
 ## License
