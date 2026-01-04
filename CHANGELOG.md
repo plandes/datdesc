@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [1.4.2] - 2026-01-04
+### Changes
 - Update dependencies for forward compatibility through medical and AMR
   libraries
 
