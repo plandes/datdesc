@@ -33,15 +33,15 @@ project:
       package_host: '3.12.10'
     # pypi dependencies added to 'project'
     dependencies:
-      - 'xlsxwriter~=3.0.3'
-      - 'numpy~=1.26.4'
+      - 'XlsxWriter==3.0.3'
+      - 'numpy==2.4.0'
       - 'pandas~=2.3.3'
       - 'tabulate~=0.9.0'
       - 'hyperopt~=0.2.7'
-      - 'jinja2>=3.1'
+      - 'Jinja2~=3.1.6'
       - 'matplotlib~=3.10.8'
       - 'seaborn~=0.13.2'
-      - 'zensols.util~=1.16.2'
+      - 'zensols.util~=1.16.3'
   # the program is called on the command line
   has_entry_points: true
 doc:

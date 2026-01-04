@@ -8,9 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.2] - 2026-01-04
+- Update dependencies for forward compatibility through medical and AMR
+  libraries
+
+
 ## [1.4.1] - 2026-01-04
 ### Changes
-- Downgrade to `numpy` 1.26.4 for forward comparability.
+- Downgrade to `numpy` 1.26.4 for forward compatibility.
 
 
 ## [1.4.0] - 2025-12-31
@@ -251,7 +256,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.2...HEAD
+[1.4.2]: https://github.com/plandes/datdesc/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/plandes/datdesc/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/plandes/datdesc/compare/v1.3.5...v1.4.0
 [1.3.5]: https://github.com/plandes/datdesc/compare/v1.3.4...v1.3.5
