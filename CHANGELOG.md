@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.3] - 2026-01-12
+### Changed
+- Unpin debug version component (numpy 2.4.0 yanked).
+
+
 ## [1.4.2] - 2026-01-04
 ### Changes
 - Update dependencies for forward compatibility through medical and AMR
@@ -257,7 +262,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.2...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.3...HEAD
+[1.4.3]: https://github.com/plandes/datdesc/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/plandes/datdesc/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/plandes/datdesc/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/plandes/datdesc/compare/v1.3.5...v1.4.0
