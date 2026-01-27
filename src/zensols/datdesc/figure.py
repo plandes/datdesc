@@ -60,6 +60,13 @@ class Plot(Dictable, metaclass=ABCMeta):
     legend_params: Dict[str, Any] = field(default_factory=dict)
     """Parameters given to :meth:`~matplotlib.pyplot.Axes.legend`."""
 
+    code_pre_render: str = field(default=None)
+    """If provided, execute code before the plot has been created.  The code is
+    executed with variable ``ax`` set the :class:`~matplotlib.pyplot.Axes`,
+    ``fig`` set to :class:`matplotlib.figure.Figure` and ``plot`` set to this
+    instance.
+
+    """
     code_post_render: str = field(default=None)
     """If provided, execute code after the plot has been created.  The code is
     executed with variable ``ax`` set the :class:`~matplotlib.pyplot.Axes`,
@@ -297,9 +304,13 @@ class Figure(Deallocatable, Dictable):
             if len(self.seaborn) > 0:
                 self._configure_seaborn()
             axes: Union[Axes, np.ndarray] = self._get_axes()
+            fig: MatplotFigure = self._get_figure()
+            locals()['fig'] = fig  # suppress warnings
             plot: Plot
             for plot in self.plots:
                 ax: Axes = axes
+                if plot.code_pre_render is not None:
+                    exec(plot.code_pre_render)
                 if isinstance(ax, np.ndarray):
                     if len(ax.shape) == 1:
                         ix = plot.row if plot.row != 0 else plot.column
@@ -309,7 +320,6 @@ class Figure(Deallocatable, Dictable):
                 assert ax is not None
                 plot.render(ax)
                 if plot.code_post_render is not None:
-                    fig: MatplotFigure = self._get_figure()
                     exec(plot.code_post_render)
             self._rendered = True
 

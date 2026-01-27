@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Added
+- `plots.Plot.code_pre_render` that executes before the plot is rendered.
+
+
 ## [1.4.3] - 2026-01-12
 ### Changed
 - Unpin debug version component (numpy 2.4.0 yanked).
