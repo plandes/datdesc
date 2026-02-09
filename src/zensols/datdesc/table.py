@@ -292,7 +292,8 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     @staticmethod
     def format_thousand(x: int, apply_k: bool = True,
                         add_comma: bool = True,
-                        round: int = None) -> str:
+                        round: int = None,
+                        max_k: int = 1_000) -> str:
         """Format a number as a string with comma separating thousands.
 
         :param x: the number to format
@@ -303,13 +304,15 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 
         :param round: the number to round the mantissa if given
 
+        :param max_k: the maximum value needed to reformat with `K` at the end
+
         """
         add_k: int = False
         if round is not None and not math.isnan(x):
             x = _round(x, round)
             if round == 0:
                 x = int(x)
-        if x > 10000:
+        if x > max_k:
             if apply_k:
                 x = _round(x / 1000)
                 add_k = True
