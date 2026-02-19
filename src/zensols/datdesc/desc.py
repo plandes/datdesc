@@ -4,7 +4,7 @@
 from __future__ import annotations
 __author__ = 'Paul Landes'
 from typing import (
-    Tuple, Any, Dict, List, Set, Sequence,
+    Tuple, Any, Dict, List, Set, Sequence, Mapping,
     ClassVar, Optional, Iterable, Union, Type
 )
 from dataclasses import dataclass, field
@@ -18,6 +18,8 @@ from io import StringIO, TextIOBase, TextIOWrapper
 import json
 from pathlib import Path
 import pandas as pd
+import openpyxl as ox
+from openpyxl.workbook import Workbook
 from tabulate import tabulate
 from zensols.config import Dictable
 from zensols.persist import PersistableContainer, persisted, FileTextUtil
@@ -731,6 +733,164 @@ class DataDescriber(PersistableContainer, Dictable):
         return DataDescriber(
             describers=tuple(map(DataFrameDescriber.from_table, tables)),
             name=path.name)
+
+    @classmethod
+    def from_excel(cls: Type, path: Union[str, Path], *,
+                   dataset_name_fmt: str = '{path.stem}',
+                   read_excel_kwargs: Optional[Mapping[str, Any]] = None,
+                   header_row: Optional[int] = None,
+                   data_start_row: Optional[int] = None,
+                   include_sheets: Optional[Iterable[str]] = None,
+                   exclude_sheets: Optional[Iterable[str]] = None,
+                   table_desc_fmt: str = "From {path.name} (sheet '{sheet}')",
+                   head: Optional[str] = None,
+                   mangle_sheet_name: bool = False,
+                   mangle_file_names: bool = False) -> DataDescriber:
+        """Read *all* sheets from an Excel workbook using pandas, and populate:
+
+            * :obj:`DataFrameDescriber.meta` from COMMENTS
+              (a.k.a. Excel "notes") on header cells
+
+            * :obj:`DataFrameDescriber.index_meta` from COMMENTS
+              on index-column cells (one per row)
+
+        Conventions (workbook layout assumptions):
+
+            * Header row contains column names. Put each column description as a
+              cell comment on the corresponding header cell.
+
+            * If you set pandas `index_col=...`, put row descriptions as cell
+               comments on the cells of that index column for each data row.
+
+        Note: :mod:`openpyxl` supports the legacy Excel "notes" comment objects,
+        but not newer threaded comments. Use Notes if you want this to work.
+
+        :param read_excel_kwargs: :func:`pandas.read_excel` keyword params
+
+        :param header_row: start row of header; if omitted inferred from pandas
+                           If omitted, inferred from pandas ``header`` (default
+                           0 => row 1)
+
+        :param data_start_row: start row of header; if omitted inferred from
+                               pandas If omitted, inferred from pandas
+                               ``header`` (default 0 => row 1)
+
+        """
+        def clean_comment_text(text: Optional[str]) -> Optional[str]:
+            if not text:
+                return None
+            # openpyxl returns raw note text; normalize a bit
+            t = text.replace("\r\n", "\n").strip()
+            return t if t else None
+
+        path = Path(path)
+        rex: Dict[str, Any] = dict(read_excel_kwargs or {})
+
+        # Infer header/data rows from pandas' notion of header, unless explicitly set
+        pandas_header = rex.get('header', 0)
+        if header_row is None:
+            if pandas_header is None:
+                raise DataDescriptionError(
+                    'pandas header=None: provide header_row to map comments')
+            if isinstance(pandas_header, int):
+                header_row = pandas_header
+            else:
+                raise DataDescriptionError(
+                    ('Multi-row header (header=[...]) not supported; ' +
+                     'set header_row'))
+        if data_start_row is None:
+            data_start_row = header_row
+
+        data_start_row += 1
+        header_row += 1
+
+        # Load workbook once to access comments
+        wb: Workbook = ox.load_workbook(path, data_only=True, read_only=False)
+        sheet_names: set[str] = set(wb.sheetnames)
+        if include_sheets is not None:
+            allow = set(include_sheets)
+            sheet_names = sheet_names & allow
+        if exclude_sheets is not None:
+            deny = set(exclude_sheets)
+            sheet_names = sheet_names - deny
+
+        describers: list[DataFrameDescriber] = []
+        sh_name: str
+        for sh_name in sheet_names:
+            ws = wb[sh_name]
+            # read sheet via pandas
+            df = pd.read_excel(path, sheet_name=sh_name, **rex)
+            # build header-value -> excel column index map by scanning the
+            # header row (this handles index_col removing a column from df,
+            # since mapping is by name)
+            header_map: Dict[Any, int] = {}
+            for col_idx in range(1, ws.max_column + 1):
+                cell = ws.cell(row=header_row, column=col_idx)
+                if cell.value is not None:
+                    header_map[cell.value] = col_idx
+            # column descriptions from header-cell comments
+            meta_items: list[tuple[str, str]] = []
+            for col_name in df.columns:
+                # Try exact match first
+                excel_col_idx = header_map.get(col_name)
+                # If pandas made the column name a string but Excel had a
+                # non-string (or vice versa), do a tolerant match.
+                if excel_col_idx is None:
+                    for k, v in header_map.items():
+                        if str(k) == str(col_name):
+                            excel_col_idx = v
+                            break
+                if excel_col_idx is not None:
+                    c = ws.cell(row=header_row, column=excel_col_idx).comment
+                    desc = clean_comment_text(c.text if c is not None else None)
+                    if desc:
+                        meta_items.append((str(col_name), desc))
+            meta: Optional[Union[pd.DataFrame, Sequence[tuple[str, str]]]] = \
+                tuple(meta_items) if meta_items else None
+            # row descriptions from comments in the index column (if any)
+            index_meta: Optional[Dict[Any, str]] = None
+            index_col = rex.get('index_col', None)
+            # only support a single index column (int or str); if none, skip
+            # index_meta.
+            index_excel_col_idx: Optional[int] = None
+            if index_col is not None and \
+               not isinstance(index_col, (list, tuple)):
+                if isinstance(index_col, int):
+                    # pandas index_col is 0-based within the parsed table; for
+                    # typical sheets, Excel columns are 1-based, so +1.
+                    index_excel_col_idx = index_col + 1
+                else:
+                    # index_col is a column label; resolve in header map
+                    index_excel_col_idx = header_map.get(index_col)
+                    if index_excel_col_idx is None:
+                        for k, v in header_map.items():
+                            if str(k) == str(index_col):
+                                index_excel_col_idx = v
+                                break
+            if index_excel_col_idx is not None:
+                index_meta = {}
+                # map each dataframe row i -> excel row number
+                for i, idx_val in enumerate(df.index):
+                    excel_row = data_start_row + i
+                    c = ws.cell(row=excel_row, column=index_excel_col_idx).comment
+                    desc = clean_comment_text(c.text if c is not None else None)
+                    if desc:
+                        index_meta[idx_val] = desc
+                if not index_meta:
+                    index_meta = None
+            describers.append(
+                DataFrameDescriber(
+                    name=sh_name,
+                    df=df,
+                    desc=table_desc_fmt.format(path=path, sheet=sh_name),
+                    head=head,
+                    meta=meta,
+                    index_meta=index_meta,
+                    mangle_file_names=mangle_file_names))
+        return DataDescriber(
+            describers=tuple(describers),
+            name=dataset_name_fmt.format(path=path),
+            mangle_sheet_name=mangle_sheet_name)
 
     def to_json(self, writer: TextIOBase):
         """Serialize the object to JSON that can be re-instantiated using

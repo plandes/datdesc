@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `plots.Plot.code_pre_render` that executes before the plot is rendered.
 - Added *thousands K* threshold value for formatting large numbers in tables.
+- Convert an Excel file to a `DataDescriber`.
 
 
 ## [1.4.3] - 2026-01-12
