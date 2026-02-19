@@ -209,7 +209,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             meta = self.meta.copy()
         elif not isinstance(meta, pd.DataFrame):
             meta = self._meta_dict_to_dataframe(meta)
-        if df is not None:
+        if df is None:
+            df = self.df
+        else:
             # overwrite passed in metadata with this instance's by name
             df_ovr: pd.DataFrame = self.meta[~self.meta.index.isin(meta.index)]
             meta = pd.concat((df_ovr.copy(), meta)).drop_duplicates()

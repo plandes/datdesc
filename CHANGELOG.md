@@ -8,10 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.4] - 2026-02-19
 ### Added
 - `plots.Plot.code_pre_render` that executes before the plot is rendered.
 - Added *thousands K* threshold value for formatting large numbers in tables.
 - Convert an Excel file to a `DataDescriber`.
+
+### Changed
+- Fix NPE when deriving a `DataFrameDescriber`.
 
 
 ## [1.4.3] - 2026-01-12
@@ -268,7 +272,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.3...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.4...HEAD
+[1.4.4]: https://github.com/plandes/datdesc/compare/v1.4.3...v1.4.4
 [1.4.3]: https://github.com/plandes/datdesc/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/plandes/datdesc/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/plandes/datdesc/compare/v1.4.0...v1.4.1
