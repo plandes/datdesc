@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changes
+- Fix CLI `show` action and `DataFrameDescriber.create_table` bug when `name`
+  passed to method.
+
+
 ## [1.4.4] - 2026-02-19
 ### Added
 - `plots.Plot.code_pre_render` that executes before the plot is rendered.

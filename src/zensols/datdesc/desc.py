@@ -368,7 +368,8 @@ class DataFrameDescriber(PersistableContainer, Dictable):
                 self.column_descriptions.items())))
         params.update(self.table_kwargs)
         params.update(kwargs)
-        table: Table = fac.create(**params)
+        name: str = params.pop('name')
+        table: Table = fac.create(name, **params)
         name: str = self.get_table_name('camel')
         table.name = self._TABLE_FORMAT.format(name=name)
         table.dataframe = self.df
