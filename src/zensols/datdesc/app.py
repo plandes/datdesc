@@ -244,7 +244,7 @@ class Application(object):
             print('\n'.join(self.table_factory.get_table_names()))
         else:
             dfd: DataFrameDescriber = self._get_example()
-            table: Table = dfd.create_table(name=name)
+            table: Table = dfd.create_table(type=name)
             table.write()
 
     def generate_tables(self, input_path: Path, output_path: Path):
