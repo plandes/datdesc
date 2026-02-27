@@ -721,7 +721,6 @@ class DataDescriber(PersistableContainer, Dictable):
 
     @classmethod
     def from_yaml_file(cls: Type, path: Path) -> DataDescriber:
-
         """Create a data descriptor from a previously written YAML/CSV files
         using :meth:`save`.
 
