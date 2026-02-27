@@ -73,14 +73,28 @@ column as the index (makes that column go away) using a variable size and
 placement, use:
 ```yaml
 intercodertab:
-  type: one_column
-  path: test-resources/section-id.csv
-  caption: >-
-    Krippendorff’s ...
+  type: slack
+  slack_col: 0
   single_column: true
-  uses: zentable
+  path: some-path/some-file.csv
+  caption: >-
+    A caption ...
+  column_keeps:
+    - dataset
+    - split
+    - count
+    - portion
+  column_renames:
+    dataset: Dataset
+    split: Split
+    count: Count
+    portion: Portion
   read_params:
     index_col: 0
+  make_percent_column_names:
+    portion: 0
+  format_thousands_column_names:
+    count: null
   tabulate_params:
     disable_numparse: true
   replace_nan: ' '
@@ -90,6 +104,8 @@ intercodertab:
 
 Some of these fields include:
 
+* **make_percent_column_names**: columns to make percents with decimal points
+* **format_thousands_column_names**: columns to add commas and decimals points
 * **index_col**: clears column 0 and
 * **bold_cells**: make certain cells bold
 * **disable_numparse** tells the `tabulate` module not reformat numbers
