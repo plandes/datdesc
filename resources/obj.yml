@@ -1,0 +1,9 @@
+#@meta {author: "Paul Landes"}
+#@meta {desc: "application objects", date: "2026-02-27"}
+
+
+datdesc_file_processor:
+  class_name: zensols.datdesc.process.FileProcessor
+  table_factory_name: datdesc_table_factory
+  figure_factory_name: datdesc_figure_factory
+  hyperparam_table_default: 'instance: datdesc_hyperparam_table_default'
