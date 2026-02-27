@@ -1,7 +1,7 @@
 """Classes to create first class object and process files.
 
 """
-from typing import Tuple, Iterable, Any, Dict
+from typing import Iterable, Any
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import logging
@@ -79,7 +79,7 @@ class FileProcessor(Dictable):
     def _process_data_file(self, data_file: Path, output_file: Path):
         from .latex import CsvToLatexTable
 
-        tables: Tuple[Table, ...] = \
+        tables: tuple[Table, ...] = \
             tuple(self.table_factory.from_file(data_file))
         if len(tables) == 0:
             raise LatexTableError(f'No tables found: {data_file}')
@@ -103,13 +103,13 @@ class FileProcessor(Dictable):
         from .latex import CsvToLatexTable
 
         def map_table(dd: DataFrameDescriber, hp: HyperparamModel) -> Table:
-            hmtab: Dict[str, Any] = hp.table
-            params: Dict[str, Any] = dict(**table_defs, **hmtab) \
+            hmtab: dict[str, Any] = hp.table
+            params: dict[str, Any] = dict(**table_defs, **hmtab) \
                 if hmtab is not None else table_defs
             return dd.create_table(**params)
 
-        table_defs: Dict[str, Any] = self.hyperparam_table_default.asdict()
-        tables: Tuple[Table] = tuple(
+        table_defs: dict[str, Any] = self.hyperparam_table_default.asdict()
+        tables: tuple[Table, ...] = tuple(
             map(lambda x: map_table(*x),
                 zip(hset.create_describer().describers, hset.models.values())))
         with open(table_file, 'w') as f:
@@ -184,7 +184,7 @@ class FileProcessor(Dictable):
 
     # NEED
     def _get_paths(self, input_path: Path, output_path: Path) -> \
-            Iterable[Tuple[str, Path]]:
+            Iterable[tuple[str, Path]]:
         if input_path.is_dir() and \
            output_path is not None and \
            not output_path.exists():
@@ -196,7 +196,7 @@ class FileProcessor(Dictable):
                 'Both parameters must both be either files or directories, ' +
                 f"got: '{input_path}', and '{output_path}'")
 
-        def _map_file_type(path: Path) -> Tuple[str, Path]:
+        def _map_file_type(path: Path) -> tuple[str, Path]:
             t: str = None
             if self.data_file_regex.match(path.name) is not None:
                 t = 'd'

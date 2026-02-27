@@ -5,7 +5,7 @@ only files that match *-table.yml are considered.
 
 """
 __author__ = 'Paul Landes'
-from typing import Tuple, Iterable, List, Set
+from typing import Iterable
 from dataclasses import dataclass, field
 import logging
 from itertools import chain
@@ -55,7 +55,7 @@ class Application(object):
             table.write()
 
     def _get_paths(self, input_path: Path, output_path: Path) -> \
-            Iterable[Tuple[str, Path]]:
+            Iterable[tuple[str, Path]]:
         return self.processor._get_paths(input_path, output_path)
 
     def generate_tables(self, input_path: Path, output_path: Path):
@@ -67,7 +67,7 @@ class Application(object):
 
         """
         paths: Iterable[str, Path] = self._get_paths(input_path, output_path)
-        table_types: Set[str] = {'h', 'd', 's'}
+        table_types: set[str] = {'h', 'd', 's'}
         file_type: str
         path: Path
         for file_type, path in filter(lambda x: x[0] in table_types, paths):
@@ -148,15 +148,15 @@ class Application(object):
             if output_file is None:
                 output_file = Path(desc.name)
         else:
-            paths: Tuple[Path] = (input_path,)
-            descs: List[DataDescriber] = []
+            paths: tuple[Path, ...] = (input_path,)
+            descs: list[DataDescriber] = []
             name: str = input_path.name
             if output_file is None:
                 output_file = Path(f'{input_path.stem}.xlsx')
             if input_path.is_dir():
                 paths = tuple(filter(lambda p: p.suffix == '.yml',
                                      input_path.iterdir()))
-            descs: Tuple[DataDescriber] = tuple(map(
+            descs: tuple[DataDescriber, ...] = tuple(map(
                 DataDescriber.from_yaml_file, paths))
             if len(descs) == 1:
                 name = descs[0].name
