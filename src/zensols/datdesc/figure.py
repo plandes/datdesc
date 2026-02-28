@@ -27,7 +27,7 @@ from zensols.persist import (
 from zensols.config import (
     Serializer, Dictable, ConfigFactory, ImportConfigFactory, ImportIniConfig
 )
-from . import FigureError
+from . import FigureError, Renderable
 
 logger = logging.getLogger(__name__)
 
@@ -565,3 +565,47 @@ class FigureFactory(Dictable):
                 plot: Plot = self._parse_plot(pdef, raise_fn)
                 fig.add_plot(plot)
             yield fig
+
+
+@dataclass
+class RenderableFigure(Renderable):
+    """A renderable for figures.  The output is either a directory where all
+    figures will be written, or a file.
+
+    """
+    factory: FigureFactory = field()
+    """Create instances of :`.Figure` using :meth:`create` or from configuration
+    files with :meth:`from_file`.
+
+    """
+    def get_figures(self) -> Iterable[Figure]:
+        """Get figures configured in file :obj:`path`."""
+        fac: FigureFactory = self.factory
+        fig: Figure
+        for fig in fac.from_file(self.path):
+            yield fig
+
+    def write(self, output: Path, image_format: str = None) -> tuple[Path, ...]:
+        output_files: list[Path] = []
+        figures: tuple[Path] = tuple(self.get_figures())
+        n_figs: int = len(figures)
+        if n_figs == 0:
+            raise FigureError(f'No figures found: {self.path}')
+        if n_figs > 1 and not output.is_dir():
+            raise FigureError(
+                f'{n_figs} figures found, but not a directory: {output}')
+        fig: Figure
+        for fig in figures:
+            suffix: str = output.suffix
+            fig.image_file_norm = False
+            if output.is_dir():
+                fig.image_dir = output
+            else:
+                fig.image_dir = output.parent
+                fig.name = output.stem
+            if image_format is not None:
+                fig.image_format = image_format
+            elif len(suffix) > 1:
+                fig.image_format = suffix[1:]
+            output_files.append(fig.save())
+        return tuple(output_files)

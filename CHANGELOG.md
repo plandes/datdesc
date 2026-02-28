@@ -8,9 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Removed
+- CLI `hyper` action.  This is now handled by the `table` action with the
+  `--format` option.
+
 ### Changes
 - Fix CLI `show` action and `DataFrameDescriber.create_table` bug when `name`
   passed to method.
+- Table, hyperparameter, and figure output logic are now in `Renderable`
+  subclasses.
 
 
 ## [1.4.4] - 2026-02-19

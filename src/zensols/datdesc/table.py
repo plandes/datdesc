@@ -680,7 +680,10 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
             return super().asflatdict(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        return f'{self.name} in {self.path}'
+
+    def __repr__(self):
+        return self.__str__()
 
 
 @dataclass
@@ -820,7 +823,8 @@ class TableFactory(Dictable):
         del tab_def['name']
         return {table.name: tab_def}
 
-    def to_file(self, table: Table, table_path: Path) -> Dict[str, Any]:
+    def to_file(self, table: Table, table_path: Path):
+        """Save ``table`` as a YAML file to ``table_path``."""
         tab_def: Dict[str, Any] = self._to_flatdict(table)
         with open(table_path, 'w') as f:
             yaml.dump(
@@ -828,9 +832,3 @@ class TableFactory(Dictable):
                 stream=f,
                 default_flow_style=False,
                 sort_keys=False)
-
-    def __str__(self):
-        return f'{self.name} in {self.path}'
-
-    def __repr__(self):
-        return self.__str__()

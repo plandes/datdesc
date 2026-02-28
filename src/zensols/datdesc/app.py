@@ -7,12 +7,14 @@ only files that match *-table.yml are considered.
 __author__ = 'Paul Landes'
 from typing import Iterable
 from dataclasses import dataclass, field
+from collections.abc import Callable
 import logging
 from itertools import chain
 from pathlib import Path
 from zensols.config import ConfigFactory
-from . import Table, DataFrameDescriber, DataDescriber
-from .process import OutputFormat, FileProcessor
+from zensols.cli import ApplicationError
+from .render import Renderable, RenderableFactory
+from . import OutputFormat, Table, DataFrameDescriber, DataDescriber
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +27,8 @@ class Application(object):
     config_factory: ConfigFactory = field()
     """Creates table and figure factories."""
 
-    processor: FileProcessor = field()
-    """The name of the file processor config object."""
+    renderable_factory: RenderableFactory = field()
+    """Creates instances of :class:`.Renderable` from file paths."""
 
     def _get_example(self) -> DataFrameDescriber:
         import pandas as pd
@@ -39,6 +41,37 @@ class Application(object):
                       'age': [16, 20, 19, 18]}),
             meta=(('name', 'the person\'s name'),
                   ('age', 'the age of the individual')))
+
+    def _is_one_of(self, rend_type: type[Renderable] | set = None) -> bool:
+        def is_in(obj) -> bool:
+            return obj.__class__.__name__ in types
+
+        if not isinstance(rend_type, set):
+            rend_type = [rend_type]
+        types: set[str] = set(map(lambda rt: rt.__name__, rend_type))
+        return is_in
+
+    def _get_renderables(self, input_path: Path, output_path: Path,
+                         rend_type: type[Renderable] | set = None) -> \
+            tuple[Renderable]:
+        if input_path.is_dir() and \
+           output_path is not None and \
+           not output_path.exists():
+            output_path.mkdir(parents=True)
+        if output_path is not None and \
+           ((input_path.is_dir() and not output_path.is_dir()) or
+               (not input_path.is_dir() and output_path.is_dir())):
+            raise ApplicationError(
+                'Both parameters must both be either files or directories, ' +
+                f"got: '{input_path}', and '{output_path}'")
+        rends: Iterable[Renderable] = self.renderable_factory(input_path)
+        if rend_type is not None:
+            is_type: Callable = self._is_one_of(rend_type)
+            rends = filter(is_type, rends)
+        rends = tuple(rends)
+        if not input_path.is_dir() and len(rends) == 0:
+            raise ApplicationError(f'Unknown file type: {input_path}')
+        return rends
 
     def show_table(self, name: str = None):
         """Print a list of example LaTeX tables.
@@ -54,11 +87,15 @@ class Application(object):
             table: Table = dfd.create_table(type=name)
             table.write()
 
-    def _get_paths(self, input_path: Path, output_path: Path) -> \
-            Iterable[tuple[str, Path]]:
-        return self.processor._get_paths(input_path, output_path)
+    def _map_table_out_path(self, input_path: Path, output_path: Path,
+                            renderable: Renderable) -> Path:
+        rend_out_path: Path = output_path
+        if input_path.is_dir():
+            rend_out_path = output_path / f'{renderable.path.stem}.sty'
+        return rend_out_path
 
-    def generate_tables(self, input_path: Path, output_path: Path):
+    def generate_tables(self, input_path: Path, output_path: Path,
+                        output_format: OutputFormat = OutputFormat.table):
         """Create LaTeX tables.
 
         :param input_path: YAML definitions or JSON serialized file
@@ -66,32 +103,24 @@ class Application(object):
         :param output_path: output file or directory
 
         """
-        paths: Iterable[str, Path] = self._get_paths(input_path, output_path)
-        table_types: set[str] = {'h', 'd', 's'}
-        file_type: str
-        path: Path
-        for file_type, path in filter(lambda x: x[0] in table_types, paths):
-            if input_path.is_dir():
-                ofile: Path = output_path / f'{path.stem}.sty'
-                self.processor._process_file(path, ofile, file_type)
+        from .latex import RenderableLatexTable
+        from .hyperparam import RenderableHyperparamSet
+        from .desc import RenderableDataFrameDescriber
+        rts: type[Renderable] = {
+            RenderableLatexTable,
+            RenderableHyperparamSet,
+            RenderableDataFrameDescriber}
+        is_hyper: Callable = self._is_one_of(RenderableHyperparamSet)
+        renderable: Renderable
+        for renderable in self._get_renderables(input_path, output_path, rts):
+            rend_out_path: Path = self._map_table_out_path(
+                input_path, output_path, renderable)
+            if is_hyper(renderable):
+                hyper_renderable = self.renderable_factory('hyperparam')
+                hyper_renderable.path = renderable.path
+                hyper_renderable.write(rend_out_path, output_format)
             else:
-                self.processor._process_file(input_path, output_path, file_type)
-
-    def generate_hyperparam(self, input_path: Path, output_path: Path,
-                            output_format: OutputFormat = OutputFormat.short):
-        """Write hyperparameter formatted data.
-
-        :param input_path: YAML definitions or JSON serialized file
-
-        :param output_path: output file or directory
-
-        :param output_format: output format of the hyperparameter metadata
-
-        """
-        paths: Iterable[str, Path] = self._get_paths(input_path, output_path)
-        path: Path
-        for _, path in filter(lambda x: x[0] == 'h', paths):
-            self.processor._process_hyper_file(path, output_path, output_format)
+                renderable.write(rend_out_path)
 
     def generate_figures(self, input_path: Path, output_path: Path,
                          output_image_format: str = None):
@@ -104,13 +133,13 @@ class Application(object):
         :param output_image_format: the output format (defaults to ``svg``)
 
         """
-        paths: Iterable[str, Path] = self._get_paths(input_path, output_path)
-        path: Path
-        for _, path in filter(lambda x: x[0] == 'f', paths):
-            self.processor._process_figure_file(path, output_path, output_image_format)
+        from .figure import RenderableFigure as RType
+        renderable: RType
+        for renderable in self._get_renderables(input_path, output_path, RType):
+            renderable.write(output_path, image_format=output_image_format)
 
     def list_figures(self, input_path: Path):
-        """Generate figures.
+        """List figures.
 
         :param input_path: YAML definitions or JSON serialized file
 
@@ -119,15 +148,12 @@ class Application(object):
         :param output_image_format: the output format (defaults to ``svg``)
 
         """
-        from .figure import Figure
+        from .figure import RenderableFigure as RType
         logging.getLogger('zensols.datdesc').setLevel(logging.WARNING)
-        paths: Iterable[str, Path] = self._get_paths(input_path, None)
-        path: Path
-        for _, path in filter(lambda x: x[0] == 'f', paths):
-            fig: Figure
-            for fig in self._get_figures(path):
-                path: Path = fig.path
-                print(path.stem)
+        renderable: RType
+        for renderable in self._get_renderables(input_path, None, RType):
+            for fig in renderable.get_figures():
+                print(fig.name)
 
     def write_excel(self, input_path: Path, output_file: Path = None,
                     output_latex_format: bool = False):

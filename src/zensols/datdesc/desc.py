@@ -23,6 +23,7 @@ from openpyxl.workbook import Workbook
 from tabulate import tabulate
 from zensols.config import Dictable
 from zensols.persist import PersistableContainer, persisted, FileTextUtil
+from .render import Renderable
 from . import DataDescriptionError, Table, TableFactory
 
 logger = logging.getLogger(__name__)
@@ -959,3 +960,23 @@ class DataDescriber(PersistableContainer, Dictable):
 
     def __repr__(self) -> str:
         return f'{self.name}: describers={self.describers}'
+
+
+@dataclass
+class RenderableDataFrameDescriber(Renderable):
+    """Reads instances serialized with :meth:`.DataDescriber.to_json` and writes
+    the CVS, YAML and Excel files.
+
+    """
+    def get_data_describer(self) -> DataDescriber:
+        """Return the data describer serialized in :obj:`path`."""
+        with open(self.path) as f:
+            return DataDescriber.from_json(f)
+
+    def write(self, output: Path) -> tuple[Path, ...]:
+        dd: DataDescriber = self.get_data_describer()
+        paths: List[Path] = dd.save(
+            csv_dir=output / DataDescriber.DEFAULT_CSV_DIR,
+            yaml_dir=output / DataDescriber.DEFAULT_YAML_DIR,
+            excel_path=output / DataDescriber.DEFAULT_EXCEL_DIR / dd.name)
+        return tuple(paths)

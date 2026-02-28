@@ -10,11 +10,12 @@ import logging
 import itertools as it
 from itertools import chain
 from datetime import datetime
+from pathlib import Path
 from io import TextIOBase
 import pandas as pd
+from zensols.util import stdout
 from zensols.config import Writable
-from . import Table
-
+from . import LatexTableError, TableFactory, Renderable, Table
 
 logger = logging.getLogger(__name__)
 
@@ -163,3 +164,33 @@ class CsvToLatexTable(Writable):
                 logger.error(msg, e)
             if i < tlen:
                 writer.write('\n')
+
+
+@dataclass
+class RenderableLatexTable(Renderable):
+    """A renderable for table definitions in yaml files.  The output is a latex
+    ``.sty`` file with the output table as a command (see :obj:`table_factory`).
+
+    """
+    factory: TableFactory = field()
+    """Reads the table definitions file and writes a Latex ``.sty`` file of the
+    generated tables from the CSV data.
+
+    """
+    def get_tables(self) -> Iterable[Table]:
+        """Return the tables configured in :obj:`path`."""
+        return self.factory.from_file(self.path)
+
+    def write(self, output: Path) -> tuple[Path, ...]:
+        tables: tuple[Table, ...] = tuple(self.get_tables())
+        if len(tables) == 0:
+            raise LatexTableError(f'No tables found: {self.path}')
+        package_name: str = tables[0].package_name
+        if logger.isEnabledFor(logging.INFO):
+            logger.info(f'{self.path} -> {output}, pkg={package_name}')
+        with stdout(output, extension='sty', logger=logger) as f:
+            tab = CsvToLatexTable(tables, package_name)
+            tab.write(writer=f)
+        if hasattr(f, 'name'):
+            output = Path(f.name)
+        return (output,)

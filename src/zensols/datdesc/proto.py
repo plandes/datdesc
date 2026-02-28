@@ -1,16 +1,6 @@
-from typing import Tuple, Iterable, Any, Dict, List, Set
 from dataclasses import dataclass, field
-import logging
-import re
-from itertools import chain
 from pathlib import Path
-from zensols.util import stdout
-from zensols.cli import ApplicationError
-from zensols.config import Settings, FactoryError, ConfigFactory
-from . import (
-    LatexTableError, TableFactory, Table, DataFrameDescriber, DataDescriber
-)
-from .process import OutputFormat, FileProcessor
+from . import TableFactory, Table, DataFrameDescriber, DataDescriber
 from .app import Application
 
 
@@ -78,4 +68,4 @@ class PrototypeApplication(object):
 
     def proto(self):
         """Prototype test."""
-        self._create_save_example()
+        self._create_figure_example('radar')

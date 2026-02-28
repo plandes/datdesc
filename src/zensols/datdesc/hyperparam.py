@@ -29,6 +29,7 @@ from typing import (
 )
 from dataclasses import dataclass, field
 from abc import ABCMeta, abstractmethod
+import logging
 import sys
 import re
 import textwrap as tw
@@ -39,10 +40,15 @@ from io import TextIOBase
 from frozendict import frozendict
 import yaml
 import pandas as pd
-from zensols.util import APIError
+from zensols.util import APIError, stdout
 from zensols.config import Dictable, Configurable
 from zensols.persist import persisted
-from . import DataDescriptionError, DataFrameDescriber, DataDescriber
+from . import (
+    Renderable, OutputFormat,
+    DataDescriptionError, DataFrameDescriber, DataDescriber,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class HyperparamError(DataDescriptionError):
@@ -675,3 +681,49 @@ class HyperparamSetLoader(object):
     def __getitem__(self, path: str) -> \
             Union[HyperparamSet, HyperparamSet, Hyperparam]:
         return self(path)
+
+
+@dataclass
+class RenderableHyperparamSet(Renderable):
+    """Reads :class:`.HyperparamSet` instances and writes latex tables.
+
+    """
+    hyperparam_table_default: dict[str, str] = field(default=None)
+    """Default settings for hyperparameter :class:`.Table` instances."""
+
+    def _write_hyper_table(self, hset: HyperparamSet, table_file: Path,
+                           f: TextIOBase):
+        from .latex import CsvToLatexTable
+        from .table import Table
+
+        def map_table(dd: DataFrameDescriber, hp: HyperparamModel) -> Table:
+            hmtab: dict[str, Any] = hp.table
+            params: dict[str, Any] = dict(**table_defs, **hmtab) \
+                if hmtab is not None else table_defs
+            return dd.create_table(**params)
+
+        table_defs: dict[str, Any] = self.hyperparam_table_default
+        tables: tuple[Table, ...] = tuple(
+            map(lambda x: map_table(*x),
+                zip(hset.create_describer().describers, hset.models.values())))
+        tab = CsvToLatexTable(tables, table_file.stem)
+        tab.write(writer=f)
+
+    def write(self, output: Path,
+              output_format: OutputFormat = OutputFormat.short) -> \
+            tuple[Path, ...]:
+        loader = HyperparamSetLoader(self.path)
+        hset: HyperparamSet = loader.load()
+        with stdout(output, logger=logger) as f:
+            {OutputFormat.short: lambda: hset.write(
+                writer=f, include_doc=False),
+             OutputFormat.verbose: lambda: hset.write(
+                 writer=f, include_doc=True),
+             OutputFormat.json: lambda: hset.asjson(
+                 writer=f, indent=4),
+             OutputFormat.yaml: lambda: hset.asyaml(writer=f),
+             OutputFormat.sphinx: lambda: hset.write_sphinx(writer=f),
+             OutputFormat.table: lambda: self._write_hyper_table(
+                 hset, output, f)
+             }[output_format]()
+        return (output,)

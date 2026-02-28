@@ -65,7 +65,7 @@ class TestApplication(unittest.TestCase):
         in_file: Path = base_dir / 'svm-hyperparam.yml'
         gold_file: Path = base_dir / 'svm-gold.yaml'
         out_file: Path = self.out_dir / 'hyper.yaml'
-        self.harness.execute(f'hyper {in_file} {out_file} -f yaml --level=warn')
+        self.harness.execute(f'table {in_file} {out_file} -f yaml --level=warn')
         self._text_compare(out_file, gold_file)
 
     def test_hyper_sphinx(self):
@@ -73,7 +73,7 @@ class TestApplication(unittest.TestCase):
         in_file: Path = base_dir / 'svm-hyperparam.yml'
         gold_file: Path = base_dir / 'svm-gold.py'
         out_file: Path = self.out_dir / 'svm-hyper.py'
-        self.harness.execute(f'hyper {in_file} {out_file} -f sphinx --level=warn')
+        self.harness.execute(f'table {in_file} {out_file} -f sphinx --level=warn')
         self._text_compare(out_file, gold_file)
 
     def test_hyper_table(self):
