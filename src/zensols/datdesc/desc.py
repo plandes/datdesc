@@ -376,7 +376,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         return table
 
     @classmethod
-    def from_table(cls: Type, tab: Table) -> DataFrameDescriber:
+    def from_table(cls: Type, table: Table) -> DataFrameDescriber:
         """Create a frame descriptor from a :class:`.Table`."""
         def filter_kwargs(t: Tuple[str, Any]) -> bool:
             k, v = t
@@ -385,11 +385,11 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             return not isinstance(v, (tuple, list, set, dict)) or len(v) > 0
 
         kw_skips: Set[str] = {'name', 'df', 'desc', 'meta'}
-        res: parse.Result = parse.parse(cls._TABLE_FORMAT, tab.name)
+        res: parse.Result = parse.parse(cls._TABLE_FORMAT, table.name)
         if res is None:
-            raise DataDescriptionError(f"Bad table name: '{tab.name}'")
-        df: pd.DataFrame = tab.dataframe
-        renames: Dict[str, str] = tab.column_renames
+            raise DataDescriptionError(f"Bad table name: '{table.name}'")
+        df: pd.DataFrame = table.dataframe
+        renames: Dict[str, str] = table.column_renames
         col: str
         for col in df.columns:
             if col not in renames:
@@ -397,13 +397,14 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         meta = pd.DataFrame(renames.items(), columns='name description'.split())
         meta.index = meta['name']
         meta = meta.drop(columns=['name'])
-        kws: Dict[str, Any] = dict(filter(filter_kwargs, tab.__dict__.items()))
+        kws: Dict[str, Any] = dict(filter(
+            filter_kwargs, table.__dict__.items()))
         if len(kws) == 0:
             kws = None
         return DataFrameDescriber(
             name=res['name'],
             df=df,
-            desc=tab.caption,
+            desc=table.caption,
             meta=meta,
             table_kwargs=kws)
 
@@ -731,6 +732,16 @@ class DataDescriber(PersistableContainer, Dictable):
         return DataDescriber(describers=(dfd,), name=dfd.name)
 
     @classmethod
+    def from_table(cls: Type, tables: tuple[Table, ...],
+                   name: str = None) -> DataDescriber:
+        """Create a data descriptor from a :class:`.Table`."""
+        dd = DataDescriber(
+            describers=tuple(map(DataFrameDescriber.from_table, tables)))
+        if name is not None:
+            dd.name = name
+        return dd
+
+    @classmethod
     def from_yaml_file(cls: Type, path: Path) -> DataDescriber:
         """Create a data descriptor from a previously written YAML/CSV files
         using :meth:`save`.
@@ -741,10 +752,8 @@ class DataDescriber(PersistableContainer, Dictable):
 
         """
         fac: TableFactory = TableFactory.default_instance()
-        tables: Table[Table, ...] = tuple(fac.from_file(path))
-        return DataDescriber(
-            describers=tuple(map(DataFrameDescriber.from_table, tables)),
-            name=path.name)
+        tables: tuple[Table, ...] = tuple(fac.from_file(path))
+        return cls.from_tables(tables, path.name)
 
     @classmethod
     def from_json_file(cls: Type, path: Path) -> DataDescriber:

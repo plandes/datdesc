@@ -7,12 +7,21 @@ from typing import List, Any, Dict
 import sys
 from zensols.cli import ActionResult, CliHarness
 from zensols.cli import ApplicationFactory as CliApplicationFactory
+from .render import RenderableFactory
 
 
 class ApplicationFactory(CliApplicationFactory):
     def __init__(self, *args, **kwargs):
         kwargs['package_resource'] = 'zensols.datdesc'
         super().__init__(*args, **kwargs)
+
+    @classmethod
+    def get_renderable_factory(cls: type, **kwargs) -> RenderableFactory:
+        """Return a factory that creates instances of :class:`.Renderable` from
+        file paths.
+
+        """
+        return cls.create_harness().get_application(**kwargs).renderable_factory
 
 
 def main(args: List[str] = sys.argv, **kwargs: Dict[str, Any]) -> ActionResult:
