@@ -688,7 +688,7 @@ class DataDescriber(PersistableContainer, Dictable):
         is kept in tact and unserialized / restored with :meth:`from_json`.
 
         """
-        out_file: Path = output_path / f'{self.name}.json'
+        out_file: Path = output_path / f'{self.name}-table.json'
         with open(out_file, 'w') as f:
             self.to_json(writer=f)
         logger.info(f'saved json file to: {out_file}')
@@ -745,6 +745,15 @@ class DataDescriber(PersistableContainer, Dictable):
         return DataDescriber(
             describers=tuple(map(DataFrameDescriber.from_table, tables)),
             name=path.name)
+
+    @classmethod
+    def from_json_file(cls: Type, path: Path) -> DataDescriber:
+        """Like :meth:`from_yaml_file` but a JSON file written with
+        meth:`save_json`.
+
+        """
+        with open(path) as f:
+            return cls.from_json(f)
 
     @classmethod
     def from_excel(cls: Type, path: Union[str, Path], *,
