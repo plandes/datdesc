@@ -683,6 +683,16 @@ class DataDescriber(PersistableContainer, Dictable):
             paths.append(out_file)
         return paths
 
+    def save_json(self, output_path: Path = Path('.')) -> Path:
+        """Serialize the this instance as a JSON file.  Most or all of the state
+        is kept in tact and unserialized / restored with :meth:`from_json`.
+
+        """
+        out_file: Path = output_path / f'{self.name}.json'
+        with open(out_file, 'w') as f:
+            self.to_json(writer=f)
+        logger.info(f'saved json file to: {out_file}')
+
     def save(self, csv_dir: Path = None, yaml_dir: Path = None,
              excel_path: Union[bool, Path] = None) -> List[Path]:
         """Save both the CSV and YAML configuration file.

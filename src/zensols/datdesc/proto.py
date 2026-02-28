@@ -26,6 +26,12 @@ class PrototypeApplication(object):
             print(f.read().strip())
         #table2 = next(TableFactory.default_instance().from_file(ofile))
 
+    def _create_write_yml(self):
+        dd = DataDescriber.from_describer(self.app._get_example())
+        out = Path('tmp')
+        dd.save(out, out, False)
+        dd.save_json(out)
+
     def _from_file_example(self):
         tab_file = Path('test-resources/config/sections-table.yml')
         ofile = Path('example.yml')
@@ -68,4 +74,5 @@ class PrototypeApplication(object):
 
     def proto(self):
         """Prototype test."""
-        self._create_figure_example('radar')
+        #self._create_figure_example('radar')
+        self._create_write_yml()
