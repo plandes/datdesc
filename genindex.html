@@ -1,0 +1,1497 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#"><link rel="search" title="Search" href="search.html">
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 --><title>Index - Generate Latex tables in a .sty file from CSV files 1.4.5 documentation</title>
+<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-codeautolink.css?v=b2176991" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="_static/codeautolink.css?v=57550ae3" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="top.html"><div class="brand">Generate Latex tables in a .sty file from CSV files 1.4.5 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="top.html">
+  
+  <span class="sidebar-brand-text">Generate Latex tables in a .sty file from CSV files 1.4.5 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/zensols.datdesc.html">zensols.datdesc package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          
+<section class="genindex-section">
+  <h1 id="index">Index</h1>
+  <div class="genindex-jumpbox"><a href="#_"><strong>_</strong></a> | <a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#K"><strong>K</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#W"><strong>W</strong></a> | <a href="#X"><strong>X</strong></a> | <a href="#Y"><strong>Y</strong></a> | <a href="#Z"><strong>Z</strong></a></div>
+</section>
+<section id="_" class="genindex-section">
+  <h2>_</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.FigureError.__annotations__">__annotations__ (zensols.datdesc.domain.FigureError attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.LatexTableError.__annotations__">(zensols.datdesc.domain.LatexTableError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamError.__annotations__">(zensols.datdesc.hyperparam.HyperparamError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamValueError.__annotations__">(zensols.datdesc.hyperparam.HyperparamValueError attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.DataDescriptionError.__firstlineno__">__firstlineno__ (zensols.datdesc.domain.DataDescriptionError attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.FigureError.__firstlineno__">(zensols.datdesc.domain.FigureError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.LatexTableError.__firstlineno__">(zensols.datdesc.domain.LatexTableError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamError.__firstlineno__">(zensols.datdesc.hyperparam.HyperparamError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamValueError.__firstlineno__">(zensols.datdesc.hyperparam.HyperparamValueError attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.app.Application.__init__">__init__() (zensols.datdesc.app.Application method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.cli.ApplicationFactory.__init__">(zensols.datdesc.cli.ApplicationFactory method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.__init__">(zensols.datdesc.desc.DataDescriber method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.__init__">(zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.RenderableDataFrameDescriber.__init__">(zensols.datdesc.desc.RenderableDataFrameDescriber method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.__init__">(zensols.datdesc.dfstash.DataFrameStash method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.FigureError.__init__">(zensols.datdesc.domain.FigureError method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.LatexTableError.__init__">(zensols.datdesc.domain.LatexTableError method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.__init__">(zensols.datdesc.figure.Figure method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory.__init__">(zensols.datdesc.figure.FigureFactory method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot.__init__">(zensols.datdesc.figure.Plot method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.RenderableFigure.__init__">(zensols.datdesc.figure.RenderableFigure method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.__init__">(zensols.datdesc.hyperparam.Hyperparam method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamContainer.__init__">(zensols.datdesc.hyperparam.HyperparamContainer method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.__init__">(zensols.datdesc.hyperparam.HyperparamModel method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSet.__init__">(zensols.datdesc.hyperparam.HyperparamSet method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSetLoader.__init__">(zensols.datdesc.hyperparam.HyperparamSetLoader method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.RenderableHyperparamSet.__init__">(zensols.datdesc.hyperparam.RenderableHyperparamSet method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.CsvToLatexTable.__init__">(zensols.datdesc.latex.CsvToLatexTable method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.LatexTable.__init__">(zensols.datdesc.latex.LatexTable method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.RenderableLatexTable.__init__">(zensols.datdesc.latex.RenderableLatexTable method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.SlackTable.__init__">(zensols.datdesc.latex.SlackTable method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.__init__">(zensols.datdesc.plots.BarPlot method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.DataFramePlot.__init__">(zensols.datdesc.plots.DataFramePlot method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HeatMapPlot.__init__">(zensols.datdesc.plots.HeatMapPlot method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HistPlot.__init__">(zensols.datdesc.plots.HistPlot method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PaletteContainerPlot.__init__">(zensols.datdesc.plots.PaletteContainerPlot method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.__init__">(zensols.datdesc.plots.PointPlot method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.RadarPlot.__init__">(zensols.datdesc.plots.RadarPlot method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.proto.PrototypeApplication.__init__">(zensols.datdesc.proto.PrototypeApplication method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.Renderable.__init__">(zensols.datdesc.render.Renderable method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.RenderableFactory.__init__">(zensols.datdesc.render.RenderableFactory method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.__init__">(zensols.datdesc.table.Table method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.__init__">(zensols.datdesc.table.TableFactory method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.DataDescriptionError.__module__">__module__ (zensols.datdesc.domain.DataDescriptionError attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.FigureError.__module__">(zensols.datdesc.domain.FigureError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.LatexTableError.__module__">(zensols.datdesc.domain.LatexTableError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamError.__module__">(zensols.datdesc.hyperparam.HyperparamError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamValueError.__module__">(zensols.datdesc.hyperparam.HyperparamValueError attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.DataDescriptionError.__static_attributes__">__static_attributes__ (zensols.datdesc.domain.DataDescriptionError attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.FigureError.__static_attributes__">(zensols.datdesc.domain.FigureError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.LatexTableError.__static_attributes__">(zensols.datdesc.domain.LatexTableError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamError.__static_attributes__">(zensols.datdesc.hyperparam.HyperparamError attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamValueError.__static_attributes__">(zensols.datdesc.hyperparam.HyperparamValueError attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="A" class="genindex-section">
+  <h2>A</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HistPlot.add">add() (zensols.datdesc.plots.HistPlot method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.add">(zensols.datdesc.plots.PointPlot method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.add_plot">add_plot() (zensols.datdesc.figure.Figure method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.add_summary">add_summary() (zensols.datdesc.desc.DataDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.RadarPlot.alpha">alpha (zensols.datdesc.plots.RadarPlot attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.proto.PrototypeApplication.app">app (zensols.datdesc.proto.PrototypeApplication attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.app.Application">Application (class in zensols.datdesc.app)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.cli.ApplicationFactory">ApplicationFactory (class in zensols.datdesc.cli)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.asflatdict">asflatdict() (zensols.datdesc.table.Table method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.auto_commit">auto_commit (zensols.datdesc.dfstash.DataFrameStash attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="B" class="genindex-section">
+  <h2>B</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot">BarPlot (class in zensols.datdesc.plots)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.blank_columns">blank_columns (zensols.datdesc.table.Table attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.bold_cells">bold_cells (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.bold_max_columns">bold_max_columns (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.LatexTable.booktabs">booktabs (zensols.datdesc.latex.LatexTable attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="C" class="genindex-section">
+  <h2>C</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.capitalize_columns">capitalize_columns (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.caption">caption (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.choices">choices (zensols.datdesc.hyperparam.Hyperparam attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.CLASS_MAP">CLASS_MAP (zensols.datdesc.hyperparam.Hyperparam attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.clear">clear() (zensols.datdesc.dfstash.DataFrameStash method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.clear">(zensols.datdesc.figure.Figure method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.proto.PrototypeApplication.CLI_META">CLI_META (zensols.datdesc.proto.PrototypeApplication attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.clone">clone() (zensols.datdesc.hyperparam.HyperparamModel method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.close">close() (zensols.datdesc.dfstash.DataFrameStash method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.cls">cls (zensols.datdesc.hyperparam.Hyperparam property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.code_format">code_format (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.code_post">code_post (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot.code_post_render">code_post_render (zensols.datdesc.figure.Plot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.code_pre">code_pre (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot.code_pre_render">code_pre_render (zensols.datdesc.figure.Plot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.code_render">code_render (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot.column">column (zensols.datdesc.figure.Plot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.column_aligns">column_aligns (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.column_descriptions">column_descriptions (zensols.datdesc.desc.DataFrameDescriber property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.column_keeps">column_keeps (zensols.datdesc.table.Table attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.column_removes">column_removes (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.column_renames">column_renames (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.column_value_replaces">column_value_replaces (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.columns">columns (zensols.datdesc.dfstash.DataFrameStash attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.SlackTable.columns">(zensols.datdesc.latex.SlackTable property)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.columns">(zensols.datdesc.table.Table property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.commit">commit() (zensols.datdesc.dfstash.DataFrameStash method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSetLoader.config">config (zensols.datdesc.hyperparam.HyperparamSetLoader attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.app.Application.config_factory">config_factory (zensols.datdesc.app.Application attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.config_factory">(zensols.datdesc.figure.Figure attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory.config_factory">(zensols.datdesc.figure.FigureFactory attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.RenderableFactory.config_factory">(zensols.datdesc.render.RenderableFactory attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.config_factory">(zensols.datdesc.table.TableFactory attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.create">create() (zensols.datdesc.figure.Figure method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory.create">(zensols.datdesc.figure.FigureFactory method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.create">(zensols.datdesc.table.TableFactory method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.create_dataframe_describer">create_dataframe_describer() (zensols.datdesc.hyperparam.HyperparamModel method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSet.create_describer">create_describer() (zensols.datdesc.hyperparam.HyperparamSet method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.create_table">create_table() (zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.csv_path">csv_path (zensols.datdesc.desc.DataFrameDescriber property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.CsvToLatexTable">CsvToLatexTable (class in zensols.datdesc.latex)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="D" class="genindex-section">
+  <h2>D</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSetLoader.data">data (zensols.datdesc.hyperparam.HyperparamSetLoader attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.DataFramePlot.data">(zensols.datdesc.plots.DataFramePlot attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HistPlot.data">(zensols.datdesc.plots.HistPlot attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber">DataDescriber (class in zensols.datdesc.desc)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.DataDescriptionError">DataDescriptionError</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.dataframe">dataframe (zensols.datdesc.dfstash.DataFrameStash property)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.dataframe">(zensols.datdesc.table.Table property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber">DataFrameDescriber (class in zensols.datdesc.desc)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.DataFramePlot">DataFramePlot (class in zensols.datdesc.plots)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash">DataFrameStash (class in zensols.datdesc.dfstash)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.deallocate">deallocate() (zensols.datdesc.figure.Figure method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.DEFAULT_CSV_DIR">DEFAULT_CSV_DIR (zensols.datdesc.desc.DataDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.DEFAULT_EXCEL_DIR">DEFAULT_EXCEL_DIR (zensols.datdesc.desc.DataDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory.default_instance">default_instance() (zensols.datdesc.figure.FigureFactory class method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.default_instance">(zensols.datdesc.table.TableFactory class method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.default_params">default_params (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.default_table_type">default_table_type (zensols.datdesc.table.TableFactory attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.DEFAULT_YAML_DIR">DEFAULT_YAML_DIR (zensols.datdesc.desc.DataDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.definition_file">definition_file (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.delete">delete() (zensols.datdesc.dfstash.DataFrameStash method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.derive">derive() (zensols.datdesc.desc.DataDescriber method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.derive">(zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.derive_with_index_meta">derive_with_index_meta() (zensols.datdesc.desc.DataDescriber method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.derive_with_index_meta">(zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.desc">desc (zensols.datdesc.desc.DataFrameDescriber attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.desc">(zensols.datdesc.hyperparam.HyperparamModel attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.describers">describers (zensols.datdesc.desc.DataDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.describers_by_name">describers_by_name (zensols.datdesc.desc.DataDescriber property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.df">df (zensols.datdesc.desc.DataFrameDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.df_with_index_meta">df_with_index_meta() (zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.doc">doc (zensols.datdesc.hyperparam.Hyperparam attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.doc">(zensols.datdesc.hyperparam.HyperparamModel attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.double_hlines">double_hlines (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.dump">dump() (zensols.datdesc.dfstash.DataFrameStash method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="E" class="genindex-section">
+  <h2>E</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.exists">exists() (zensols.datdesc.dfstash.DataFrameStash method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="F" class="genindex-section">
+  <h2>F</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.RenderableFigure.factory">factory (zensols.datdesc.figure.RenderableFigure attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.RenderableLatexTable.factory">(zensols.datdesc.latex.RenderableLatexTable attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure">Figure (class in zensols.datdesc.figure)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.FigureError">FigureError</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory">FigureFactory (class in zensols.datdesc.figure)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamContainer.flatten">flatten() (zensols.datdesc.hyperparam.HyperparamContainer method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.flatten">(zensols.datdesc.hyperparam.HyperparamModel method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSet.flatten">(zensols.datdesc.hyperparam.HyperparamSet method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HeatMapPlot.format">format (zensols.datdesc.plots.HeatMapPlot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.LatexTable.format_scientific">format_scientific() (zensols.datdesc.latex.LatexTable method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.format_scientific">(zensols.datdesc.table.Table method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.format_scientific_column_names">format_scientific_column_names (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.format_table">format_table() (zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.format_tables">format_tables() (zensols.datdesc.desc.DataDescriber method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.format_thousand">format_thousand() (zensols.datdesc.table.Table static method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.format_thousands_column_names">format_thousands_column_names (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.formatted_dataframe">formatted_dataframe (zensols.datdesc.table.Table property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.RadarPlot.frame">frame (zensols.datdesc.plots.RadarPlot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.from_columns">from_columns() (zensols.datdesc.desc.DataFrameDescriber class method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.from_describer">from_describer() (zensols.datdesc.desc.DataDescriber class method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory.from_dict">from_dict() (zensols.datdesc.figure.FigureFactory method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.from_excel">from_excel() (zensols.datdesc.desc.DataDescriber class method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory.from_file">from_file() (zensols.datdesc.figure.FigureFactory method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.from_file">(zensols.datdesc.table.TableFactory method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.from_json">from_json() (zensols.datdesc.desc.DataDescriber class method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.from_json_file">from_json_file() (zensols.datdesc.desc.DataDescriber class method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.from_table">from_table() (zensols.datdesc.desc.DataFrameDescriber class method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.from_tables">from_tables() (zensols.datdesc.desc.DataDescriber class method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.from_yaml_file">from_yaml_file() (zensols.datdesc.desc.DataDescriber class method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="G" class="genindex-section">
+  <h2>G</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.app.Application.generate_figures">generate_figures() (zensols.datdesc.app.Application method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.app.Application.generate_tables">generate_tables() (zensols.datdesc.app.Application method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.get">get() (zensols.datdesc.dfstash.DataFrameStash method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.get">(zensols.datdesc.hyperparam.HyperparamModel method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSet.get">(zensols.datdesc.hyperparam.HyperparamSet method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.RenderableDataFrameDescriber.get_artifacts">get_artifacts() (zensols.datdesc.desc.RenderableDataFrameDescriber method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.RenderableFigure.get_artifacts">(zensols.datdesc.figure.RenderableFigure method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.RenderableLatexTable.get_artifacts">(zensols.datdesc.latex.RenderableLatexTable method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.Renderable.get_artifacts">(zensols.datdesc.render.Renderable method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.RenderableDataFrameDescriber.get_data_describer">get_data_describer() (zensols.datdesc.desc.RenderableDataFrameDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.RenderableFigure.get_figures">get_figures() (zensols.datdesc.figure.RenderableFigure method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory.get_plot_names">get_plot_names() (zensols.datdesc.figure.FigureFactory method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.cli.ApplicationFactory.get_renderable_factory">get_renderable_factory() (zensols.datdesc.cli.ApplicationFactory class method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.get_table_name">get_table_name() (zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.get_table_names">get_table_names() (zensols.datdesc.table.TableFactory method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.RenderableLatexTable.get_tables">get_tables() (zensols.datdesc.latex.RenderableLatexTable method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.get_type_str">get_type_str() (zensols.datdesc.hyperparam.Hyperparam method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="H" class="genindex-section">
+  <h2>H</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.head">head (zensols.datdesc.desc.DataFrameDescriber attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.head">(zensols.datdesc.table.Table attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HeatMapPlot">HeatMapPlot (class in zensols.datdesc.plots)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.height">height (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HistPlot">HistPlot (class in zensols.datdesc.plots)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.hlines">hlines (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.hue_column_name">hue_column_name (zensols.datdesc.plots.BarPlot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.hue_name">hue_name (zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.hue_names">hue_names (zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.hue_palette">hue_palette (zensols.datdesc.plots.BarPlot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam">Hyperparam (class in zensols.datdesc.hyperparam)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.RenderableHyperparamSet.hyperparam_table_default">hyperparam_table_default (zensols.datdesc.hyperparam.RenderableHyperparamSet attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamContainer">HyperparamContainer (class in zensols.datdesc.hyperparam)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamError">HyperparamError</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel">HyperparamModel (class in zensols.datdesc.hyperparam)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSet">HyperparamSet (class in zensols.datdesc.hyperparam)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSetLoader">HyperparamSetLoader (class in zensols.datdesc.hyperparam)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamValueError">HyperparamValueError</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="I" class="genindex-section">
+  <h2>I</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.image_dir">image_dir (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.image_file_norm">image_file_norm (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.image_format">image_format (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.index_col_name">index_col_name (zensols.datdesc.table.Table attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.index_meta">index_meta (zensols.datdesc.desc.DataFrameDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.interval">interval (zensols.datdesc.hyperparam.Hyperparam attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.interval_str">interval_str (zensols.datdesc.hyperparam.Hyperparam property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.items">items() (zensols.datdesc.desc.DataDescriber method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="J" class="genindex-section">
+  <h2>J</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.OutputFormat.json">json (zensols.datdesc.domain.OutputFormat attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="K" class="genindex-section">
+  <h2>K</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.key_column">key_column (zensols.datdesc.dfstash.DataFrameStash attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.key_title">key_title (zensols.datdesc.plots.BarPlot attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HistPlot.key_title">(zensols.datdesc.plots.HistPlot attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.key_title">(zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.RadarPlot.key_title">(zensols.datdesc.plots.RadarPlot attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.keys">keys() (zensols.datdesc.desc.DataDescriber method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.keys">(zensols.datdesc.dfstash.DataFrameStash method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="L" class="genindex-section">
+  <h2>L</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.RadarPlot.label_gap">label_gap (zensols.datdesc.plots.RadarPlot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.LatexTable">LatexTable (class in zensols.datdesc.latex)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.LatexTableError">LatexTableError</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot.legend_params">legend_params (zensols.datdesc.figure.Plot attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.app.Application.list_figures">list_figures() (zensols.datdesc.app.Application method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.load">load() (zensols.datdesc.dfstash.DataFrameStash method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSetLoader.load">(zensols.datdesc.hyperparam.HyperparamSetLoader method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.log_scale">log_scale (zensols.datdesc.plots.BarPlot attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HistPlot.log_scale">(zensols.datdesc.plots.HistPlot attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="M" class="genindex-section">
+  <h2>M</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.make_percent_column_names">make_percent_column_names (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.mangle_file_names">mangle_file_names (zensols.datdesc.desc.DataFrameDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.mangle_sheet_name">mangle_sheet_name (zensols.datdesc.desc.DataDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.meta">meta (zensols.datdesc.desc.DataFrameDescriber property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.meta_path">meta_path (zensols.datdesc.desc.DataFrameDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.metadata">metadata (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.metadata_dataframe">metadata_dataframe (zensols.datdesc.hyperparam.HyperparamModel property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.mkdirs">mkdirs (zensols.datdesc.dfstash.DataFrameStash attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSet.models">models (zensols.datdesc.hyperparam.HyperparamSet attribute)</a>
+</li>
+        <li>
+    module
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc">zensols.datdesc</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.app">zensols.datdesc.app</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.cli">zensols.datdesc.cli</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.desc">zensols.datdesc.desc</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.dfstash">zensols.datdesc.dfstash</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.domain">zensols.datdesc.domain</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.figure">zensols.datdesc.figure</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.hyperparam">zensols.datdesc.hyperparam</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.latex">zensols.datdesc.latex</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.plots">zensols.datdesc.plots</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.proto">zensols.datdesc.proto</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.render">zensols.datdesc.render</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.table">zensols.datdesc.table</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="N" class="genindex-section">
+  <h2>N</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.name">name (zensols.datdesc.desc.DataDescriber attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.name">(zensols.datdesc.desc.DataFrameDescriber attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.name">(zensols.datdesc.figure.Figure attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.name">(zensols.datdesc.hyperparam.Hyperparam attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.name">(zensols.datdesc.hyperparam.HyperparamModel attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSet.name">(zensols.datdesc.hyperparam.HyperparamSet attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.name">(zensols.datdesc.table.Table attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.RenderableFactory.name_format">name_format (zensols.datdesc.render.RenderableFactory attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="O" class="genindex-section">
+  <h2>O</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.OutputFormat">OutputFormat (class in zensols.datdesc.domain)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="P" class="genindex-section">
+  <h2>P</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.CsvToLatexTable.package_name">package_name (zensols.datdesc.latex.CsvToLatexTable attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.package_name">(zensols.datdesc.table.Table property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.padding">padding (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PaletteContainerPlot.palette">palette (zensols.datdesc.plots.PaletteContainerPlot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PaletteContainerPlot">PaletteContainerPlot (class in zensols.datdesc.plots)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.params">params (zensols.datdesc.hyperparam.HyperparamModel attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HeatMapPlot.params">(zensols.datdesc.plots.HeatMapPlot attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.params">(zensols.datdesc.table.Table attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.path">path (zensols.datdesc.dfstash.DataFrameStash attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.path">(zensols.datdesc.figure.Figure property)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.Renderable.path">(zensols.datdesc.render.Renderable attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.path">(zensols.datdesc.table.Table attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.percent_column_names">percent_column_names (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot">Plot (class in zensols.datdesc.figure)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.plot_params">plot_params (zensols.datdesc.plots.BarPlot attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HistPlot.plot_params">(zensols.datdesc.plots.HistPlot attribute)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.plot_params">(zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory.plot_section_regex">plot_section_regex (zensols.datdesc.figure.FigureFactory attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.plots">plots (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.point_data">point_data (zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot">PointPlot (class in zensols.datdesc.plots)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot.post_hooks">post_hooks (zensols.datdesc.figure.Plot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.proto.PrototypeApplication.proto">proto() (zensols.datdesc.proto.PrototypeApplication method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.proto.PrototypeApplication">PrototypeApplication (class in zensols.datdesc.proto)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="R" class="genindex-section">
+  <h2>R</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.RadarPlot">RadarPlot (class in zensols.datdesc.plots)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.read_params">read_params (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.RenderableDataFrameDescriber.render">render() (zensols.datdesc.desc.RenderableDataFrameDescriber method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot.render">(zensols.datdesc.figure.Plot method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.RenderableFigure.render">(zensols.datdesc.figure.RenderableFigure method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.RenderableHyperparamSet.render">(zensols.datdesc.hyperparam.RenderableHyperparamSet method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.RenderableLatexTable.render">(zensols.datdesc.latex.RenderableLatexTable method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.Renderable.render">(zensols.datdesc.render.Renderable method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.render_value_font_size">render_value_font_size (zensols.datdesc.plots.BarPlot attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.RadarPlot.render_value_font_size">(zensols.datdesc.plots.RadarPlot attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.Renderable">Renderable (class in zensols.datdesc.render)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.app.Application.renderable_factory">renderable_factory (zensols.datdesc.app.Application attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.RenderableDataFrameDescriber">RenderableDataFrameDescriber (class in zensols.datdesc.desc)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.RenderableFactory">RenderableFactory (class in zensols.datdesc.render)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.RenderableFigure">RenderableFigure (class in zensols.datdesc.figure)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.RenderableHyperparamSet">RenderableHyperparamSet (class in zensols.datdesc.hyperparam)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.RenderableLatexTable">RenderableLatexTable (class in zensols.datdesc.latex)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.replace_nan">replace_nan (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.FigureFactory.reset_default_instance">reset_default_instance() (zensols.datdesc.figure.FigureFactory class method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.reset_default_instance">(zensols.datdesc.table.TableFactory class method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.round_column_names">round_column_names (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot.row">row (zensols.datdesc.figure.Plot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.LatexTable.row_deletes">row_deletes (zensols.datdesc.latex.LatexTable attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.LatexTable.row_range">row_range (zensols.datdesc.latex.LatexTable attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.rules">rules (zensols.datdesc.table.Table attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="S" class="genindex-section">
+  <h2>S</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.sample_rate">sample_rate (zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.save">save() (zensols.datdesc.desc.DataDescriber method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.save">(zensols.datdesc.figure.Figure method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.save_csv">save_csv() (zensols.datdesc.desc.DataDescriber method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.save_csv">(zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.save_excel">save_excel() (zensols.datdesc.desc.DataDescriber method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.save_excel">(zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.save_json">save_json() (zensols.datdesc.desc.DataDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.save_yaml">save_yaml() (zensols.datdesc.desc.DataDescriber method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.seaborn">seaborn (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.SHEET_NAME_MAXLEN">SHEET_NAME_MAXLEN (zensols.datdesc.desc.DataDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.OutputFormat.short">short (zensols.datdesc.domain.OutputFormat attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.show">show() (zensols.datdesc.figure.Figure method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.app.Application.show_table">show_table() (zensols.datdesc.app.Application method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.single_column_index">single_column_index (zensols.datdesc.dfstash.DataFrameStash attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.SlackTable.slack_column">slack_column (zensols.datdesc.latex.SlackTable attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.SlackTable">SlackTable (class in zensols.datdesc.latex)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.OutputFormat.sphinx">sphinx (zensols.datdesc.domain.OutputFormat attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.subplot_params">subplot_params (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="T" class="genindex-section">
+  <h2>T</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.T">T (zensols.datdesc.desc.DataFrameDescriber property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table">Table (class in zensols.datdesc.table)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.OutputFormat.table">table (zensols.datdesc.domain.OutputFormat attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.table">(zensols.datdesc.hyperparam.HyperparamModel attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.table_kwargs">table_kwargs (zensols.datdesc.desc.DataFrameDescriber attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.table_section_regex">table_section_regex (zensols.datdesc.table.TableFactory attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory">TableFactory (class in zensols.datdesc.table)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.CsvToLatexTable.tables">tables (zensols.datdesc.latex.CsvToLatexTable attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.tabulate_params">tabulate_params (zensols.datdesc.table.Table attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.template">template (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.template_params">template_params (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Plot.title">title (zensols.datdesc.figure.Plot attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.title_font_size">title_font_size (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.TableFactory.to_file">to_file() (zensols.datdesc.table.TableFactory method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.to_json">to_json() (zensols.datdesc.desc.DataDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.transpose">transpose() (zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.type">type (zensols.datdesc.hyperparam.Hyperparam attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.type">(zensols.datdesc.table.Table attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.render.RenderableFactory.types">types (zensols.datdesc.render.RenderableFactory attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="U" class="genindex-section">
+  <h2>U</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamContainer.update">update() (zensols.datdesc.hyperparam.HyperparamContainer method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSetLoader.updates">updates (zensols.datdesc.hyperparam.HyperparamSetLoader attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.uses">uses (zensols.datdesc.table.Table attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="V" class="genindex-section">
+  <h2>V</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.VALID_TYPES">VALID_TYPES (zensols.datdesc.hyperparam.Hyperparam attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.value">value (zensols.datdesc.hyperparam.Hyperparam property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.dfstash.DataFrameStash.values">values() (zensols.datdesc.dfstash.DataFrameStash method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.values_dataframe">values_dataframe (zensols.datdesc.hyperparam.HyperparamModel property)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.variables">variables (zensols.datdesc.table.Table attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.OutputFormat.verbose">verbose (zensols.datdesc.domain.OutputFormat attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="W" class="genindex-section">
+  <h2>W</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.figure.Figure.width">width (zensols.datdesc.figure.Figure attribute)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataDescriber.write">write() (zensols.datdesc.desc.DataDescriber method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.write">(zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.write">(zensols.datdesc.hyperparam.HyperparamModel method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSet.write">(zensols.datdesc.hyperparam.HyperparamSet method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.latex.CsvToLatexTable.write">(zensols.datdesc.latex.CsvToLatexTable method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.write">(zensols.datdesc.table.Table method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.app.Application.write_excel">write_excel() (zensols.datdesc.app.Application method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.desc.DataFrameDescriber.write_pretty">write_pretty() (zensols.datdesc.desc.DataFrameDescriber method)</a>
+</li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.Hyperparam.write_sphinx">write_sphinx() (zensols.datdesc.hyperparam.Hyperparam method)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamContainer.write_sphinx">(zensols.datdesc.hyperparam.HyperparamContainer method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamModel.write_sphinx">(zensols.datdesc.hyperparam.HyperparamModel method)</a>
+</li>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.hyperparam.HyperparamSet.write_sphinx">(zensols.datdesc.hyperparam.HyperparamSet method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.table.Table.writes">writes (zensols.datdesc.table.Table attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="X" class="genindex-section">
+  <h2>X</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.x_axis_label">x_axis_label (zensols.datdesc.plots.BarPlot attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HistPlot.x_axis_label">(zensols.datdesc.plots.HistPlot attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.x_axis_name">x_axis_name (zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.x_column_name">x_column_name (zensols.datdesc.plots.BarPlot attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.x_column_name">(zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.x_label_rotation">x_label_rotation (zensols.datdesc.plots.BarPlot attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HeatMapPlot.x_label_rotation">(zensols.datdesc.plots.HeatMapPlot attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="Y" class="genindex-section">
+  <h2>Y</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.y_axis_label">y_axis_label (zensols.datdesc.plots.BarPlot attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.HistPlot.y_axis_label">(zensols.datdesc.plots.HistPlot attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.y_axis_name">y_axis_name (zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.BarPlot.y_column_name">y_column_name (zensols.datdesc.plots.BarPlot attribute)</a>
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#zensols.datdesc.plots.PointPlot.y_column_name">(zensols.datdesc.plots.PointPlot attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="api/zensols.datdesc.html#zensols.datdesc.domain.OutputFormat.yaml">yaml (zensols.datdesc.domain.OutputFormat attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="Z" class="genindex-section">
+  <h2>Z</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    zensols.datdesc
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.app
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.app">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.cli
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.cli">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.desc
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.desc">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.dfstash
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.dfstash">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.domain
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.domain">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.figure
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.figure">module</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    zensols.datdesc.hyperparam
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.hyperparam">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.latex
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.latex">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.plots
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.plots">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.proto
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.proto">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.render
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.render">module</a>
+</li>
+        </ul></li>
+        <li>
+    zensols.datdesc.table
+
+        <ul>
+          <li><a href="api/zensols.datdesc.html#module-zensols.datdesc.table">module</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026 Paul Landes
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=c97b86a3"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    </body>
+</html>

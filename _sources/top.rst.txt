@@ -1,0 +1,21 @@
+Generate Latex tables in a .sty file from CSV files
+===================================================
+This API and command line program describes data in tables with metadata and generate LaTeX tables in a `.sty` file from CSV files.
+
+.. toctree::
+   :maxdepth: 3
+   :glob:
+
+   Overview <index.md>
+   doc/*
+   API Reference <api.rst>
+   Contributing <CONTRIBUTING.md>
+   License <LICENSE.md>
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

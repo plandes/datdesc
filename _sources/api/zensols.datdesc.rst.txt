@@ -1,0 +1,125 @@
+zensols.datdesc package
+=======================
+
+Submodules
+----------
+
+zensols.datdesc.app module
+--------------------------
+
+.. automodule:: zensols.datdesc.app
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.cli module
+--------------------------
+
+.. automodule:: zensols.datdesc.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.desc module
+---------------------------
+
+.. automodule:: zensols.datdesc.desc
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.dfstash module
+------------------------------
+
+.. automodule:: zensols.datdesc.dfstash
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.domain module
+-----------------------------
+
+.. automodule:: zensols.datdesc.domain
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.figure module
+-----------------------------
+
+.. automodule:: zensols.datdesc.figure
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.hyperparam module
+---------------------------------
+
+.. automodule:: zensols.datdesc.hyperparam
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.latex module
+----------------------------
+
+.. automodule:: zensols.datdesc.latex
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.opt module
+--------------------------
+
+.. automodule:: zensols.datdesc.opt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.optscore module
+-------------------------------
+
+.. automodule:: zensols.datdesc.optscore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.plots module
+----------------------------
+
+.. automodule:: zensols.datdesc.plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.proto module
+----------------------------
+
+.. automodule:: zensols.datdesc.proto
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.render module
+-----------------------------
+
+.. automodule:: zensols.datdesc.render
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.datdesc.table module
+----------------------------
+
+.. automodule:: zensols.datdesc.table
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: zensols.datdesc
+   :members:
+   :undoc-members:
+   :show-inheritance:
