@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.5] - 2026-02-28
+There are significant CLI changes.  However, the API changes minor feature
+updates with no API changes that impact backward comparability.
+
 ### Removed
 - CLI `hyper` action.  This is now handled by the `table` action with the
   `--format` option.
@@ -283,7 +287,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.4...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.5...HEAD
+[1.4.5]: https://github.com/plandes/datdesc/compare/v1.4.4...v1.4.5
 [1.4.4]: https://github.com/plandes/datdesc/compare/v1.4.3...v1.4.4
 [1.4.3]: https://github.com/plandes/datdesc/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/plandes/datdesc/compare/v1.4.1...v1.4.2
