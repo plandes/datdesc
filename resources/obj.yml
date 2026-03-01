@@ -4,7 +4,7 @@
 
 ## Factory and processors
 #
-datdesc_renderable_file_factory:
+datdesc_renderable_factory:
   class_name: zensols.datdesc.render.RenderableFactory
   name_format: 'datdesc_renderable_{name}'
   types:
