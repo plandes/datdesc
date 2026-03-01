@@ -30,7 +30,7 @@ class Renderable(Dictable, metaclass=ABCMeta):
         return self.get_artifacts()
 
     @abstractmethod
-    def write(self, output: Path) -> Path:
+    def render(self, output: Path) -> Path:
         """Write the rendered output.
 
         :param output: either a file or directory (depending on the subclass)

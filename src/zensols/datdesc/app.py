@@ -118,9 +118,9 @@ class Application(object):
             if is_hyper(renderable):
                 hyper_renderable = self.renderable_factory('hyperparam')
                 hyper_renderable.path = renderable.path
-                hyper_renderable.write(rend_out_path, output_format)
+                hyper_renderable.render(rend_out_path, output_format)
             else:
-                renderable.write(rend_out_path)
+                renderable.render(rend_out_path)
 
     def generate_figures(self, input_path: Path, output_path: Path,
                          output_image_format: str = None):
@@ -136,7 +136,7 @@ class Application(object):
         from .figure import RenderableFigure as RType
         renderable: RType
         for renderable in self._get_renderables(input_path, output_path, RType):
-            renderable.write(output_path, image_format=output_image_format)
+            renderable.render(output_path, image_format=output_image_format)
 
     def list_figures(self, input_path: Path):
         """List figures.

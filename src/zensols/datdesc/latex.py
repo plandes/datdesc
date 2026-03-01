@@ -184,7 +184,7 @@ class RenderableLatexTable(Renderable):
     def get_artifacts(self):
         return self.get_tables()
 
-    def write(self, output: Path) -> tuple[Path, ...]:
+    def render(self, output: Path) -> Path:
         tables: tuple[Table, ...] = tuple(self.get_tables())
         if len(tables) == 0:
             raise LatexTableError(f'No tables found: {self.path}')

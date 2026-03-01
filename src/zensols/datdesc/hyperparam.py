@@ -709,8 +709,8 @@ class RenderableHyperparamSet(Renderable):
         tab = CsvToLatexTable(tables, table_file.stem)
         tab.write(writer=f)
 
-    def write(self, output: Path,
-              output_format: OutputFormat = OutputFormat.short) -> \
+    def render(self, output: Path,
+               output_format: OutputFormat = OutputFormat.short) -> \
             tuple[Path, ...]:
         loader = HyperparamSetLoader(self.path)
         hset: HyperparamSet = loader.load()

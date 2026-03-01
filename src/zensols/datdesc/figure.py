@@ -588,7 +588,8 @@ class RenderableFigure(Renderable):
     def get_artifacts(self) -> Iterable[Any]:
         return self.get_figures()
 
-    def write(self, output: Path, image_format: str = None) -> tuple[Path, ...]:
+    def render(self, output: Path, image_format: str = None) -> \
+            tuple[Path, ...]:
         output_files: list[Path] = []
         figures: tuple[Path] = tuple(self.get_figures())
         n_figs: int = len(figures)

@@ -1003,7 +1003,7 @@ class RenderableDataFrameDescriber(Renderable):
     def get_artifacts(self) -> Iterable[Any]:
         return iter((self.get_data_describer(),))
 
-    def write(self, output: Path) -> tuple[Path, ...]:
+    def render(self, output: Path) -> Path:
         dd: DataDescriber = self.get_data_describer()
         paths: List[Path] = dd.save(
             csv_dir=output / DataDescriber.DEFAULT_CSV_DIR,
