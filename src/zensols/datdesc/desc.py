@@ -732,11 +732,10 @@ class DataDescriber(PersistableContainer, Dictable):
         return DataDescriber(describers=(dfd,), name=dfd.name)
 
     @classmethod
-    def from_table(cls: Type, tables: tuple[Table, ...],
-                   name: str = None) -> DataDescriber:
+    def from_tables(cls: Type, tables: tuple[Table, ...],
+                    name: str = None) -> DataDescriber:
         """Create a data descriptor from a :class:`.Table`."""
-        dd = DataDescriber(
-            describers=tuple(map(DataFrameDescriber.from_table, tables)))
+        dd = DataDescriber(tuple(map(DataFrameDescriber.from_table, tables)))
         if name is not None:
             dd.name = name
         return dd
@@ -1000,6 +999,9 @@ class RenderableDataFrameDescriber(Renderable):
         """Return the data describer serialized in :obj:`path`."""
         with open(self.path) as f:
             return DataDescriber.from_json(f)
+
+    def get_artifacts(self) -> Iterable[Any]:
+        return iter((self.get_data_describer(),))
 
     def write(self, output: Path) -> tuple[Path, ...]:
         dd: DataDescriber = self.get_data_describer()

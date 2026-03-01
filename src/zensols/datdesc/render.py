@@ -1,7 +1,7 @@
 """Classes to create first class object and process files.
 
 """
-from typing import Iterable
+from typing import Iterable, Any
 from dataclasses import dataclass, field
 from abc import abstractmethod, ABCMeta
 import logging
@@ -20,6 +20,14 @@ class Renderable(Dictable, metaclass=ABCMeta):
     """
     path: Path = field()
     """The input definition of the object to render."""
+
+    def get_artifacts(self) -> Iterable[Any]:
+        """Return artifacts created found on :obj:`path`."""
+        return iter(())
+
+    def __iter__(self) -> Iterable[Any]:
+        """See :meth:`get_artifacts`."""
+        return self.get_artifacts()
 
     @abstractmethod
     def write(self, output: Path) -> Path:
@@ -72,11 +80,15 @@ class RenderableFactory(Dictable):
         if rend_name is None:
             if expect:
                 raise DataDescriptionError(f'Unknown file type mapping: {path}')
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"no match: '{name}' using '{pat}'")
         else:
             return self._from_name(rend_name, path)
 
     def _from_dir(self, path: Path) -> Iterable[Renderable]:
-        return map(self._from_file, path.iterdir())
+        return filter(
+            lambda r: r is not None,
+            map(self._from_file, path.iterdir()))
 
     def __call__(self, path: Path | str) -> Iterable[Renderable]:
         if isinstance(path, str):

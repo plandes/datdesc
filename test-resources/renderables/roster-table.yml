@@ -1,0 +1,14 @@
+rosterTab:
+  type: one_column
+  caption: Example dataframe using mock roster data.
+  head: Mock Roster
+  path: test-resources/renderables/roster.csv
+  template_params:
+    tabular: tabular
+    tabular_args: ''
+  column_renames:
+    name: the person's name
+    age: the age of the individual
+  row_range:
+  - 1
+  - -1

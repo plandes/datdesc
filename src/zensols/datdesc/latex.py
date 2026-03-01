@@ -181,6 +181,9 @@ class RenderableLatexTable(Renderable):
         """Return the tables configured in :obj:`path`."""
         return self.factory.from_file(self.path)
 
+    def get_artifacts(self):
+        return self.get_tables()
+
     def write(self, output: Path) -> tuple[Path, ...]:
         tables: tuple[Table, ...] = tuple(self.get_tables())
         if len(tables) == 0:

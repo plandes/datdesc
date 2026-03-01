@@ -585,6 +585,9 @@ class RenderableFigure(Renderable):
         for fig in fac.from_file(self.path):
             yield fig
 
+    def get_artifacts(self) -> Iterable[Any]:
+        return self.get_figures()
+
     def write(self, output: Path, image_format: str = None) -> tuple[Path, ...]:
         output_files: list[Path] = []
         figures: tuple[Path] = tuple(self.get_figures())
