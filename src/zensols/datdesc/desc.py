@@ -596,7 +596,7 @@ class DataDescriber(PersistableContainer, Dictable):
         return [max([min(min_col, len(str(s))) for s in df[col].values] +
                     [len(col)]) for col in df.columns]
 
-    def save_excel(self, output_file: Path) -> Path:
+    def save_excel(self, output_file: Path = None) -> Path:
         """Save all provided dataframe describers to an Excel file.
 
         :param output_file: the Excel file to write; ``.xlsx`` will be postpend
@@ -604,6 +604,7 @@ class DataDescriber(PersistableContainer, Dictable):
 
         """
         from xlsxwriter.worksheet import Worksheet
+        output_file = Path(self.name) if output_file is None else output_file
         if output_file.is_dir():
             output_file = output_file / self.name
         if len(output_file.suffix) == 0:
