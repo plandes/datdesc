@@ -17,6 +17,9 @@ datdesc_figure:
 datdesc_plot_point:
   class_name: zensols.datdesc.plots.PointPlot
 
+datdesc_plot_scatter:
+  class_name: zensols.datdesc.plots.ScatterPlot
+
 datdesc_plot_bar:
   class_name: zensols.datdesc.plots.BarPlot
 

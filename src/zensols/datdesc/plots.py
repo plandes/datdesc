@@ -110,9 +110,13 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
 
     def __post_init__(self):
         super().__post_init__()
-        df: pd.DataFrame = self.data
         if self.title is None:
             self.title = ''
+        self.set_data(self.data)
+        self.data = None
+
+    def set_data(self, df: pd.DataFrame):
+        """Set the point data using ``df``."""
         if df is not None and self.point_data is None and \
            self.x_column_name is not None and \
            self.y_column_name is not None and \
@@ -129,7 +133,6 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
             name: str
             for col, name in col_map:
                 self.add(name, df[col], x_vals)
-        self.data = None
 
     def add(self, name: str, line: Iterable[float], x_vals: Sequence = None):
         """Add the losses of a dataset by adding X values as incrementing
@@ -192,6 +195,135 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
             palette=self._get_palette(self.hue_names))
         params.update(self.plot_params)
         sns.pointplot(**params)
+        self._set_legend_title(axes, self.key_title)
+
+
+@dataclass
+class ScatterPlot(PaletteContainerPlot, DataFramePlot):
+    """Render a scatter plot using :mod:`seaborn` ``scatterplot``.
+
+    This is a simpler version of :class:`PointPlot` for when only point
+    rendering is needed.
+
+    """
+    scatter_data: List[Tuple[str, pd.DataFrame]] = field(default=None, repr=False)
+    """The data to plot.  Each element is a tuple with the plot name and a
+    dataframe with columns:
+
+        * :obj:`x_column_name`: the X values of the graph
+
+        * :obj:`y_column_name`: the Y values of the graph
+
+    Optionally use :meth:`add` to populate this list.
+
+    """
+    x_axis_name: str = field(default=None)
+    """The axis name with the X label."""
+
+    y_axis_name: str = field(default=None)
+    """The axis name with the Y label."""
+
+    x_column_name: str = field(default='x')
+    """The :obj:`data` column with the X values."""
+
+    y_column_name: Union[str, Sequence[Tuple[str, str]]] = field(default='y')
+    """The :obj:`data` column(s) with the Y values."""
+
+    key_title: str = field(default=None)
+    """The title that goes in the key."""
+
+    sample_rate: int = field(default=0)
+    """Every $n$ data point in the list is added to the plot."""
+
+    plot_params: Dict[str, Any] = field(default_factory=dict)
+    """Parameters given to :func:`seaborn.scatterplot`."""
+
+    hue_name: str = field(default=None, repr=False)
+    """The name of the hue given to :mod:`seaborn.scatterplot`."""
+
+    hue_names: Tuple[str, ...] = field(default=None, repr=False)
+    """Hue names given to :mod:`seaborn.scatterplot`."""
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.title is None:
+            self.title = ''
+        self.set_data(self.data)
+        self.data = None
+
+    def set_data(self, df: pd.DataFrame):
+        """Set the scatter data using ``df``."""
+        if df is not None and self.scatter_data is None and \
+           self.x_column_name is not None and \
+           self.y_column_name is not None and \
+           isinstance(self.y_column_name, (Tuple, List)) and \
+           self.x_column_name in df.columns:
+            x_vals: Sequence = df[self.x_column_name]
+            col_map: Sequence[Tuple[str, str]] = self.y_column_name
+            self.y_column_name = 'y_column'
+            col: str
+            name: str
+            for col, name in col_map:
+                self.add(name, df[col], x_vals)
+
+    def add(self, name: str, values: Iterable[float], x_vals: Sequence = None):
+        """Add a series of Y values to the scatter plot.
+
+        :param name: the series name
+
+        :param values: the Y values for the series
+
+        :param x_vals: the values used for the X axis, which defaults to
+                       ``range(1, n + 1)``
+
+        """
+        values = tuple(values)
+        n: int = len(values)
+        df = pd.DataFrame(
+            data=tuple(range(1, n + 1)) if x_vals is None else x_vals,
+            columns=[self.x_column_name])
+        df[self.y_column_name] = values
+        if self.scatter_data is None:
+            self.scatter_data = []
+        self.scatter_data.append((name, df))
+
+    def _scatter_data_to_meld(self) -> pd.DataFrame:
+        data: Sequence[Tuple[str, pd.DataFrame]] = self.scatter_data
+        hue_name: str = self.title
+        x_axis_name: str = self.x_axis_name
+        y_axis_name: str = self.y_axis_name
+        x_column_name: str = self.x_column_name
+        y_column_name: str = self.y_column_name
+        dfs: List[pd.DataFrame] = []
+        desc: str
+        dfl: pd.DataFrame
+        assert len(data) > 0
+        for desc, dfl in data:
+            dfl = dfl[[x_column_name, y_column_name]].copy()
+            dfl = dfl.rename(columns={
+                x_column_name: x_axis_name,
+                y_column_name: y_axis_name,
+            })
+            dfl[hue_name] = desc
+            dfs.append(dfl)
+        df: pd.DataFrame = pd.concat(dfs, ignore_index=True)
+        if self.sample_rate > 0:
+            df = df[(df.index % self.sample_rate) == 0]
+        self.hue_names = tuple(df[hue_name].drop_duplicates().to_list())
+        return df
+
+    def _render(self, axes: Axes):
+        import seaborn as sns
+        x_axis_name: str = self.x_axis_name
+        y_axis_name: str = self.y_axis_name
+        df: pd.DataFrame = self.data
+        if df is None:
+            df = self._scatter_data_to_meld()
+        params: Dict[str, Any] = dict(
+            ax=axes, data=df, x=x_axis_name, y=y_axis_name, hue=self.title,
+            palette=self._get_palette(self.hue_names))
+        params.update(self.plot_params)
+        sns.scatterplot(**params)
         self._set_legend_title(axes, self.key_title)
 
 

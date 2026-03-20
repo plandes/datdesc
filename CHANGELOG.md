@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.6] - 2026-03-20
+### Added
+- Add scatter plot.
+
+
 ## [1.4.5] - 2026-02-28
 There are significant CLI changes.  However, the API changes minor feature
 updates with no API changes that impact backward comparability.
@@ -287,7 +292,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.5...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.6...HEAD
+[1.4.6]: https://github.com/plandes/datdesc/compare/v1.4.5...v1.4.6
 [1.4.5]: https://github.com/plandes/datdesc/compare/v1.4.4...v1.4.5
 [1.4.4]: https://github.com/plandes/datdesc/compare/v1.4.3...v1.4.4
 [1.4.3]: https://github.com/plandes/datdesc/compare/v1.4.2...v1.4.3
