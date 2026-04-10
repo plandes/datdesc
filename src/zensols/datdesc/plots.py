@@ -52,6 +52,27 @@ class PaletteContainerPlot(Plot):
 
 
 @dataclass
+class CodePlot(PaletteContainerPlot):
+    """A plotter that executes :obj:`code_render` as a Python block.
+
+    """
+    code: str = field(default='')
+    """The code used to render the plot.  The code is executed with variable
+    ``ax`` set the :class:`~matplotlib.pyplot.Axes```plot`` set to this
+    instance.
+
+    """
+    context: Any = field(default=None)
+    """Data that is useful, and made available, when rendering the plot."""
+
+    def _render(self, axes: Axes):
+        _locs = locals()
+        _locs['context'] = self.context
+        _locs['plot'] = self
+        exec(self.code, None, _locs)
+
+
+@dataclass
 class DataFramePlot(Plot):
     """A base class for plots that render data from a Pandas dataframe.
 

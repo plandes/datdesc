@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.4.6] - 2026-03-20
 ### Added
 - Add scatter plot.
+- A plot (`CodePlot`) that evaluates to Python code to render.
 
 
 ## [1.4.5] - 2026-02-28

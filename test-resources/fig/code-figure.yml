@@ -1,0 +1,24 @@
+codeFig:
+  plots:
+    - type: code
+      context:
+        color: blue
+        x_labels: [0, π, 2π]
+      code: |
+        import numpy as np
+        print('data')
+        ax = axes
+        # generate data for one full cycle (0 to 2*pi)
+        x = np.linspace(0, 2 * np.pi, 1000)
+        y = np.sin(x)
+        # Plot on the passed axes
+        ax.plot(x, y, color=context['color'], linewidth=2)
+        # styling
+        ax.set_title('One Phase of a Sine Wave')
+        ax.set_xlabel('Radians')
+        ax.set_ylabel('Amplitude')
+        ax.axhline(0, color='black', linewidth=0.8)
+        ax.grid(True, linestyle='--', alpha=0.6)
+        # set ticks to show pi increments
+        ax.set_xticks([0, np.pi, 2 * np.pi])
+        ax.set_xticklabels(context['x_labels'])

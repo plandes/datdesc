@@ -22,7 +22,7 @@ testint:
 			@echo "running integration test"
 			$(eval dte=$(shell date +'%Y/%m/%d'))
 			@mkdir -p target/lat
-			@make pyinvoke PY_INVOKE_ARG="-e testcur" \
+			@$(MAKE) pyinvoke PY_INVOKE_ARG="-e testcur" \
 				ARG="table test-resources/config target/lat"
 			@( cd target/lat ; \
 			  for i in * ; do \
