@@ -40,3 +40,22 @@
   \caption{The top \anontabtopn\ most frequently annotated sections.}
   \label{tab:anontabparam}
   \end{table}}
+
+% default table spans a single column (in two column) or the page
+% usage: \anontabparamCapTop[<placement>]{<size>}
+\newcommand{\anontabparamCapTop}[1][b]{%
+  \begin{table}[#1]
+  \centering
+  \small
+  \caption{The top \anontabtopn\ most frequently annotated sections.}
+  \label{tab:anontabparamCapTop}
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Type}              & \textbf{Tokens}   & \textbf{Spans}   & \textbf{Notes}                        \\
+    \hline
+    physical-examination       & 203K (8\%)        & 1,385 (6\%)      & Consult, Physician                    \\
+    history-of-present-illness & 239K (9\%)        & 1,348 (6\%)      & Consult, Discharge summary, Physician \\
+    allergies                  & 9,221 (0\%)       & 1,205 (5\%)      & Consult, Discharge summary, Physician \\
+    \hline
+  \end{tabular}
+  \end{table}}
