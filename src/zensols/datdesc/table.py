@@ -794,6 +794,8 @@ class TableFactory(Dictable):
         with open(table_path) as f:
             content = f.read()
         tdefs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
+        name: str
+        td: Dict[str, Any]
         for name, td in tdefs.items():
             table_type: str = td.get(self._TYPE_NAME)
             if table_type is None:
@@ -803,11 +805,13 @@ class TableFactory(Dictable):
             del td[self._TYPE_NAME]
             td['definition_file'] = table_path
             sec: str = self._get_section_by_name(table_type)
+            template_params: Dict[str, Any] = td.pop('template_params', {})
             try:
                 inst: Table = self.config_factory.new_instance(sec, **td)
                 inst.name = name
                 inst.type = sec[len(self._SECTION_PREFIX):]
                 self._fix_path(inst)
+                inst.template_params |= template_params
             except Exception as e:
                 msg: str = f"Could not parse table file '{table_path}': {e}"
                 raise LatexTableError(msg, name) from e
