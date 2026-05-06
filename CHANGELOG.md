@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changed
+- Fix bug with table config clobbering template parameters.
+- Feature to set position of caption (top or bottom) of one column table.
+
+
 ## [1.4.6] - 2026-03-20
 ### Added
 - Add scatter plot.
