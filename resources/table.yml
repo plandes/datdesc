@@ -15,37 +15,6 @@ datdesc_table_factory:
 
 ## Table definitions
 #
-# datdesc_table_one_column:
-#   class_name: zensols.datdesc.latex.LatexTable
-#   template_params:
-#     tabular: tabular
-#     tabular_args: ''
-#   default_params:
-#     - [placement, '!ht']
-#     - [size]
-#   template: |-
-#     % default table spans a single column (in two column) or the page
-#     % usage: {{ usage }}
-#     {% if head is not none  -%}
-#     \newcommand{\{{-name-}}Head}{ {{-head-}} }
-#     {% endif -%}
-#     \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
-#       \begin{table}[ {{-p.placement-}} ]
-#       \centering
-#       {{ p.size }}
-#       \begin{ {{-t.tabular-}} }{{ t.tabular_args }}{ {{-columns-}} }
-#     {{ table }}
-#       \end{ {{-t.tabular-}} }
-#       {% if head is not none -%}
-#       \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
-#       {% else -%}
-#       {% if caption is not none and (caption|length > 0) -%}
-#       \caption{ {{-caption-}} }
-#       {% endif -%}
-#       {% endif -%}
-#       \label{tab:{{ name }}}
-#       \end{table}}
-
 datdesc_table_one_column:
   class_name: zensols.datdesc.latex.LatexTable
   template_params:
