@@ -174,6 +174,11 @@ class Figure(Deallocatable, Dictable):
     """Additional parameters given to :func:`matplotlib.pyplot.subplots`.
 
     """
+    savefig_params: Dict[str, Any] = field(
+        default_factory=lambda: {'bbox_inches': 'tight'})
+    """Additional parameters given to :func:`matplotlib.figure.Figure.savefig`.
+
+    """
     def __post_init__(self):
         super().__init__()
         self._subplots = PersistedWork('_subplots', self)
@@ -337,8 +342,8 @@ class Figure(Deallocatable, Dictable):
         self._get_figure().savefig(
             fname=path,
             format=self.image_format,
-            bbox_inches='tight',
-            metadata=self._get_image_metadata())
+            metadata=self._get_image_metadata(),
+            **self.savefig_params)
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'wrote: {path}')
         return path

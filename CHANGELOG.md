@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.7] - 2026-05-22
 ### Changed
 - Fix bug with table config clobbering template parameters.
 - Feature to set position of caption (top or bottom) of one column table.
+- Add configurable parameters for the `savefig` call.
 
 
 ## [1.4.6] - 2026-03-20
@@ -298,7 +300,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.6...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.7...HEAD
+[1.4.7]: https://github.com/plandes/datdesc/compare/v1.4.6...v1.4.7
 [1.4.6]: https://github.com/plandes/datdesc/compare/v1.4.5...v1.4.6
 [1.4.5]: https://github.com/plandes/datdesc/compare/v1.4.4...v1.4.5
 [1.4.4]: https://github.com/plandes/datdesc/compare/v1.4.3...v1.4.4
