@@ -261,8 +261,6 @@ class DataclassStash(DataFrameStash):
     def get_describer(self) -> DataFrameDescriber:
         meta: tuple[tuple[str, str], ...] = tuple(map(
             lambda f: (f.name, f.doc.text), self.metadata.fields_by_order))
-        name: str = self._to_c_const(self.metadata.class_type)
-        desc: str = self.metadata.doc.text
         return DataFrameDescriber(
             name=self._to_c_const(self.metadata.class_type),
             desc=None if self.metadata.doc is None else self.metadata.doc.text,
