@@ -56,4 +56,4 @@ doc:
         url: 'https://numpy.org/doc/stable'
       pandas:
         modules: ['pandas']
-        url: 'https://pandas.pydata.org/pandas-docs/stable'
+        url: 'https://pandas.pydata.org/pandas-docs/version/2.3/'

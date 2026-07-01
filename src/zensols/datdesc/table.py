@@ -98,7 +98,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
     """Indexes of rows to put double horizontal line breaks."""
 
     rules: Dict[int, str] = field(default_factory=dict)
-    """Like :obj:`hlines` but allows other horizontal lines such as ``toprule`.
+    """Like :obj:`hlines` but allows other horizontal lines such as ``toprule``.
     Each key/value is a tuple of row and the verbatim text to add at that place.
 
     """
@@ -690,10 +690,10 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 class TableFactory(Dictable):
     """Reads the table definitions file and writes a Latex ``.sty`` file of the
     generated tables from the CSV data.  Tables are created with either
-    :meth:`usage` or :meth:`from_file`.  See the `usage`_ documentation for
+    :meth:`usage` or :meth:`from_file`.  See the `usage`__ documentation for
     information about the configuration files used by :meth:`from_file`.
 
-    .. _usage: https://github.com/plandes/datdesc?#tables
+    __ https://github.com/plandes/datdesc#tables
 
     """
     _DEFAULT_INSTANCE: ClassVar[TableFactory] = None
@@ -735,7 +735,7 @@ class TableFactory(Dictable):
 
     @classmethod
     def reset_default_instance(cls: TableFactory):
-        """Force :meth:`default_instance' to re-instantiate a new instance on a
+        """Force :meth:`default_instance` to re-instantiate a new instance on a
         subsequent call.
 
         """

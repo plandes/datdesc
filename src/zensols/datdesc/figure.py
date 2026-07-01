@@ -394,10 +394,10 @@ class _FigureSerializer(Serializer):
 @dataclass
 class FigureFactory(Dictable):
     """Create instances of :`.Figure` using :meth:`create` or from configuration
-    files with :meth:`from_file`.  See the `usage`_ documentation for
+    files with :meth:`from_file`.  See the `usage`__ documentation for
     information about the configuration files used by :meth:`from_file`.
 
-    .. _usage: https://github.com/plandes/datdesc?#figures
+    __ https://github.com/plandes/datdesc#tables
 
     """
     _DEFAULT_INSTANCE: ClassVar[FigureFactory] = None

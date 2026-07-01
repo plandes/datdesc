@@ -1,7 +1,7 @@
 """Generate LaTeX tables in a .sty file from CSV files.  The paths to the CSV
 files to create tables from and their metadata is given as a YAML configuration
 file.  Paraemters are both files or both directories.  When using directories,
-only files that match *-table.yml are considered.
+only files that match ``*-table.yml`` are considered.
 
 """
 __author__ = 'Paul Landes'

@@ -10,11 +10,13 @@ for the following purposes:
 
 The object instance graph hierarchy is:
 
-|  :class:`.HyperparamSet`
-|  |
-|  +-- :class:`.HyperparamModel`
-|      |
-|      +--:class:`.Hyperparam`
+.. parsed-literal::
+
+   :class:`.HyperparamSet`
+   |
+   +-- :class:`.HyperparamModel`
+       |
+       +-- :class:`.Hyperparam`
 
 Access to the hyperparameters is done by calling the *set* or *model* levels
 with a *dotted path notation* string.  For example, ``svm.C`` first navigates to
