@@ -42,7 +42,7 @@ project:
       - 'openpyxl~=3.1.5'
       - 'matplotlib~=3.10.8'
       - 'seaborn~=0.13.2'
-      - 'zensols.util~=1.16.3'
+      - 'zensols.util~=1.16.11'
   # the program is called on the command line
   has_entry_points: true
 doc:

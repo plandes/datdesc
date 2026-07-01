@@ -23,8 +23,8 @@ class TestBase(TestUtil):
         self._dfs = dfs
         self._assertFile(dfs)
 
-    def test_nascent_append(self):
-        dfs = self._create_dfs()
+    def _test_nascent_append(self, **kwargs):
+        dfs = self._create_dfs(**kwargs)
         self.assertEqual('key', dfs.dataframe.index.name)
         self.assertEqual(0, len(dfs))
         dfs.dump('Stan', (16,))
@@ -36,21 +36,52 @@ class TestBase(TestUtil):
         self._dfs = dfs
         self._assertFile(dfs)
 
-    def test_append(self):
+    def test_nascent_append(self):
+        self._test_nascent_append()
+
+    def test_nascent_append_sort_key(self):
+        self._test_nascent_append(sort_columns=('key',))
+
+    def test_nascent_append_sort_value(self):
+        self._test_nascent_append(sort_columns=('value',))
+
+    def _test_append(self, sort: str, **kwargs):
         df = self._get_example_df()
         df.index.name = 'key'
-        dfs = self._create_dfs(dataframe=df)
+        dfs = self._create_dfs(dataframe=df, **kwargs)
         self.assertEqual(4, len(df))
         dfs.dump('Mackey', (33, False))
         self.assertFalse(self.dfs_path.exists())
         self.assertEqual(5, len(dfs.dataframe))
-        self.assertEqual(('Stan', 'Kyle', 'Cartman', 'Kenny', 'Mackey'),
-                         tuple(dfs.keys()))
-        self.assertEqual(
-            ((16, True), (20, True), (19, False), (18, True), (33, False)),
-            tuple(dfs.values()))
+        if sort == 'name':
+            self.assertEqual(('Cartman', 'Kenny', 'Kyle', 'Mackey', 'Stan'),
+                             tuple(dfs.keys()))
+            self.assertEqual(
+                ((19, False), (18, True), (20, True), (33, False), (16, True)),
+                tuple(dfs.values()))
+        elif sort == 'age':
+            self.assertEqual(('Stan', 'Kenny', 'Cartman', 'Kyle', 'Mackey'),
+                             tuple(dfs.keys()))
+            self.assertEqual(
+                ((16, True), (18, True), (19, False), (20, True), (33, False)),
+                tuple(dfs.values()))
+        else:
+            self.assertEqual(('Stan', 'Kyle', 'Cartman', 'Kenny', 'Mackey'),
+                             tuple(dfs.keys()))
+            self.assertEqual(
+                ((16, True), (20, True), (19, False), (18, True), (33, False)),
+                tuple(dfs.values()))
         self._dfs = dfs
         self._assertFile(dfs)
+
+    def test_append(self):
+        self._test_append(None)
+
+    def test_append_sort_key(self):
+        self._test_append('name', sort_columns=('key',))
+
+    def test_append_sort_col(self):
+        self._test_append('age', sort_columns=('age',))
 
     def _create_update_df(self):
         df = pd.DataFrame(

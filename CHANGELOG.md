@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.8] - 2026-06-30
+### Changed
+- Added a stash, and a unit test case for it, that uses CSV files as backing
+  stores for Python `dataclasses`.  This uses a very simple object relational
+  mapping using the `dataclasses` introspection library.
+
+
 ## [1.4.7] - 2026-05-22
 ### Changed
 - Fix bug with table config clobbering template parameters.
@@ -300,7 +307,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.7...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.8...HEAD
+[1.4.8]: https://github.com/plandes/datdesc/compare/v1.4.7...v1.4.8
 [1.4.7]: https://github.com/plandes/datdesc/compare/v1.4.6...v1.4.7
 [1.4.6]: https://github.com/plandes/datdesc/compare/v1.4.5...v1.4.6
 [1.4.5]: https://github.com/plandes/datdesc/compare/v1.4.4...v1.4.5

@@ -36,11 +36,14 @@ class TestUtil(object):
                   ('age', 'the age of the individual')))
 
     def _create_dfs(self, **kwargs):
+        cls = DataFrameStash
         if 'single_column_index' not in kwargs:
             kwargs['single_column_index'] = None
         if 'auto_commit' not in kwargs:
             kwargs['auto_commit'] = False
-        return DataFrameStash(path=self.dfs_path, **kwargs)
+        if 'test_class' in kwargs:
+            cls = kwargs.pop('test_class')
+        return cls(path=self.dfs_path, **kwargs)
 
     def _assertFile(self, dfs: DataFrameStash):
         self.assertFalse(self.dfs_path.exists())
