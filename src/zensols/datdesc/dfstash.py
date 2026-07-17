@@ -14,8 +14,8 @@ import re
 from pathlib import Path
 import pandas as pd
 from zensols.config import Dictable
-from zensols.persist import PersistableError, CloseableStash, persisted
-from zensols.dataclasses.inspect import DataclassMetadata, ClassDoc, ClassField
+from zensols.persist import PersistableError, CloseableStash
+from zensols.dataclasses.inspect import DataclassMetadata, ClassField
 from .desc import DataFrameDescriber
 
 logger = logging.getLogger(__name__)
