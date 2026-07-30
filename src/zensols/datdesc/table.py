@@ -8,7 +8,6 @@ from collections.abc import Sequence, Iterable, Callable
 from dataclasses import dataclass, field
 from abc import abstractmethod, ABCMeta
 import logging
-import sys
 import re
 import string
 import itertools as it
@@ -17,14 +16,13 @@ from io import TextIOBase, StringIO
 from pathlib import Path
 import pandas as pd
 import yaml
-from jinja2 import Template, Environment, BaseLoader
 from tabulate import tabulate
 from zensols.util import Failure
 from zensols.persist import persisted, PersistedWork
 from zensols.config import (
     Dictable, ConfigFactory, ImportIniConfig, ImportConfigFactory
 )
-from .render import RenderableArtifact
+from .renderlatex import RenderableLatexArtifact
 from . import LatexTableError
 
 logger = logging.getLogger(__name__)
@@ -37,7 +35,7 @@ _round: Callable = round
 
 
 @dataclass
-class Table(RenderableArtifact, metaclass=ABCMeta):
+class Table(RenderableLatexArtifact, metaclass=ABCMeta):
     """Generates a Zensols styled Latex table from a CSV file.
 
     """
@@ -47,29 +45,19 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     _FILE_NAME_REGEX: ClassVar[re.Pattern] = re.compile(r'(.+)\.yml')
     """Used to narrow down to a :obj:`package_name`."""
 
+    writes: list[str] = field(default_factory=lambda: ['template', 'variables'])
+    """A list of what to output for this table.  Entries are ``table`` and
+    ``varaibles``.
+
+    """
     head: str = field(default=None)
     """The header to use for the table, which is used as the text in the list of
     tables and made bold in the table.
 
     """
     type: str = field(default=None)
-    """"""
-    template_params: dict[str, str] = field(default_factory=dict)
-    """Parameters used in the template."""
+    """The type of table (i.e. ``one_column``)."""
 
-    default_params: Sequence[Sequence[str]] = field(default_factory=list)
-    """Default parameters to be substituted in the template that are
-    interpolated by the LaTeX numeric values such as #1, #2, etc.  This is a
-    sequence (list or tuple) of ``(<name>, [<default>])`` where ``name`` is
-    substituted by name in the template and ``default`` is the default if not
-    given in :obj:`params`.
-
-    """
-    params: dict[str, str] = field(default_factory=dict)
-    """Parameters used in the template that override of the
-    :obj:`default_params`.
-
-    """
     definition_file: Path = field(default=None)
     """The YAML file from which this instance was created."""
 
@@ -209,11 +197,6 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     unformatted dataframe::
 
         v = stages['unformatted'].iloc[2, 3]
-
-    """
-    writes: list[str] = field(default_factory=lambda: ['table', 'variables'])
-    """A list of what to output for this table.  Entries are ``table`` and
-    ``varaibles``.
 
     """
     code_pre: str = field(default=None)
@@ -492,54 +475,6 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
         params.update(self.tabulate_params)
         return params
 
-    def _get_command_params(self) -> dict[str, str]:
-        """Create parameters prefixed as a nested :class:`~builtins.Dict` with
-        name ``p`` to be substituted as values in the table template.  A
-        ``p.argdef`` is also added that gives the commands number of arguments
-        and the initial default.
-
-        """
-        dparams: Sequence[Sequence[str]] = self.default_params  # metadata
-        oparams: dict[str, str] = self.params  # user overridden
-        aparams: dict[str, str] = {}  # argument params
-        # to populate and return
-        params: dict[str, str] = {
-            'p': aparams,
-            't': self.template_params}
-        proto: str = ''
-        init_arg: str = ''
-        pix: int = 1  # parameter index
-        usage = StringIO()
-        usage.write(f'\\{self.name}')
-        dpix: int  # default parameter index
-        param: Sequence[str]
-        for dpix, param in enumerate(dparams):
-            lp: int = len(param)
-            if lp < 1:
-                msg: str = f"No entries in param definition '{param}'"
-                raise LatexTableError(msg, self.name)
-            if len(param) > 2:
-                raise LatexTableError(
-                    f"Expecting < 2 params: '{param}'", self.name)
-            name: str = param[0]
-            default: str = param[1] if len(param) > 1 else None
-            val: str = oparams.get(name, default)
-            if dpix == 0:
-                if val is not None:
-                    init_arg = f'[{val}]'
-            if dpix == 0 and val is not None:
-                usage.write(f'[<{name}>]')
-            else:
-                usage.write(f'{{<{name}>}}')
-            if val is None or (dpix == 0 and len(init_arg) > 0):
-                val = f'#{pix}'
-                pix += 1
-            aparams[name] = val
-        proto = f'[{pix - 1}]{init_arg}'
-        aparams['argdef'] = proto
-        params['usage'] = usage.getvalue()
-        return params
-
     @abstractmethod
     def _write_table_content(self, depth: int, writer: TextIOBase,
                              content: list[str]):
@@ -588,18 +523,11 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
                 v = stages['unformatted'].iloc[row, col]
             self._write_variable_content(name, v, depth, writer)
 
-    def _render_flat_table(self, params: dict[str, Any]) -> str:
-        if logger.isEnabledFor(logging.TRACE):
-            logger.trace(f'template: <<{self.template}>>')
-        template: Template = Environment(loader=BaseLoader).from_string(
-            self.template)
-        return template.render(params)
-
     def _apply_rendered_table(self, table: list[str], code: str):
         if code is not None:
             exec(code)
 
-    def _write_table(self, depth: int = 0, writer: TextIOBase = sys.stdout):
+    def _write_template(self, depth: int, writer: TextIOBase):
         """Write the formatted table."""
         df: pd.DataFrame = self.formatted_dataframe
         table_rows: tuple[list[Any], ...] = tuple(self._get_table_rows(df))
@@ -612,19 +540,8 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
         self._write_table_content(1, table_rows_flat, tab_lines)
         template_params['table'] = table_rows_flat.getvalue().rstrip()
         template_params.update(cmd_params)
-        table: str = self._render_flat_table(template_params)
+        table: str = self._render_template(template_params)
         self._write_block(table, depth, writer)
-
-    def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
-        writeable: str
-        for writeable in self.writes:
-            meth_name: str = f'_write_{writeable}'
-            if not hasattr(self, meth_name):
-                raise LatexTableError(
-                    f"No such writeable object in {self}: '{writeable}'")
-            else:
-                meth: Callable = getattr(self, meth_name)
-                meth(depth, writer)
 
     def _serialize_dict(self) -> dict[str, Any]:
         priorities: list[str] = 'type caption head path definition_file'.split()

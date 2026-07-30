@@ -2,12 +2,15 @@
 
 """
 from typing import Any
-from collections.abc import Iterable
+from collections.abc import Iterable, Callable
 from dataclasses import dataclass, field
 from abc import abstractmethod, ABCMeta
+import sys
+from io import TextIOBase
 import logging
 import re
 from pathlib import Path
+from jinja2 import Template, Environment, BaseLoader
 from zensols.config import Dictable, ConfigFactory
 from zensols.persist import PersistableContainer
 from . import DataDescriptionError
@@ -21,19 +24,28 @@ class RenderableArtifact(PersistableContainer, Dictable, metaclass=ABCMeta):
 
     """
     name: str = field()
-    """The name of the item, also used in reference labels."""
+    """The name of the artifiact, also used in reference labels."""
 
     path: Path | str = field()
-    """The file that has the data used to populate this item."""
+    """The file that has the data used to populate this artifiact."""
+
+    caption: str = field()
+    """The human readable string used to the caption in the figure."""
 
     template: str = field()
     """The figure template, which lives in the application configuration
     ``obj.yml``.
 
     """
-    caption: str = field()
-    """The human readable string used to the caption in the figure."""
+    template_params: dict[str, str] = field(default_factory=dict)
+    """Parameters used in the template."""
 
+    writes: list[str] = field(default_factory=lambda: ['template'])
+    """A list of what to output for this artifact.  Each must be a method in the
+    subclass and the default only renders the template.  This is configurable so
+    a client can decide what from the artifact is output.
+
+    """
     def __post_init__(self):
         super().__init__()
 
@@ -60,6 +72,29 @@ class RenderableArtifact(PersistableContainer, Dictable, metaclass=ABCMeta):
 
         """
         self._set_path(path)
+
+    def _render_template(self, params: dict[str, Any]) -> str:
+        if logger.isEnabledFor(logging.TRACE):
+            logger.trace(f'template: <<{self.template}>>')
+        template: Template = Environment(loader=BaseLoader).from_string(
+            self.template)
+        return template.render(params)
+
+    def _write_template(self, depth: int, writer: TextIOBase):
+        template_params: dict[str, Any] = dict(self.asdict())
+        rendered: str = self._render_template(template_params)
+        self._write_block(rendered, depth, writer)
+
+    def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
+        writeable: str
+        for writeable in self.writes:
+            meth_name: str = f'_write_{writeable}'
+            if not hasattr(self, meth_name):
+                raise DataDescriptionError(
+                    f"No such writeable object in {self}: '{writeable}'")
+            else:
+                meth: Callable = getattr(self, meth_name)
+                meth(depth, writer)
 
 
 RenderableArtifact.path = RenderableArtifact._path

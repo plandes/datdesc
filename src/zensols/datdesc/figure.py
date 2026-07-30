@@ -23,7 +23,8 @@ from zensols.persist import persisted, PersistedWork, FileTextUtil
 from zensols.config import (
     Serializer, Dictable, ConfigFactory, ImportConfigFactory, ImportIniConfig
 )
-from . import FigureError, RenderableArtifact, Renderable
+from . import FigureError
+from .render import RenderableArtifact, Renderable
 
 logger = logging.getLogger(__name__)
 

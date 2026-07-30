@@ -69,10 +69,12 @@ class PrototypeApplication(object):
         fig_file = Path(f'test-resources/fig/iris-{name}-figure.yml')
         fac = FigureFactory.default_instance()
         fig: Figure = next(fac.from_file(fig_file))
+        fig.write()
         fig.image_file_norm = False
         fig.save()
+        return fig
 
     def proto(self):
         """Prototype test."""
-        #self._create_figure_example('radar')
-        self._create_write_yml()
+        self._create_figure_example('bar')
+        #self._create_example()
