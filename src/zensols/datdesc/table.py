@@ -22,10 +22,11 @@ import yaml
 from jinja2 import Template, Environment, BaseLoader
 from tabulate import tabulate
 from zensols.util import Failure
-from zensols.persist import persisted, PersistedWork, PersistableContainer
+from zensols.persist import persisted, PersistedWork
 from zensols.config import (
     Dictable, ConfigFactory, ImportIniConfig, ImportConfigFactory
 )
+from .render import RenderableArtifact
 from . import LatexTableError
 
 logger = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ _round: Callable = round
 
 
 @dataclass
-class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
+class Table(RenderableArtifact, metaclass=ABCMeta):
     """Generates a Zensols styled Latex table from a CSV file.
 
     """
@@ -47,20 +48,6 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 
     _FILE_NAME_REGEX: ClassVar[re.Pattern] = re.compile(r'(.+)\.yml')
     """Used to narrow down to a :obj:`package_name`."""
-
-    path: Union[Path, str] = field()
-    """The path to the CSV file to make a latex table."""
-
-    name: str = field()
-    """The name of the table, also used as the label."""
-
-    template: str = field()
-    """The table template, which lives in the application configuration
-    ``obj.yml``.
-
-    """
-    caption: str = field(default='')
-    """The human readable string used to the caption in the table."""
 
     head: str = field(default=None)
     """The header to use for the table, which is used as the text in the list of
@@ -256,7 +243,7 @@ class Table(PersistableContainer, Dictable, metaclass=ABCMeta):
 
     """
     def __post_init__(self):
-        super().__init__()
+        super().__post_init__()
         if isinstance(self.uses, str):
             self.uses = re.split(r'\s*,\s*', self.uses)
         if isinstance(self.hlines, (tuple, list)):

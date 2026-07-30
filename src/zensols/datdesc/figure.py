@@ -21,13 +21,11 @@ from matplotlib.pyplot import Axes
 from matplotlib.figure import Figure as MatplotFigure
 from zensols.util import Failure
 from zensols.config import Settings
-from zensols.persist import (
-    persisted, PersistedWork, FileTextUtil, Deallocatable
-)
+from zensols.persist import persisted, PersistedWork, FileTextUtil
 from zensols.config import (
     Serializer, Dictable, ConfigFactory, ImportConfigFactory, ImportIniConfig
 )
-from . import FigureError, Renderable
+from . import FigureError, RenderableArtifact, Renderable
 
 logger = logging.getLogger(__name__)
 
@@ -118,15 +116,12 @@ class Plot(Dictable, metaclass=ABCMeta):
 
 
 @dataclass
-class Figure(Deallocatable, Dictable):
+class Figure(RenderableArtifact):
     """An object oriented class to manage :class:`matplit.figure.Figure` and
     subplots (:class:`matplit.pyplot.Axes`).
 
     """
     _DICTABLE_ATTRIBUTES: ClassVar[Set[str]] = {'path'}
-
-    name: str = field(default='Untitled')
-    """Used for file naming and the title."""
 
     config_factory: ConfigFactory = field(default=None, repr=False)
     """The configuration factory used to create plots."""
@@ -180,7 +175,7 @@ class Figure(Deallocatable, Dictable):
 
     """
     def __post_init__(self):
-        super().__init__()
+        super().__post_init__()
         self._subplots = PersistedWork('_subplots', self)
         self._rendered = False
         self._file_name = None
@@ -239,11 +234,10 @@ class Figure(Deallocatable, Dictable):
         """The matplotlib figure."""
         return self._get_subplots()[0]
 
-    @property
-    def path(self) -> Path:
-        """The path of the image figure to save.  This is constructed from
-        :obj:`image_dir`, :obj:`name` and :obj`image_format`.  Conversely,
-        when set, it updates these fields.
+    def _get_path(self) -> Path:
+        """Get the path of the image figure to save.  This is constructed from
+        :obj:`image_dir`, :obj:`name` and :obj`image_format`.  Conversely, when
+        set, it updates these fields.
 
         """
         file_name: str = None
@@ -257,11 +251,10 @@ class Figure(Deallocatable, Dictable):
             file_name = f'{file_name}.{self.image_format}'
         return self.image_dir / file_name
 
-    @path.setter
-    def path(self, path: Path):
-        """The path of the image figure to save.  This is constructed from
-        :obj:`image_dir`, :obj:`name` and :obj`image_format`.  Conversely,
-        when set, it updates these fields.
+    def _set_path(self, path: Path):
+        """Set the path of the image figure to save.  This is constructed from
+        :obj:`image_dir`, :obj:`name` and :obj`image_format`.  Conversely, when
+        set, it updates these fields.
 
         """
         if path is None:
@@ -532,7 +525,7 @@ class FigureFactory(Dictable):
             content = f.read()
             defs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
         self._unserialize(defs)
-        return self._from_dict(defs, str(figure_path))
+        return self._from_dict(defs, figure_path)
 
     def from_dict(self, figure_config: Dict[str, Any]) -> Iterable[Figure]:
         """Return figures parsed from nested :class:`builtins.dict` (see class
@@ -542,10 +535,10 @@ class FigureFactory(Dictable):
 
         """
         self._unserialize(figure_config)
-        return self._from_dict(figure_config, '<inline dict>')
+        return self._from_dict(figure_config)
 
-    def _from_dict(self, figure_config: Dict[str, Any], figure_path: str) -> \
-            Iterable[Figure]:
+    def _from_dict(self, figure_config: Dict[str, Any],
+                   figure_path: Path = None) -> Iterable[Figure]:
         def raise_fn(msg: str):
             msg = f"{msg} in figure '{fig_name}' in file '{figure_path}'"
             raise FigureError(msg)
@@ -555,9 +548,10 @@ class FigureFactory(Dictable):
         fig_name: str
         fdef: Dict[str, Any]
         for fig_name, fdef in figure_config.items():
-            pdefs: List[Dict[str, Any]] = fdef.pop(self._PLOTS_NAME, None)
+            pdefs: list[dict[str, Any]] = fdef.pop(self._PLOTS_NAME, None)
             fig: Figure = self.config_factory.new_instance(
-                self._FIGURE_SEC_NAME, **fdef)
+                self._FIGURE_SEC_NAME,
+                **dict(fdef) | {'path': figure_path})
             if pdefs is None:
                 raise_fn(f"Plot definition '{self._PLOTS_NAME}' not found")
             if not isinstance(pdefs, List):

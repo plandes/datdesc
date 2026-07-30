@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Value formatting for bar plots.
+- A base class `RenderableArtifact` created by `Renderable`.
 
 
 ## [1.4.8] - 2026-06-30

@@ -8,9 +8,60 @@ import logging
 import re
 from pathlib import Path
 from zensols.config import Dictable, ConfigFactory
+from zensols.persist import PersistableContainer
 from . import DataDescriptionError
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class RenderableArtifact(PersistableContainer, Dictable, metaclass=ABCMeta):
+    """Data that can be rendered from a :class:`.Renderable`.
+
+    """
+    name: str = field()
+    """The name of the item, also used in reference labels."""
+
+    path: Path | str = field()
+    """The file that has the data used to populate this item."""
+
+    template: str = field()
+    """The figure template, which lives in the application configuration
+    ``obj.yml``.
+
+    """
+    caption: str = field()
+    """The human readable string used to the caption in the figure."""
+
+    def __post_init__(self):
+        super().__init__()
+
+    def _get_path(self) -> Path:
+        return self._path_value
+
+    def _set_path(self, path: Path):
+        self._path_value = path
+
+    @property
+    def _path(self) -> Path:
+        """The path of the rendered item to save.  This is constructed from
+        :obj:`image_dir`, :obj:`name` and :obj`image_format`.  Conversely,
+        when set, it updates these fields.
+
+        """
+        return self._get_path()
+
+    @_path.setter
+    def _path(self, path: Path):
+        """The path of the image figure to save.  This is constructed from
+        :obj:`image_dir`, :obj:`name` and :obj`image_format`.  Conversely,
+        when set, it updates these fields.
+
+        """
+        self._set_path(path)
+
+
+RenderableArtifact.path = RenderableArtifact._path
 
 
 @dataclass
@@ -21,7 +72,7 @@ class Renderable(Dictable, metaclass=ABCMeta):
     path: Path = field()
     """The input definition of the object to render."""
 
-    def get_artifacts(self) -> Iterable[Any]:
+    def get_artifacts(self) -> Iterable[RenderableArtifact]:
         """Return artifacts created found on :obj:`path`."""
         return iter(())
 
@@ -77,6 +128,7 @@ class RenderableFactory(Dictable):
             m: re.Match = pat.match(fname)
             if m is not None:
                 rend_name = name
+                break
         if rend_name is None:
             if expect:
                 raise DataDescriptionError(f'Unknown file type mapping: {path}')

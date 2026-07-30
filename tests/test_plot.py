@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 import shutil
 import pandas as pd
-from zensols.config import ImportYamlConfig, ImportConfigFactory
+from zensols.config import ImportYamlConfig, ImportConfigFactory, DictionaryConfig
 from zensols.datdesc.plots import BarPlot
 
 
@@ -13,7 +13,12 @@ class TestPlot(unittest.TestCase):
             shutil.rmtree(target)
 
     def test_bar(self):
-        fac = ImportConfigFactory(ImportYamlConfig('test-resources/fig/bar-plot.yml'))
+        def_conf = DictionaryConfig({
+            'note_event_figure':
+            {'path': None, 'template': None, 'caption': None}})
+        conf = ImportYamlConfig('test-resources/fig/bar-plot.yml')
+        conf.copy_sections(def_conf)
+        fac = ImportConfigFactory(def_conf)
         fig = fac('note_event_figure')
         df: pd.DataFrame = pd.read_csv('test-resources/fig/iris.csv')
         df = df['species ds_type'.split()]
