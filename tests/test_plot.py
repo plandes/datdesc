@@ -2,7 +2,9 @@ import unittest
 from pathlib import Path
 import shutil
 import pandas as pd
-from zensols.config import ImportYamlConfig, ImportConfigFactory, DictionaryConfig
+from zensols.config import (
+    ImportYamlConfig, ImportConfigFactory, DictionaryConfig
+)
 from zensols.datdesc.plots import BarPlot
 
 
