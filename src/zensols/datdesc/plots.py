@@ -381,7 +381,10 @@ class BarPlot(PaletteContainerPlot, DataFramePlot):
 
     """
     render_value_font_size: int = field(default=None)
-    """Whether to add Y-axis values to the bars."""
+    """Whether to add Y-axis values to the bars and the font size to render."""
+
+    render_value_format: str = field(default=None)
+    """The (f-string) format with value ``x`` for the Y-axis value labels."""
 
     hue_palette: bool = field(default=False)
     """Whether to use the hue to calculate the palette colors."""
@@ -410,9 +413,14 @@ class BarPlot(PaletteContainerPlot, DataFramePlot):
             params['palette'] = self._get_palette(
                 self.data[self.hue_column_name].drop_duplicates())
         sns.barplot(**params)
-        if self.render_value_font_size:
+        if self.render_value_font_size is not None or \
+           self.render_value_format is not None:
+            params: dict[str, Any] = dict(
+                fontsize=self.render_value_font_size,
+                fmt=self.render_value_format)
+            params = dict(filter(lambda t: t[0] is not None, params.items()))
             for cont in axes.containers:
-                axes.bar_label(cont, fontsize=self.render_value_font_size)
+                axes.bar_label(cont, **params)
         if self.log_scale is not None:
             # add log scale
             axes.set_yscale('log', base=self.log_scale)

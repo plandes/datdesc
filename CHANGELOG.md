@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Added
+- Value formatting for bar plots.
+
+
 ## [1.4.8] - 2026-06-30
 ### Changed
 - Added a stash, and a unit test case for it, that uses CSV files as backing
