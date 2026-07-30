@@ -24,11 +24,8 @@ model ``svm``, then to the hyperparameter named ``C``.
 
 """
 from __future__ import annotations
-__author__ = 'Paul Landes'
-from typing import (
-    Union, Dict, Any, List, Tuple, ClassVar, Optional,
-    Type, Set, Sequence, Iterable
-)
+from typing import Any, ClassVar
+from collections.abc import Sequence, Iterable
 from dataclasses import dataclass, field
 from abc import ABCMeta, abstractmethod
 import logging
@@ -77,11 +74,11 @@ class Hyperparam(Dictable):
     Otherwise, the :obj:`value` member has the value of the hyperparameter.
 
     """
-    _DICTABLE_WRITE_EXCLUDES: ClassVar[Set[str]] = {'name'}
+    _DICTABLE_WRITE_EXCLUDES: ClassVar[set[str]] = {'name'}
     _NAME_REGEX = re.compile(r'^[a-zA-Z0-9_]+$')
     _NODE: ClassVar[str] = 'node()'
 
-    CLASS_MAP: ClassVar[Dict[str, Type]] = frozendict({
+    CLASS_MAP: ClassVar[dict[str, type]] = frozendict({
         'str': str,
         'choice': str,
         'float': float,
@@ -107,15 +104,14 @@ class Hyperparam(Dictable):
     documentation generation tasks.
 
     """
-    choices: Tuple[str, ...] = field(default=None)
+    choices: tuple[str, ...] = field(default=None)
     """When :obj:`type` is ``choice``, the value strings used in :obj:`value`.
 
     """
-    value: Optional[Union[str, float, int, bool, list, dict]] = \
-        field(default=None)
+    value: str | float | int | bool | list | dict | None = field(default=None)
     """The value of the hyperparamer used in the application."""
 
-    interval: Union[Tuple[float, float], Tuple[int, int]] = field(default=None)
+    interval: tuple[float | int, int] = field(default=None)
     """Valid intervals for :obj:`value` as an inclusive interval."""
 
     def __post_init__(self):
@@ -134,13 +130,13 @@ class Hyperparam(Dictable):
                     f'No choice values given for choice: {self}')
 
     @property
-    def _value(self) -> Optional[Union[str, float, int, bool, list, dict]]:
+    def _value(self) -> str | float | int | bool | list | dict | None:
         return self._value_val
 
     @_value.setter
-    def _value(self, val: Optional[Union[str, float, int, bool, list, dict]]):
-        cls: Type = type(val)
-        tcls: Type = self.cls
+    def _value(self, val: str | float | int | bool | list | dict | None):
+        cls: type = type(val)
+        tcls: type = self.cls
         if val is not None:
             if cls != tcls:
                 raise HyperparamValueError(
@@ -157,7 +153,7 @@ class Hyperparam(Dictable):
                         f'[{self.interval[0]}, {self.interval[1]}]')
         self._value_val = val
 
-    def _resolve(self, path: List[str], val: Any, set_val: bool = False) -> Any:
+    def _resolve(self, path: list[str], val: Any, set_val: bool = False) -> Any:
         if len(path) == 0:
             if set_val:
                 self.value = val
@@ -210,7 +206,7 @@ class Hyperparam(Dictable):
             raise HyperparamError(f"'{self}' is not subscriptable")
 
     @property
-    def cls(self) -> Type:
+    def cls(self) -> type:
         """The Python equivalent class of :obj:`type`."""
         return self.CLASS_MAP[self.type]
 
@@ -247,7 +243,7 @@ class HyperparamContainer(Dictable, metaclass=ABCMeta):
     _DICTABLE_WRITABLE_DESCENDANTS: ClassVar[bool] = True
 
     @abstractmethod
-    def _resolve(self, path: List[str], val: Any, set_val: bool) -> Any:
+    def _resolve(self, path: list[str], val: Any, set_val: bool) -> Any:
         """Drill down to the hyperparameter navigating through
         :class:`.HyperparamModel` and :class:`.HyperparamSet` using the dotted
         path notation (see module docs).
@@ -256,7 +252,7 @@ class HyperparamContainer(Dictable, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def flatten(self, deep: bool = False) -> Dict[str, Any]:
+    def flatten(self, deep: bool = False) -> dict[str, Any]:
         """Return a flattened directory with the dotted path notation (see
         module docs).
 
@@ -282,7 +278,7 @@ class HyperparamContainer(Dictable, metaclass=ABCMeta):
         """
         return self._resolve(path.split('.'), None, False)
 
-    def update(self, params: Union[Dict[str, Any], HyperparamContainer]):
+    def update(self, params: dict[str, Any] | HyperparamContainer):
         """Update parameter values.
 
         :param params: a dict of dotted path notation keys
@@ -318,10 +314,10 @@ class HyperparamModel(HyperparamContainer):
     as in place during documentation generation.
 
     """
-    params: Dict[str, Hyperparam] = field(default_factory=dict)
+    params: dict[str, Hyperparam] = field(default_factory=dict)
     """The hyperparameters keyed by their names."""
 
-    table: Optional[Dict[str, Any]] = field(default=None, repr=False)
+    table: dict[str, Any | None] = field(default=None, repr=False)
     """Overriding data used when creating a :class:`.Table` from
     :meth:`.DataFrameDescriber.create_table`.
 
@@ -332,7 +328,7 @@ class HyperparamModel(HyperparamContainer):
         if self.desc is None:
             self.desc = self.name
 
-    def _resolve(self, path: List[str], val: Any, set_val: bool) -> Any:
+    def _resolve(self, path: list[str], val: Any, set_val: bool) -> Any:
         if len(path) == 0:
             return self
         if len(path) == 1 and path[0] == Hyperparam._NODE:
@@ -341,11 +337,11 @@ class HyperparamModel(HyperparamContainer):
         return param._resolve(path[1:], val, set_val)
 
     @classmethod
-    def _flatten(cls, n: Any, p: Tuple[str], col: Dict[str, Any]):
+    def _flatten(cls, n: Any, p: tuple[str], col: dict[str, Any]):
         if isinstance(n, Hyperparam):
             np = n.name if p is None else f'{p}.{n.name}'
             cls._flatten(n.value, n.name, col)
-        elif isinstance(n, Dict):
+        elif isinstance(n, dict):
             for k, v in n.items():
                 np = k if p is None else f'{p}.{k}'
                 cls._flatten(v, np, col)
@@ -356,15 +352,15 @@ class HyperparamModel(HyperparamContainer):
         else:
             col[p] = n
 
-    def flatten(self, deep: bool = False) -> Dict[str, Any]:
-        def map_param(p: Hyperparam) -> Dict[str, Any]:
+    def flatten(self, deep: bool = False) -> dict[str, Any]:
+        def map_param(p: Hyperparam) -> dict[str, Any]:
             val: Any = p.value
             if p.type == 'dict' or p.type == 'list':
                 val = copy.deepcopy(val)
             return (p.name, val)
 
         if deep:
-            col: Dict[str, Any] = {}
+            col: dict[str, Any] = {}
             self._flatten(self.params, None, col)
             return col
         else:
@@ -376,8 +372,8 @@ class HyperparamModel(HyperparamContainer):
         and documentation.
 
         """
-        def map_row(p: Hyperparam) -> Dict[str, Any]:
-            dct: Dict[str, Any] = p.asdict()
+        def map_row(p: Hyperparam) -> dict[str, Any]:
+            dct: dict[str, Any] = p.asdict()
             dct['type'] = p.get_type_str()
             del dct['choices']
             del dct['interval']
@@ -456,7 +452,7 @@ class HyperparamModel(HyperparamContainer):
         return name in self.params
 
     def __getattr__(self, attr: str, default: Any = None) -> Any:
-        val: Optional[Hyperparam] = self.params.get(attr)
+        val: Hyperparam | None = self.params.get(attr)
         if val is not None:
             return val.value
         return super().__getattribute__(attr)
@@ -465,7 +461,7 @@ class HyperparamModel(HyperparamContainer):
         if attr in {'params', 'name', 'doc', 'desc', 'table'}:
             super().__setattr__(attr, value)
         else:
-            val: Optional[Hyperparam] = self.params.get(attr)
+            val: Hyperparam | None = self.params.get(attr)
             if val is not None:
                 val.value = value
             else:
@@ -490,19 +486,19 @@ class HyperparamSet(HyperparamContainer):
     """
     _DICTABLE_WRITABLE_DESCENDANTS: ClassVar[bool] = True
 
-    models: Dict[str, HyperparamModel] = field(default_factory=dict)
+    models: dict[str, HyperparamModel] = field(default_factory=dict)
     """The models containing hyperparameters for this set."""
 
-    name: Optional[str] = field(default=None)
+    name: str | None = field(default=None)
     """The name fo the hyperparameter set."""
 
-    def _resolve(self, path: List[str], val: Any, set_val: bool) -> Any:
+    def _resolve(self, path: list[str], val: Any, set_val: bool) -> Any:
         if len(path) == 0:
             raise HyperparamError(f'Missing model in path: {path}')
         model: HyperparamModel = self.models[path[0]]
         return model._resolve(path[1:], val, set_val)
 
-    def flatten(self, deep: bool = False) -> Dict[str, Any]:
+    def flatten(self, deep: bool = False) -> dict[str, Any]:
         def map_model(m: HyperparamModel):
             return map(lambda mt: (f'{m.name}.{mt[0]}', mt[1]),
                        m.flatten(deep).items())
@@ -586,7 +582,7 @@ class HyperparamSetLoader(object):
     files.
 
     """
-    data: Union[Dict[str, Any], Path, TextIOBase] = field()
+    data: dict[str, Any] | Path | TextIOBase = field()
     """The source of data to load, which is a YAML :class:`pathlib.Path`,
     :class:`dict` or stream :class:`io.TextIOBase`.
 
@@ -598,18 +594,18 @@ class HyperparamSetLoader(object):
     other sections.
 
     """
-    updates: Sequence[Dict[str, Any]] = field(default=())
+    updates: Sequence[dict[str, Any]] = field(default=())
     """A sequence of dictionaries with keys as :class:`.HyperparamModel` names
     and values as sections with values to set after loading using :obj:`data`.
 
     """
-    def _from_param(self, name: str, param: Dict[str, Any]):
+    def _from_param(self, name: str, param: dict[str, Any]):
         if 'name' not in param:
             param['name'] = name
         return Hyperparam(**param)
 
-    def _from_model(self, name: str, model: Dict[str, Any]):
-        params: Dict[str, Any] = model['params']
+    def _from_model(self, name: str, model: dict[str, Any]):
+        params: dict[str, Any] = model['params']
         return HyperparamModel(
             name=name,
             desc=model.get('desc'),
@@ -618,7 +614,7 @@ class HyperparamSetLoader(object):
                             params.items())),
             table=model.get('table'))
 
-    def _from_dict(self, data: Dict[str, Any],
+    def _from_dict(self, data: dict[str, Any],
                    name: str = None) -> HyperparamSet:
         return HyperparamSet(
             name=name,
@@ -637,11 +633,11 @@ class HyperparamSetLoader(object):
         with open(path) as f:
             return self._from_stream(f, name=name)
 
-    def _get_updates(self) -> Iterable[Dict[str, Any]]:
-        param_update: Dict[str, Any]
+    def _get_updates(self) -> Iterable[dict[str, Any]]:
+        param_update: dict[str, Any]
         for param_update in self.updates:
             for k, v in param_update.items():
-                settings: Dict[str, Any] = dict(self.config[v])
+                settings: dict[str, Any] = dict(self.config[v])
                 yield dict(map(lambda t: (f'{k}.{t[0]}', t[1]),
                                settings.items()))
 
@@ -653,20 +649,20 @@ class HyperparamSetLoader(object):
         hs: HyperparamSet
         if isinstance(self.data, Path):
             hs = self._from_path(self.data)
-        elif isinstance(self.data, Dict):
+        elif isinstance(self.data, dict):
             hs = self._from_dict(self.data)
         elif isinstance(self.data, TextIOBase):
             hs = self._from_stream(self.data)
         else:
             raise APIError(f'Unknown input type: {type(self.data)}')
         if self.config is not None:
-            update: Dict[str, Any]
+            update: dict[str, Any]
             for update in self._get_updates():
                 hs.update(update)
         return hs
 
     def __call__(self, path: str = None) -> \
-            Union[HyperparamSet, HyperparamSet, Hyperparam]:
+            HyperparamSet | HyperparamSet | Hyperparam:
         """Calls "meth:`load`.
 
         :param path: if provided, use as the dot separated path in to
@@ -681,7 +677,7 @@ class HyperparamSetLoader(object):
             return hset
 
     def __getitem__(self, path: str) -> \
-            Union[HyperparamSet, HyperparamSet, Hyperparam]:
+            HyperparamSet | HyperparamSet | Hyperparam:
         return self(path)
 
 

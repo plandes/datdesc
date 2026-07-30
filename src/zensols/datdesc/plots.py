@@ -2,8 +2,8 @@
 
 """
 __author__ = 'Paul Landes'
-
-from typing import Tuple, List, Dict, Sequence, Iterable, Any, Union, Callable
+from typing import Any
+from collections.abc import Callable, Sequence, Iterable
 from dataclasses import dataclass, field
 import logging
 import itertools as it
@@ -21,7 +21,7 @@ class PaletteContainerPlot(Plot):
     """A base class that supports creating a color palette for subclasses.
 
     """
-    palette: Union[str, Callable] = field(default=None)
+    palette: str | Callable = field(default=None)
     """Either the a list of color characters or a callable that takes the number
     of colors as input.  For example, the Seaborn color palette (such as
     ``sns.color_palette('tab10', n_colors=n)``).  This is used as the
@@ -35,10 +35,10 @@ class PaletteContainerPlot(Plot):
             palette=lambda n: sns.color_palette('hls', n_colors=n))
 
     def _get_palette(self, hue_names: Sequence[str]) -> \
-            Dict[str, Tuple[int, int, int]]:
-        palette: Union[str, Callable] = self.palette
+            dict[str, tuple[int, int, int]]:
+        palette: str | Callable = self.palette
         n_colors = len(hue_names)
-        colors: Tuple[int, int, int]
+        colors: tuple[int, int, int]
         if isinstance(palette, Callable):
             colors = palette(n_colors)
         elif isinstance(palette, str):
@@ -87,7 +87,7 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
     :mod:`seaborn` ``pointplot``.
 
     """
-    point_data: List[Tuple[str, pd.DataFrame]] = field(default=None, repr=False)
+    point_data: list[tuple[str, pd.DataFrame]] = field(default=None, repr=False)
     """The data to plot.  Each element is tuple first components with the plot
     name.  The second component is a dataframe with columns:
 
@@ -108,7 +108,7 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
     x_column_name: str = field(default='x')
     """The :obj:`data` column with the X values."""
 
-    y_column_name: Union[str, Sequence[Tuple[str, str]]] = field(default='y')
+    y_column_name: str | Sequence[tuple[str, str]] = field(default='y')
     """The :obj:`data` column(s) with the Y values."""
 
     key_title: str = field(default=None)
@@ -117,7 +117,7 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
     sample_rate: int = field(default=0)
     """Every $n$ data point in the list of losses is added to the plot."""
 
-    plot_params: Dict[str, Any] = field(
+    plot_params: dict[str, Any] = field(
         default_factory=lambda: dict(markersize=0, linewidth=1.5))
     """Parameters given to :func:`seaborn.plotpoint`.  The default are
     decorative parameters for the marker size and line width.
@@ -126,7 +126,7 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
     hue_name: str = field(default=None, repr=False)
     """The name of the heu given to :mod:`seaborn.pointplot`."""
 
-    hue_names: Tuple[str, ...] = field(default=None, repr=False)
+    hue_names: tuple[str, ...] = field(default=None, repr=False)
     """Hue names give to :mod:`seaborn.pointplot`."""
 
     def __post_init__(self):
@@ -141,14 +141,14 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
         if df is not None and self.point_data is None and \
            self.x_column_name is not None and \
            self.y_column_name is not None and \
-           isinstance(self.y_column_name, (Tuple, List)) and \
+           isinstance(self.y_column_name, (tuple, list)) and \
            self.x_column_name in df.columns:
-            x_vals: List
+            x_vals: list
             if self.x_column_name is None:
                 x_vals = tuple(range(len(df)))
             else:
                 x_vals = df[self.x_column_name]
-            col_map: Sequence[Tuple[str, str]] = self.y_column_name
+            col_map: Sequence[tuple[str, str]] = self.y_column_name
             self.y_column_name = 'y_column'
             col: str
             name: str
@@ -178,7 +178,7 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
         self.point_data.append((name, df))
 
     def _point_data_to_meld(self) -> pd.DataFrame:
-        data: Sequence[Tuple[str, pd.DataFrame]] = self.point_data
+        data: Sequence[tuple[str, pd.DataFrame]] = self.point_data
         hue_name: str = self.title
         x_axis_name: str = self.x_axis_name
         y_axis_name: str = self.y_axis_name
@@ -211,7 +211,7 @@ class PointPlot(PaletteContainerPlot, DataFramePlot):
         df: pd.DataFrame = self.data
         if df is None:
             df = self._point_data_to_meld()
-        params: Dict[str, Any] = dict(
+        params: dict[str, Any] = dict(
             ax=axes, data=df, x=x_axis_name, y=y_axis_name, hue=self.title,
             palette=self._get_palette(self.hue_names))
         params.update(self.plot_params)
@@ -227,7 +227,8 @@ class ScatterPlot(PaletteContainerPlot, DataFramePlot):
     rendering is needed.
 
     """
-    scatter_data: List[Tuple[str, pd.DataFrame]] = field(default=None, repr=False)
+    scatter_data: list[tuple[str, pd.DataFrame]] = field(
+        default=None, repr=False)
     """The data to plot.  Each element is a tuple with the plot name and a
     dataframe with columns:
 
@@ -247,7 +248,7 @@ class ScatterPlot(PaletteContainerPlot, DataFramePlot):
     x_column_name: str = field(default='x')
     """The :obj:`data` column with the X values."""
 
-    y_column_name: Union[str, Sequence[Tuple[str, str]]] = field(default='y')
+    y_column_name: str | Sequence[tuple[str, str]] = field(default='y')
     """The :obj:`data` column(s) with the Y values."""
 
     key_title: str = field(default=None)
@@ -256,13 +257,13 @@ class ScatterPlot(PaletteContainerPlot, DataFramePlot):
     sample_rate: int = field(default=0)
     """Every $n$ data point in the list is added to the plot."""
 
-    plot_params: Dict[str, Any] = field(default_factory=dict)
+    plot_params: dict[str, Any] = field(default_factory=dict)
     """Parameters given to :func:`seaborn.scatterplot`."""
 
     hue_name: str = field(default=None, repr=False)
     """The name of the hue given to :mod:`seaborn.scatterplot`."""
 
-    hue_names: Tuple[str, ...] = field(default=None, repr=False)
+    hue_names: tuple[str, ...] = field(default=None, repr=False)
     """Hue names given to :mod:`seaborn.scatterplot`."""
 
     def __post_init__(self):
@@ -277,10 +278,10 @@ class ScatterPlot(PaletteContainerPlot, DataFramePlot):
         if df is not None and self.scatter_data is None and \
            self.x_column_name is not None and \
            self.y_column_name is not None and \
-           isinstance(self.y_column_name, (Tuple, List)) and \
+           isinstance(self.y_column_name, (tuple, list)) and \
            self.x_column_name in df.columns:
             x_vals: Sequence = df[self.x_column_name]
-            col_map: Sequence[Tuple[str, str]] = self.y_column_name
+            col_map: Sequence[tuple[str, str]] = self.y_column_name
             self.y_column_name = 'y_column'
             col: str
             name: str
@@ -309,13 +310,13 @@ class ScatterPlot(PaletteContainerPlot, DataFramePlot):
         self.scatter_data.append((name, df))
 
     def _scatter_data_to_meld(self) -> pd.DataFrame:
-        data: Sequence[Tuple[str, pd.DataFrame]] = self.scatter_data
+        data: Sequence[tuple[str, pd.DataFrame]] = self.scatter_data
         hue_name: str = self.title
         x_axis_name: str = self.x_axis_name
         y_axis_name: str = self.y_axis_name
         x_column_name: str = self.x_column_name
         y_column_name: str = self.y_column_name
-        dfs: List[pd.DataFrame] = []
+        dfs: list[pd.DataFrame] = []
         desc: str
         dfl: pd.DataFrame
         assert len(data) > 0
@@ -340,7 +341,7 @@ class ScatterPlot(PaletteContainerPlot, DataFramePlot):
         df: pd.DataFrame = self.data
         if df is None:
             df = self._scatter_data_to_meld()
-        params: Dict[str, Any] = dict(
+        params: dict[str, Any] = dict(
             ax=axes, data=df, x=x_axis_name, y=y_axis_name, hue=self.title,
             palette=self._get_palette(self.hue_names))
         params.update(self.plot_params)
@@ -389,14 +390,14 @@ class BarPlot(PaletteContainerPlot, DataFramePlot):
     hue_palette: bool = field(default=False)
     """Whether to use the hue to calculate the palette colors."""
 
-    plot_params: Dict[str, Any] = field(default_factory=dict)
+    plot_params: dict[str, Any] = field(default_factory=dict)
     """Parameters given to :func:`seaborn.barplot`."""
 
     def _render(self, axes: Axes):
         from matplotlib.ticker import ScalarFormatter
         import seaborn as sns
         df: pd.DataFrame = self.data
-        params: Dict[str, Any] = dict(
+        params: dict[str, Any] = dict(
             # dataframe of occurances and hue name
             data=df,
             # subplot
@@ -441,7 +442,7 @@ class HistPlot(PaletteContainerPlot):
     """Create a histogram plot using :meth:`seaborn.histplot`.
 
     """
-    data: List[Tuple[str, pd.DataFrame]] = field(
+    data: list[tuple[str, pd.DataFrame]] = field(
         default_factory=list, repr=False)
     """The data to plot.  Each element is tuple first components with the plot
     name.
@@ -461,7 +462,7 @@ class HistPlot(PaletteContainerPlot):
     used to update the ticks if provided.
 
     """
-    plot_params: Dict[str, Any] = field(default_factory=dict)
+    plot_params: dict[str, Any] = field(default_factory=dict)
     """Parameters given to :func:`seaborn.histplot`."""
 
     def add(self, name: str, data: Iterable[float]):
@@ -491,7 +492,7 @@ class HistPlot(PaletteContainerPlot):
                 rename(columns={name: value_col})
             dfg[hue_col] = name
             dfs.append(dfg)
-        params: Dict[str, Any] = dict(
+        params: dict[str, Any] = dict(
             # dataframe of occurancesand hue name
             data=pd.concat(dfs),
             # subplot
@@ -528,7 +529,7 @@ class HeatMapPlot(PaletteContainerPlot, DataFramePlot):
     x_label_rotation: float = field(default=0)
     """The degree of label rotation."""
 
-    params: Dict[str, Any] = field(default_factory=dict)
+    params: dict[str, Any] = field(default_factory=dict)
     """Additional parameters to give to :func:`seaborn.heatmap`."""
 
     def _render(self, axes: Axes):
@@ -672,17 +673,17 @@ class RadarPlot(DataFramePlot):
         import pandas as pd
         axes.set_theta_offset(math.pi / 2)
         axes.set_theta_direction(-1)
-        cats: List[str] = self.data.columns.to_list()
+        cats: list[str] = self.data.columns.to_list()
         theta = self._theta
         rid: Any
         row: pd.Series
         for rid, row in self.data.iterrows():
-            data: List[int] = row.to_list()
+            data: list[int] = row.to_list()
             axes.plot(theta, data, label=str(rid))
             axes.fill(theta, data, alpha=self.alpha)
         axes.set_varlabels(cats)
         self._set_legend_title(axes, self.key_title)
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if self.label_gap is not None:
             params['pad'] = self.label_gap
         if self.render_value_font_size:

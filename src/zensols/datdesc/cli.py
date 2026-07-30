@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import List, Any, Dict
+from typing import Any
 import sys
 from zensols.cli import ActionResult, CliHarness
 from zensols.cli import ApplicationFactory as CliApplicationFactory
@@ -24,6 +24,6 @@ class ApplicationFactory(CliApplicationFactory):
         return cls.create_harness().get_application(**kwargs).renderable_factory
 
 
-def main(args: List[str] = sys.argv, **kwargs: Dict[str, Any]) -> ActionResult:
+def main(args: list[str] = sys.argv, **kwargs: dict[str, Any]) -> ActionResult:
     harness: CliHarness = ApplicationFactory.create_harness(relocate=False)
     harness.invoke(args, **kwargs)

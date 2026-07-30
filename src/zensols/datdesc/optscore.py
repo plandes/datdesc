@@ -2,8 +2,6 @@
 
 """
 __author__ = 'Paul Landes'
-
-from typing import Tuple
 from dataclasses import dataclass
 from abc import abstractmethod
 import pandas as pd
@@ -36,7 +34,7 @@ class ScoringHyperparameterOptimizer(HyperparameterOptimizer):
     def _get_score_dataframe(self, score_set: ScoreSet) -> pd.DataFrame:
         return score_set.as_dataframe()
 
-    def _objective(self) -> Tuple[float, pd.DataFrame]:
+    def _objective(self) -> tuple[float, pd.DataFrame]:
         sctx: ScoreContext = self._get_next_score_context()
         res: ScoreResult = self.scorer.score(sctx)
         df: pd.DataFrame = self._get_score_dataframe(res)

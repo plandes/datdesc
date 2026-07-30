@@ -1,7 +1,8 @@
 """Classes to create first class object and process files.
 
 """
-from typing import Iterable, Any
+from typing import Any
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from abc import abstractmethod, ABCMeta
 import logging

@@ -3,10 +3,8 @@
 """
 from __future__ import annotations
 __author__ = 'Paul Landes'
-from typing import (
-    Tuple, Any, Dict, List, Set, Sequence, Mapping,
-    ClassVar, Optional, Iterable, Union, Type
-)
+from typing import Any, ClassVar
+from collections.abc import Sequence, Iterable, Mapping
 from dataclasses import dataclass, field
 import logging
 import sys
@@ -35,7 +33,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     descriptions of all the columns in that dataframe.
 
     """
-    _PERSITABLE_PROPERTIES: ClassVar[Set[str]] = {'_meta_val'}
+    _PERSITABLE_PROPERTIES: ClassVar[set[str]] = {'_meta_val'}
     _TABLE_FORMAT: ClassVar[str] = '{name}Tab'
 
     name: str = field()
@@ -50,7 +48,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     head: str = field(default=None)
     """A short summary of the table and used in :obj:`.Table.head`."""
 
-    meta_path: Optional[Path] = field(default=None)
+    meta_path: Path | None = field(default=None)
     """A path to use to create :obj:`meta` metadata.
 
     :see: :obj:`meta`
@@ -71,12 +69,12 @@ class DataFrameDescriber(PersistableContainer, Dictable):
          ('value', 'Value')))
 
     """
-    table_kwargs: Dict[str, Any] = field(default_factory=dict)
+    table_kwargs: dict[str, Any] = field(default_factory=dict)
     """Additional key word arguments given when creating a table in
     :meth:`create_table`.
 
     """
-    index_meta: Dict[Any, str] = field(default=None)
+    index_meta: dict[Any, str] = field(default=None)
     """The index metadata, which maps index values to descriptions of the
     respective row.
 
@@ -88,8 +86,8 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         super().__init__()
 
     @classmethod
-    def from_columns(cls: Type,
-                     source: Union[pd.DataFrame, Sequence[Sequence[Any]]],
+    def from_columns(cls: type,
+                     source: pd.DataFrame | Sequence[Sequence[Any]],
                      name: str = None, desc: str = None) -> DataFrameDescriber:
         """Create a new instance by transposing a column data into a new
         dataframe describer.  If ``source`` is a dataframe, it that has the
@@ -116,7 +114,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             df = pd.DataFrame(source, columns='column meta data'.split())
         data: pd.Series = df['data']
         max_rows = data.apply(len).max()
-        rows: List[List[Any]] = list(it.repeat([], max_rows))
+        rows: list[list[Any]] = list(it.repeat([], max_rows))
         for cix, col in enumerate(data):
             for rix, v in enumerate(col):
                 row = rows[rix]
@@ -130,7 +128,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             meta=tuple(df[['column', 'meta']].itertuples(
                 index=False, name=None)))
 
-    def _meta_dict_to_dataframe(self, meta: Tuple[Tuple[str, str]]):
+    def _meta_dict_to_dataframe(self, meta: tuple[tuple[str, str]]):
         return pd.DataFrame(data=map(lambda t: t[1], meta),
                             index=map(lambda t: t[0], meta),
                             columns=['description'])
@@ -142,7 +140,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         return self._meta_val
 
     @_meta.setter
-    def _meta(self, meta: Union[pd.DataFrame, Tuple[Tuple[str, str], ...]]):
+    def _meta(self, meta: pd.DataFrame | tuple[tuple[str, str], ...]):
         if meta is None:
             meta = (('description', 'Description'),
                     ('value', 'Value'))
@@ -182,8 +180,8 @@ class DataFrameDescriber(PersistableContainer, Dictable):
                name: str = None,
                df: pd.DataFrame = None,
                desc: str = None,
-               meta: Union[pd.DataFrame, Tuple[Tuple[str, str], ...]] = None,
-               index_meta: Dict[Any, str] = None) -> DataFrameDescriber:
+               meta: pd.DataFrame | tuple[tuple[str, str], ...] = None,
+               index_meta: dict[Any, str] = None) -> DataFrameDescriber:
         """Create a new instance based on this instance and replace any
         non-``None`` kwargs.
 
@@ -216,11 +214,11 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             # overwrite passed in metadata with this instance's by name
             df_ovr: pd.DataFrame = self.meta[~self.meta.index.isin(meta.index)]
             meta = pd.concat((df_ovr.copy(), meta)).drop_duplicates()
-        cols: Set[str] = set(df.columns)
+        cols: set[str] = set(df.columns)
         # stability requres filter instead rather than set operations
         idx = list(filter(lambda n: n in cols, meta.index))
         meta = meta.loc[idx]
-        dup_cols: List[str] = meta[meta.index.duplicated()].\
+        dup_cols: list[str] = meta[meta.index.duplicated()].\
             index.drop_duplicates().to_list()
         if len(dup_cols) > 0:
             m: pd.DataFrame = meta.drop_duplicates()
@@ -247,9 +245,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
 
         """
         df: pd.DataFrame = self.df
-        meta: Dict[Any, str] = self.index_meta
+        meta: dict[Any, str] = self.index_meta
         if meta is not None:
-            ix: List[Any] = df.index.to_list()
+            ix: list[Any] = df.index.to_list()
             if index_format is None:
                 ix = list(map(lambda i: meta[i], ix))
             else:
@@ -278,7 +276,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         return self.transpose()
 
     def transpose(self,
-                  row_names: Tuple[int, str, str] = ((0, 'value', 'Value'),),
+                  row_names: tuple[int, str, str] = ((0, 'value', 'Value'),),
                   name_column: str = 'name', name_description: str = 'Name',
                   index_column: str = 'description') -> DataFrameDescriber:
         """Transpose all data in this descriptor by transposing :obj:`df` and
@@ -306,9 +304,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         df.insert(0, name_column, df.index)
         df.index.name = index_column
         prev_meta: pd.DataFrame = self.meta.loc[self.df.columns]
-        index_meta: Dict[str, str] = dict(zip(
+        index_meta: dict[str, str] = dict(zip(
             prev_meta.index, prev_meta['description']))
-        meta: List[str] = [(name_column, name_description)]
+        meta: list[str] = [(name_column, name_description)]
         meta.extend(map(lambda t: (t[1], t[2]), row_names))
         return self.derive(
             df=df,
@@ -360,7 +358,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
 
         """
         fac: TableFactory = TableFactory.default_instance()
-        params: Dict[str, Any] = dict(
+        params: dict[str, Any] = dict(
             head=self.head,
             path=self.csv_path,
             caption=self.desc,
@@ -376,20 +374,20 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         return table
 
     @classmethod
-    def from_table(cls: Type, table: Table) -> DataFrameDescriber:
+    def from_table(cls: type, table: Table) -> DataFrameDescriber:
         """Create a frame descriptor from a :class:`.Table`."""
-        def filter_kwargs(t: Tuple[str, Any]) -> bool:
+        def filter_kwargs(t: tuple[str, Any]) -> bool:
             k, v = t
             if v is None or k.startswith('_') or k in kw_skips:
                 return False
             return not isinstance(v, (tuple, list, set, dict)) or len(v) > 0
 
-        kw_skips: Set[str] = {'name', 'df', 'desc', 'meta'}
+        kw_skips: set[str] = {'name', 'df', 'desc', 'meta'}
         res: parse.Result = parse.parse(cls._TABLE_FORMAT, table.name)
         if res is None:
             raise DataDescriptionError(f"Bad table name: '{table.name}'")
         df: pd.DataFrame = table.dataframe
-        renames: Dict[str, str] = table.column_renames
+        renames: dict[str, str] = table.column_renames
         col: str
         for col in df.columns:
             if col not in renames:
@@ -397,7 +395,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         meta = pd.DataFrame(renames.items(), columns='name description'.split())
         meta.index = meta['name']
         meta = meta.drop(columns=['name'])
-        kws: Dict[str, Any] = dict(filter(
+        kws: dict[str, Any] = dict(filter(
             filter_kwargs, table.__dict__.items()))
         if len(kws) == 0:
             kws = None
@@ -417,7 +415,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         self.df = self.create_table().formatted_dataframe
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout,
-              df_params: Dict[str, Any] = None):
+              df_params: dict[str, Any] = None):
         """
 
         :param df_params: the formatting pandas options, which defaults to
@@ -446,8 +444,8 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         """
         if 'showindex' not in tabulate_params:
             tabulate_params['showindex'] = False
-        cols: Dict[str, Any] = self.column_descriptions
-        title_meta: Dict[str, Any] = dict(
+        cols: dict[str, Any] = self.column_descriptions
+        title_meta: dict[str, Any] = dict(
             name=self.name, desc=self.desc, columns=cols)
         title: str = title_format.format(**title_meta)
         table: str = tabulate(
@@ -461,14 +459,14 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         self._write_block(table, depth, writer)
 
     @property
-    def column_descriptions(self) -> Dict[str, str]:
+    def column_descriptions(self) -> dict[str, str]:
         """A dictionary of name to Descriptions of the column metadata created
         from :obj:`meta`.  Any missing column metadata will result in ``None``
         dictionary values.
 
         """
         dfm: pd.DataFrame = self.meta
-        descs: Dict[str, str] = {}
+        descs: dict[str, str] = {}
         col: str
         for col in self.df.columns:
             if col in dfm.index:
@@ -477,8 +475,8 @@ class DataFrameDescriber(PersistableContainer, Dictable):
                 descs[col] = None
         return descs
 
-    def _from_dictable(self, *args, **kwargs) -> Dict[str, str]:
-        dct: Dict[str, Any] = super()._from_dictable(*args, **kwargs)
+    def _from_dictable(self, *args, **kwargs) -> dict[str, str]:
+        dct: dict[str, Any] = super()._from_dictable(*args, **kwargs)
         dct.pop('df')
         dct.pop('meta')
         dct['df'] = json.loads(self.df.to_json())
@@ -486,9 +484,9 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         return dct
 
     @classmethod
-    def _from_json(cls: Type, data: Dict[str, Any]):
-        df: Dict[str, Any] = data.pop('df')
-        meta: Dict[str, Any] = data.pop('meta')
+    def _from_json(cls: type, data: dict[str, Any]):
+        df: dict[str, Any] = data.pop('df')
+        meta: dict[str, Any] = data.pop('meta')
         return DataFrameDescriber(
             df=pd.read_json(StringIO(json.dumps(df))),
             meta=pd.read_json(StringIO(json.dumps(meta))),
@@ -523,7 +521,7 @@ class DataDescriber(PersistableContainer, Dictable):
     SHEET_NAME_MAXLEN: ClassVar[int] = 31
     """Maximum allowed characters in an Excel spreadsheet's name."""
 
-    describers: Tuple[DataFrameDescriber, ...] = field()
+    describers: tuple[DataFrameDescriber, ...] = field()
     """The contained dataframe and metadata."""
 
     name: str = field(default='default')
@@ -536,7 +534,7 @@ class DataDescriber(PersistableContainer, Dictable):
     """
     @property
     @persisted('_describers_by_name', transient=True)
-    def describers_by_name(self) -> Dict[str, DataFrameDescriber]:
+    def describers_by_name(self) -> dict[str, DataFrameDescriber]:
         """Data frame describers keyed by the describer name."""
         return frozendict(dict(map(lambda t: (t.name, t), self.describers)))
 
@@ -572,7 +570,7 @@ class DataDescriber(PersistableContainer, Dictable):
         :return: the added metadata :class:`.DataFrameDescriber` instance
 
         """
-        rows: List[Tuple[Any, ...]] = []
+        rows: list[tuple[Any, ...]] = []
         dfd: DataFrameDescriber
         for dfd in self.describers:
             rows.append((dfd.name, dfd.desc, len(dfd.df), len(dfd.df.columns)))
@@ -628,7 +626,7 @@ class DataDescriber(PersistableContainer, Dictable):
                 desc.df.to_excel(writer, sheet_name=sheet_name, index=False)
                 # set comments of header cells to descriptions
                 worksheet: Worksheet = writer.sheets[sheet_name]
-                cdesc: Dict[str, str] = desc.column_descriptions
+                cdesc: dict[str, str] = desc.column_descriptions
                 col: str
                 for cix, col in enumerate(desc.df.columns):
                     comment: str = cdesc.get(col)
@@ -644,13 +642,13 @@ class DataDescriber(PersistableContainer, Dictable):
         logger.info(f'wrote {output_file}')
         return output_file
 
-    def save_csv(self, csv_dir: Path) -> List[Path]:
+    def save_csv(self, csv_dir: Path) -> list[Path]:
         """Save all provided dataframe describers to an CSV files.
 
         :param csv_dir: the directory of where to save the data
 
         """
-        paths: List[Path] = []
+        paths: list[Path] = []
         desc: DataFrameDescriber
         for desc in self.describers:
             out_file: Path = csv_dir / desc.csv_path
@@ -661,7 +659,7 @@ class DataDescriber(PersistableContainer, Dictable):
         logger.info(f'saved csv files to directory: {csv_dir}')
         return paths
 
-    def save_yaml(self, csv_dir: Path, yaml_dir: Path) -> List[Path]:
+    def save_yaml(self, csv_dir: Path, yaml_dir: Path) -> list[Path]:
         """Save all provided dataframe describers YAML files used by the
         ``datdesc`` command.
 
@@ -671,7 +669,7 @@ class DataDescriber(PersistableContainer, Dictable):
 
         """
         fac: TableFactory = TableFactory.default_instance()
-        paths: List[Path] = []
+        paths: list[Path] = []
         desc: DataFrameDescriber
         for desc in self.describers:
             csv_file: Path = csv_dir / desc.csv_path
@@ -696,7 +694,7 @@ class DataDescriber(PersistableContainer, Dictable):
         logger.info(f'saved json file to: {out_file}')
 
     def save(self, csv_dir: Path = None, yaml_dir: Path = None,
-             excel_path: Union[bool, Path] = None) -> List[Path]:
+             excel_path: bool | Path = None) -> list[Path]:
         """Save both the CSV and YAML configuration file.
 
         :param csv_dir: the directory of where to save the data
@@ -714,7 +712,7 @@ class DataDescriber(PersistableContainer, Dictable):
         """
         csv_dir = self.DEFAULT_CSV_DIR if csv_dir is None else csv_dir
         yaml_dir = self.DEFAULT_YAML_DIR if yaml_dir is None else yaml_dir
-        paths: List[Path] = self.save_csv(csv_dir)
+        paths: list[Path] = self.save_csv(csv_dir)
         paths = paths + self.save_yaml(csv_dir, yaml_dir)
         if excel_path is False:
             excel_path = None
@@ -725,7 +723,7 @@ class DataDescriber(PersistableContainer, Dictable):
         return paths
 
     @classmethod
-    def from_describer(cls: Type, dfd: DataFrameDescriber) -> DataDescriber:
+    def from_describer(cls: type, dfd: DataFrameDescriber) -> DataDescriber:
         """Create a singleton describer.  The :obj:`name` is taken from the
         ``dfd`` :obj:`.DataFrameDescriber.name`.
 
@@ -733,7 +731,7 @@ class DataDescriber(PersistableContainer, Dictable):
         return DataDescriber(describers=(dfd,), name=dfd.name)
 
     @classmethod
-    def from_tables(cls: Type, tables: tuple[Table, ...],
+    def from_tables(cls: type, tables: tuple[Table, ...],
                     name: str = None) -> DataDescriber:
         """Create a data descriptor from a :class:`.Table`."""
         dd = DataDescriber(tuple(map(DataFrameDescriber.from_table, tables)))
@@ -742,7 +740,7 @@ class DataDescriber(PersistableContainer, Dictable):
         return dd
 
     @classmethod
-    def from_yaml_file(cls: Type, path: Path) -> DataDescriber:
+    def from_yaml_file(cls: type, path: Path) -> DataDescriber:
         """Create a data descriptor from a previously written YAML/CSV files
         using :meth:`save`.
 
@@ -756,7 +754,7 @@ class DataDescriber(PersistableContainer, Dictable):
         return cls.from_tables(tables, path.name)
 
     @classmethod
-    def from_json_file(cls: Type, path: Path) -> DataDescriber:
+    def from_json_file(cls: type, path: Path) -> DataDescriber:
         """Like :meth:`from_yaml_file` but a JSON file written with
         meth:`save_json`.
 
@@ -765,15 +763,15 @@ class DataDescriber(PersistableContainer, Dictable):
             return cls.from_json(f)
 
     @classmethod
-    def from_excel(cls: Type, path: Union[str, Path], *,
+    def from_excel(cls: type, path: str | Path, *,
                    dataset_name_fmt: str = '{path.stem}',
-                   read_excel_kwargs: Optional[Mapping[str, Any]] = None,
-                   header_row: Optional[int] = None,
-                   data_start_row: Optional[int] = None,
-                   include_sheets: Optional[Iterable[str]] = None,
-                   exclude_sheets: Optional[Iterable[str]] = None,
+                   read_excel_kwargs: Mapping[str, Any] | None = None,
+                   header_row: int | None = None,
+                   data_start_row: int | None = None,
+                   include_sheets: Iterable[str] | None = None,
+                   exclude_sheets: Iterable[str] | None = None,
                    table_desc_fmt: str = "From {path.name} (sheet '{sheet}')",
-                   head: Optional[str] = None,
+                   head: str | None = None,
                    mangle_sheet_name: bool = False,
                    mangle_file_names: bool = False) -> DataDescriber:
         """Read *all* sheets from an Excel workbook using pandas, and populate:
@@ -806,7 +804,7 @@ class DataDescriber(PersistableContainer, Dictable):
                                ``header`` (default 0 => row 1)
 
         """
-        def clean_comment_text(text: Optional[str]) -> Optional[str]:
+        def clean_comment_text(text: str | None) -> str | None:
             if not text:
                 return None
             # openpyxl returns raw note text; normalize a bit
@@ -814,9 +812,10 @@ class DataDescriber(PersistableContainer, Dictable):
             return t if t else None
 
         path = Path(path)
-        rex: Dict[str, Any] = dict(read_excel_kwargs or {})
+        rex: dict[str, Any] = dict(read_excel_kwargs or {})
 
-        # Infer header/data rows from pandas' notion of header, unless explicitly set
+        # infer header/data rows from pandas' notion of header, unless
+        # explicitly set
         pandas_header = rex.get('header', 0)
         if header_row is None:
             if pandas_header is None:
@@ -853,7 +852,7 @@ class DataDescriber(PersistableContainer, Dictable):
             # build header-value -> excel column index map by scanning the
             # header row (this handles index_col removing a column from df,
             # since mapping is by name)
-            header_map: Dict[Any, int] = {}
+            header_map: dict[Any, int] = {}
             for col_idx in range(1, ws.max_column + 1):
                 cell = ws.cell(row=header_row, column=col_idx)
                 if cell.value is not None:
@@ -875,14 +874,14 @@ class DataDescriber(PersistableContainer, Dictable):
                     desc = clean_comment_text(c.text if c is not None else None)
                     if desc:
                         meta_items.append((str(col_name), desc))
-            meta: Optional[Union[pd.DataFrame, Sequence[tuple[str, str]]]] = \
+            meta: pd.DataFrame | Sequence[tuple[str, str]] | None = \
                 tuple(meta_items) if meta_items else None
             # row descriptions from comments in the index column (if any)
-            index_meta: Optional[Dict[Any, str]] = None
+            index_meta: dict[Any, str] | None = None
             index_col = rex.get('index_col', None)
             # only support a single index column (int or str); if none, skip
             # index_meta.
-            index_excel_col_idx: Optional[int] = None
+            index_excel_col_idx: int | None = None
             if index_col is not None and \
                not isinstance(index_col, (list, tuple)):
                 if isinstance(index_col, int):
@@ -902,7 +901,8 @@ class DataDescriber(PersistableContainer, Dictable):
                 # map each dataframe row i -> excel row number
                 for i, idx_val in enumerate(df.index):
                     excel_row = data_start_row + i
-                    c = ws.cell(row=excel_row, column=index_excel_col_idx).comment
+                    c = ws.cell(row=excel_row, column=index_excel_col_idx).\
+                        comment
                     desc = clean_comment_text(c.text if c is not None else None)
                     if desc:
                         index_meta[idx_val] = desc
@@ -934,14 +934,14 @@ class DataDescriber(PersistableContainer, Dictable):
         self.asjson(writer)
 
     @classmethod
-    def from_json(cls: Type, reader: TextIOWrapper) -> DataDescriber:
+    def from_json(cls: type, reader: TextIOWrapper) -> DataDescriber:
         """Unserialize a JSON stream into a data descriptor.
 
         :param reader: the file / data stream
 
         """
-        data: Dict[str, Any] = json.load(reader)
-        describers: List[Dict[str, Any]] = data.pop('describers')
+        data: dict[str, Any] = json.load(reader)
+        describers: list[dict[str, Any]] = data.pop('describers')
         return DataDescriber(
             describers=tuple(map(DataFrameDescriber._from_json, describers)),
             **data)
@@ -953,7 +953,7 @@ class DataDescriber(PersistableContainer, Dictable):
             desc.format_table()
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout,
-              df_params: Dict[str, Any] = None):
+              df_params: dict[str, Any] = None):
         """
 
         :param df_params: the formatting pandas options, which defaults to
@@ -974,7 +974,7 @@ class DataDescriber(PersistableContainer, Dictable):
     def keys(self) -> Sequence[str]:
         return self.describers_by_name.keys()
 
-    def items(self) -> Iterable[Tuple[str, DataFrameDescriber]]:
+    def items(self) -> Iterable[tuple[str, DataFrameDescriber]]:
         return self.describers_by_name.items()
 
     def __contains__(self, name: str) -> bool:
@@ -1006,7 +1006,7 @@ class RenderableDataFrameDescriber(Renderable):
 
     def render(self, output: Path) -> Path:
         dd: DataDescriber = self.get_data_describer()
-        paths: List[Path] = dd.save(
+        paths: list[Path] = dd.save(
             csv_dir=output / DataDescriber.DEFAULT_CSV_DIR,
             yaml_dir=output / DataDescriber.DEFAULT_YAML_DIR,
             excel_path=output / DataDescriber.DEFAULT_EXCEL_DIR / dd.name)

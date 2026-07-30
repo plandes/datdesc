@@ -7,8 +7,8 @@ configured as Zensols `Resource libraries`_.
 
 """
 from __future__ import annotations
-__author__ = 'Paul Landes'
-from typing import Tuple, Dict, Any, ClassVar, Type, List, Iterable
+from typing import Any, ClassVar
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from abc import abstractmethod, ABCMeta
 import logging
@@ -56,14 +56,14 @@ class HyperparamResult(Dictable):
     """The index of the optimiation."""
 
     @classmethod
-    def from_file(cls: Type, path: Path) -> HyperparamResult:
+    def from_file(cls: type, path: Path) -> HyperparamResult:
         """Restore a result from a file name.
 
         :param path: the path from which to restore
 
         """
         with open(path) as f:
-            data: Dict[str, Any] = json.load(f)
+            data: dict[str, Any] = json.load(f)
         model_name: str = data['hyp']['name']
         hyp_set: HyperparamSet = HyperparamSetLoader(
             {model_name: data['hyp']}).load()
@@ -75,13 +75,13 @@ class HyperparamResult(Dictable):
             loss=data['loss'],
             eval_ix=data['eval_ix'])
 
-    def _from_dictable(self, *args, **kwargs) -> Dict[str, Any]:
-        dct: Dict[str, Any] = super()._from_dictable(*args, **kwargs)
+    def _from_dictable(self, *args, **kwargs) -> dict[str, Any]:
+        dct: dict[str, Any] = super()._from_dictable(*args, **kwargs)
         dct['scores'] = self.scores.to_dict()
         return dct
 
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
-        dct: Dict[str, Any] = self.asdict()
+        dct: dict[str, Any] = self.asdict()
         del dct['scores']
         del dct['hyp']
         self._write_dict(dct, depth, writer)
@@ -103,10 +103,10 @@ class HyperparamRun(Dictable):
 
     """
     _DICTABLE_WRITABLE_DESCENDANTS: ClassVar[bool] = True
-    _DICTABLE_ATTRIBUTES: ClassVar[List[str]] = [
+    _DICTABLE_ATTRIBUTES: ClassVar[list[str]] = [
         'initial_loss', 'loss_stats', 'best']
 
-    runs: Tuple[Tuple[Path, HyperparamResult]] = field(repr=False)
+    runs: tuple[tuple[Path, HyperparamResult], ...] = field(repr=False)
     """The results from previous runs."""
 
     @property
@@ -128,12 +128,12 @@ class HyperparamRun(Dictable):
         return self.runs[0][1].loss
 
     @property
-    def losses(self) -> Tuple[float]:
+    def losses(self) -> tuple[float, ...]:
         """The loss value for all runs"""
         return tuple(map(lambda r: r[1].loss, self.runs))
 
     @property
-    def loss_stats(self) -> Dict[str, float]:
+    def loss_stats(self) -> dict[str, float]:
         """The loss statistics (min, max, ave, etc)."""
         df = pd.DataFrame(self.losses, columns=['loss'])
         # skip initial row
@@ -144,12 +144,12 @@ class HyperparamRun(Dictable):
     @property
     def best_result(self) -> HyperparamResult:
         """The result that had the lowest loss."""
-        runs: List[HyperparamRun] = list(map(lambda r: r[1], self.runs))
+        runs: list[HyperparamRun] = list(map(lambda r: r[1], self.runs))
         runs.sort(key=lambda r: r.loss)
         return runs[0]
 
     @classmethod
-    def from_dir(cls: Type, path: Path) -> HyperparamRun:
+    def from_dir(cls: type, path: Path) -> HyperparamRun:
         """Return an instance with the runs stored in directory ``path``.
 
         """
@@ -159,7 +159,7 @@ class HyperparamRun(Dictable):
             except JSONDecodeError as e:
                 raise HyperparamError(f'Could not parse {path}: {e}') from e
 
-        files: List[Path] = sorted(path.iterdir(), key=lambda p: p.stem)
+        files: list[Path] = sorted(path.iterdir(), key=lambda p: p.stem)
         return cls(runs=tuple(map(lambda p: (p, read_result(p)), files)))
 
 
@@ -169,7 +169,7 @@ class CompareResult(Dictable):
     optimal hyperparameters.
 
     """
-    initial_param: Dict[str, Any] = field()
+    initial_param: dict[str, Any] = field()
     """The initial hyperparameters."""
 
     initial_loss: float = field()
@@ -181,7 +181,7 @@ class CompareResult(Dictable):
     best_eval_ix: int = field()
     """The optimized hyperparameters."""
 
-    best_param: Dict[str, Any] = field()
+    best_param: dict[str, Any] = field()
     """The optimized hyperparameters."""
 
     best_loss: float = field()
@@ -223,7 +223,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
     files are stored (see :obj:`opt_intermediate_dir`).
 
     """
-    hyperparam_names: Tuple[str, ...] = field(default=())
+    hyperparam_names: tuple[str, ...] = field(default=())
     """The name of the hyperparameters to use to create the space.
 
     :see: :meth:`_create_space`
@@ -266,7 +266,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _objective(self) -> Tuple[float, pd.DataFrame]:
+    def _objective(self) -> tuple[float, pd.DataFrame]:
         """The objective implementation used by this class.
 
         :return: a tuple of the (``loss``, ``scores``), where the scores are any
@@ -275,7 +275,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
         """
         pass
 
-    def _create_space(self) -> Dict[str, float]:
+    def _create_space(self) -> dict[str, float]:
         """Create the hyperparamter spacy used by the :mod:`hyperopt` optimizer.
 
         :see: :obj:`hyperparam_names`
@@ -285,7 +285,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
             raise HyperparamError(
                 'No given hyperparamter names to optimizer create space')
         model: HyperparamModel = self.hyperparams
-        space: Dict[str, Any] = {}
+        space: dict[str, Any] = {}
         name: str
         for name in self.hyperparam_names:
             param: Hyperparam = model[name]
@@ -304,7 +304,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
                     f'Unsupported parameter type: {param.type}')
         return space
 
-    def _compare(self) -> Tuple[float, pd.DataFrame]:
+    def _compare(self) -> tuple[float, pd.DataFrame]:
         """Like :meth:`_objective` but used when comparing the initial
         hyperparameters with the optimized.
 
@@ -367,7 +367,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
         with open(res_path, 'w') as f:
             self._last_result.asjson(writer=f, indent=4)
 
-    def _run_objective(self, space: Dict[str, Any] = None) -> float:
+    def _run_objective(self, space: dict[str, Any] = None) -> float:
         hp: HyperparamModel = self.hyperparams
         if space is not None:
             hp.update(space)
@@ -384,9 +384,9 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
         self._eval_ix += 1
         return loss
 
-    def _create_uniform_space(self, params: Tuple[str, float, float],
+    def _create_uniform_space(self, params: tuple[str, float, float],
                               integer: bool = False) -> \
-            Dict[str, float]:
+            dict[str, float]:
         """Create a uniform space used by the optimizer.
 
         :param params: a tuple of tuples with the form
@@ -395,7 +395,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
         :param integer: whether the uniform range are of type integer
 
         """
-        def map_param(name: str, start: float, end: float) -> Tuple[Any, ...]:
+        def map_param(name: str, start: float, end: float) -> tuple[Any, ...]:
             if integer:
                 return (name, hp.uniformint(name, start, end))
             else:
@@ -403,23 +403,23 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
 
         return dict(map(lambda x: map_param(*x), params))
 
-    def _create_choice(self, params: Tuple[str, Tuple[str, ...]]):
+    def _create_choice(self, params: tuple[str, tuple[str, ...]]):
         """Create a choice space.
 
         :param params: a tuple of tuples with the form
                        ``(<param name>, (<choice 1>, <choice 2>...))``
         """
-        def map_param(name: str, choices: Tuple[Any, ...]) -> Tuple[Any, ...]:
+        def map_param(name: str, choices: tuple[Any, ...]) -> tuple[Any, ...]:
             return (name, hp.choice(name, choices))
 
         return dict(map(lambda x: map_param(*x), params))
 
-    def _minimize_objective(self) -> Dict[str, float]:
+    def _minimize_objective(self) -> dict[str, float]:
         """Run the hyperparameter optimization process and return the results as
         a dict of the optimized parameters.
 
         """
-        search_space: Dict[str, float] = self._create_space()
+        search_space: dict[str, float] = self._create_space()
         if logger.isEnabledFor(logging.INFO):
             logger.info('starting hyperparameter minimization objective')
         return ho.fmin(
@@ -429,7 +429,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
             algo=ho.tpe.suggest,
             max_evals=self.max_evals)
 
-    def _finish_optimize(self, best: Dict[str, float]):
+    def _finish_optimize(self, best: dict[str, float]):
         """Called by :meth:`optimize` when complete.  Command line programs will
         probably want to report the hyperparameters and last score values
         computed during the hyperparameter optimization using
@@ -446,7 +446,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
         self._objective()
         if logger.isEnabledFor(logging.DEBUG):
             logger.info(f'initial loss: {self._last_result.loss}')
-        best: Dict[str, float] = self._minimize_objective()
+        best: dict[str, float] = self._minimize_objective()
         self._finish_optimize(best)
 
     def get_run(self, result_dir: Path = None) -> HyperparamRun:
@@ -463,14 +463,14 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
     def get_best_result(self) -> HyperparamResult:
         return self.get_run().best_result
 
-    def get_best_results(self) -> Dict[str, HyperparamResult]:
+    def get_best_results(self) -> dict[str, HyperparamResult]:
         """Return the best results across all hyperparameter optimization runs
         with keys as run names.
 
         """
         res_dirs: Iterable[Path] = self.results_intermediate_dir.iterdir()
         res_dirs = filter(lambda p: p.is_dir(), res_dirs)
-        best_results: Dict[str, HyperparamResult] = {}
+        best_results: dict[str, HyperparamResult] = {}
         res_dir: Path
         for res_dir in res_dirs:
             run: HyperparamRun = self.get_run(res_dir)
@@ -502,7 +502,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
                         f'baseline file {self.baseline_path} does not ' +
                         'look like previous results--trying as parameter file')
                     with open(self.baseline_path) as f:
-                        params: Dict[str, Any] = json.load(f)
+                        params: dict[str, Any] = json.load(f)
                         hyp = self.hyperparams.clone()
                         hyp.update(params)
                         # return a bogus result, which is alright since used
@@ -522,14 +522,14 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
 
         """
         hyp: HyperparamModel = self.hyperparams
-        prev: Dict[str, Any] = hyp.flatten()
+        prev: dict[str, Any] = hyp.flatten()
         cmp_res: CompareResult = None
         try:
             initial_loss: float
             initial_scores: pd.DataFrame
             initial_loss, initial_scores = self._compare()
             best_res: HyperparamResult = self._get_baseline()
-            best: Dict[str, Any] = best_res.hyp.flatten()
+            best: dict[str, Any] = best_res.hyp.flatten()
             best_loss: float
             best_scores: pd.DataFrame
             hyp.update(best)
@@ -584,8 +584,8 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
 
         """
         hyp: HyperparamModel = self.hyperparams
-        prev: Dict[str, Any] = hyp.flatten()
-        dfs: List[pd.DataFrame] = []
+        prev: dict[str, Any] = hyp.flatten()
+        dfs: list[pd.DataFrame] = []
         if iterations is None:
             iterations = self._get_score_iterations()
         logger.info(f'scoring {iterations} iterations using best settings')
@@ -608,7 +608,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
 
         """
         hyp: HyperparamModel = self.hyperparams
-        prev: Dict[str, Any] = hyp.flatten()
+        prev: dict[str, Any] = hyp.flatten()
         try:
             self._get_baseline()
             print('using hyperparameters:')
@@ -652,8 +652,8 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
         with :meth:`gather_aggregate_scores`.
 
         """
-        results: Dict[str, HyperparamResult] = self.get_best_results()
-        res_tups: Tuple[str, HyperparamResult] = sorted(
+        results: dict[str, HyperparamResult] = self.get_best_results()
+        res_tups: tuple[str, HyperparamResult] = sorted(
             results.items(), key=lambda t: t[1].loss)
         logger.info('scoring top best results')
         self.aggregate_score_dir.mkdir(parents=True, exist_ok=True)
@@ -675,7 +675,7 @@ class HyperparameterOptimizer(object, metaclass=ABCMeta):
         :meth:`aggregate_scores`.
 
         """
-        dfs: List[pd.DataFrame] = []
+        dfs: list[pd.DataFrame] = []
         agg_score_file: Path
         for agg_score_file in self.aggregate_score_dir.iterdir():
             dfs.append(pd.read_csv(agg_score_file))

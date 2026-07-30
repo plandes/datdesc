@@ -2,8 +2,8 @@
 
 """
 __author__ = 'Paul Landes'
-
-from typing import Sequence, Set, List, Tuple, Dict, Iterable, Any
+from typing import Any
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 import sys
 import logging
@@ -25,10 +25,10 @@ class LatexTable(Table):
     """This subclass generates LaTeX tables.
 
     """
-    row_range: Tuple[int, int] = field(default=(1, -1))
+    row_range: tuple[int, int] = field(default=(1, -1))
     """The range of rows to add to output produced by :obj:`tabulate`."""
 
-    row_deletes: Set[int] = field(default=frozenset())
+    row_deletes: set[int] = field(default=frozenset())
     """Rows to delete in the output produced by :obj:`tabulate`."""
 
     booktabs: bool = field(default=False)
@@ -40,7 +40,7 @@ class LatexTable(Table):
         super().__post_init__()
         if self.booktabs:
             self.uses.append('booktabs')
-        if not isinstance(self.row_deletes, Set):
+        if not isinstance(self.row_deletes, set):
             self.row_deletes = set(self.row_deletes)
 
     def format_scientific(self, x: float, sig_digits: int = 1) -> str:
@@ -57,16 +57,16 @@ class LatexTable(Table):
             cols = cols.replace('|', ' ')
         return cols
 
-    def _get_table_rows(self, df: pd.DataFrame) -> Iterable[List[Any]]:
+    def _get_table_rows(self, df: pd.DataFrame) -> Iterable[list[Any]]:
         """Return the rows/columns of the table given to :mod:``tabulate``."""
-        rows: Iterable[List[Any]] = map(lambda x: x[1].tolist(), df.iterrows())
-        cols: Tuple[str, ...] = tuple(map(
+        rows: Iterable[list[Any]] = map(lambda x: x[1].tolist(), df.iterrows())
+        cols: tuple[str, ...] = tuple(map(
             lambda c: f'\\textbf{{{c}}}', df.columns))
         rows = it.chain([cols], rows)
         return rows
 
-    def _get_tabulate_params(self) -> Dict[str, Any]:
-        params: Dict[str, Any] = {'tablefmt': 'latex_raw'}
+    def _get_tabulate_params(self) -> dict[str, Any]:
+        params: dict[str, Any] = {'tablefmt': 'latex_raw'}
         params.update(super()._get_tabulate_params())
         return params
 
@@ -75,10 +75,10 @@ class LatexTable(Table):
         self._write_line(f'\\newcommand{{\\{name}}}{{{value}}}', depth, writer)
 
     def _write_table_content(self, depth: int, writer: TextIOBase,
-                             content: List[str]):
+                             content: list[str]):
         """Write the text of the table's rows and columns."""
         n_hlines: int = 0
-        hl_map: Dict[int, str] = {
+        hl_map: dict[int, str] = {
             0: r'\toprule',
             1: r'\midrule',
             2: r'\bottomrule'}
@@ -142,7 +142,7 @@ class CsvToLatexTable(Writable):
 \\ProvidesPackage{%(package_name)s}[%(date)s Tables]
 
 """ % {'date': date, 'package_name': self.package_name})
-        uses: Set[str] = set(chain.from_iterable(
+        uses: set[str] = set(chain.from_iterable(
             map(lambda t: t.uses, self.tables)))
         for use in sorted(uses):
             writer.write(f'\\usepackage{{{use}}}\n')

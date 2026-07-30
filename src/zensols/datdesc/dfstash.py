@@ -3,8 +3,7 @@
 
 """
 __author__ = 'Paul Landes'
-
-from typing import Any, Optional, Type
+from typing import Any
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 import dataclasses
@@ -56,7 +55,7 @@ class DataFrameStash(CloseableStash, Dictable):
     auto_commit: bool = field(default=True)
     """Whether to save to the file system after any modification."""
 
-    single_column_index: Optional[int] = field(default=0)
+    single_column_index: int | None = field(default=0)
     """If this is set, then a single type is assumed for loads and restores.
     Otherwise, if set to ``None``, multiple columns are saved and retrieved.
 
@@ -245,7 +244,7 @@ class DataclassStash(DataFrameStash):
         return row[1:]
 
     def _row_to_object(self, name: str, row: tuple[Any, ...]) -> Any:
-        cls: Type = self.metadata.class_type
+        cls: type = self.metadata.class_type
         return cls(name, *row)
 
     @staticmethod

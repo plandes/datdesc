@@ -3,10 +3,8 @@
 """
 from __future__ import annotations
 __author__ = 'Paul Landes'
-from typing import (
-    Dict, List, Sequence, Tuple, Any, Iterable, Set,
-    ClassVar, Optional, Callable, Union
-)
+from typing import Any, ClassVar
+from collections.abc import Sequence, Iterable, Callable
 from dataclasses import dataclass, field
 from abc import abstractmethod, ABCMeta
 import logging
@@ -43,8 +41,8 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     """Generates a Zensols styled Latex table from a CSV file.
 
     """
-    _DICTABLE_ATTRIBUTES: ClassVar[Set[str]] = {'columns'}
-    _TABLE_ATTRIBUTES_EXCLUDES: ClassVar[Set[str]] = {'columns'}
+    _DICTABLE_ATTRIBUTES: ClassVar[set[str]] = {'columns'}
+    _TABLE_ATTRIBUTES_EXCLUDES: ClassVar[set[str]] = {'columns'}
 
     _FILE_NAME_REGEX: ClassVar[re.Pattern] = re.compile(r'(.+)\.yml')
     """Used to narrow down to a :obj:`package_name`."""
@@ -56,7 +54,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     """
     type: str = field(default=None)
     """"""
-    template_params: Dict[str, str] = field(default_factory=dict)
+    template_params: dict[str, str] = field(default_factory=dict)
     """Parameters used in the template."""
 
     default_params: Sequence[Sequence[str]] = field(default_factory=list)
@@ -67,7 +65,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     given in :obj:`params`.
 
     """
-    params: Dict[str, str] = field(default_factory=dict)
+    params: dict[str, str] = field(default_factory=dict)
     """Parameters used in the template that override of the
     :obj:`default_params`.
 
@@ -75,7 +73,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     definition_file: Path = field(default=None)
     """The YAML file from which this instance was created."""
 
-    uses: List[str] = field(default_factory=list)
+    uses: list[str] = field(default_factory=list)
     """Comma separated list of packages to use."""
 
     hlines: Sequence[int] = field(default_factory=set)
@@ -84,21 +82,21 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     double_hlines: Sequence[int] = field(default_factory=set)
     """Indexes of rows to put double horizontal line breaks."""
 
-    rules: Dict[int, str] = field(default_factory=dict)
+    rules: dict[int, str] = field(default_factory=dict)
     """Like :obj:`hlines` but allows other horizontal lines such as ``toprule``.
     Each key/value is a tuple of row and the verbatim text to add at that place.
 
     """
-    column_keeps: Optional[List[str]] = field(default=None)
+    column_keeps: list[str] | None = field(default=None)
     """If provided, only keep the columns in the list"""
 
-    column_removes: List[str] = field(default_factory=list)
+    column_removes: list[str] = field(default_factory=list)
     """The name of the columns to remove from the table, if any."""
 
-    column_renames: Dict[str, str] = field(default_factory=dict)
+    column_renames: dict[str, str] = field(default_factory=dict)
     """Columns to rename, if any."""
 
-    column_value_replaces: Dict[str, Dict[Any, Any]] = \
+    column_value_replaces: dict[str, dict[Any, Any]] = \
         field(default_factory=dict)
     """Data values to replace in the dataframe.  It is keyed by the column name
     and values are the replacements.  Each value is a ``dict`` with orignal
@@ -111,7 +109,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     table.
 
     """
-    round_column_names: Dict[str, Union[Tuple[int, int], int]] = field(
+    round_column_names: dict[str, tuple[int, int] | int] = field(
         default_factory=dict)
     """Each column in the map will get rounded to their respective values.
 
@@ -123,7 +121,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     percent_column_names: Sequence[str] = field(default=())
     """Column names that have a percent sign to be escaped."""
 
-    make_percent_column_names: Dict[str, Union[int, str]] = field(
+    make_percent_column_names: dict[str, int | str] = field(
         default_factory=dict)
     """Each columnn in the map will get rounded to the value * 100 of the name.
     For example, ``{'ann_per': 3}`` will round column ``ann_per`` to 3 decimal
@@ -134,26 +132,26 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     percentage to the first decimal without the percentage sign (``%``).
 
     """
-    format_thousands_column_names: Dict[str, Optional[Dict[str, Any]]] = \
+    format_thousands_column_names: dict[str, dict[str, Any] | None] = \
         field(default_factory=dict)
     """Columns to format using thousands, and optionally round.  The keys are
     the column names of the table and the values are either ``None`` or the
     keyword arguments to :meth:`format_thousand`.
 
     """
-    format_scientific_column_names: Dict[str, Optional[int]] = \
+    format_scientific_column_names: dict[str, int | None] = \
         field(default_factory=dict)
     """Format a column using LaTeX formatted scientific notation using
     :meth:`format_scientific`.  Keys are column names and values is the mantissa
     length or 1 if ``None``.
 
     """
-    read_params: Dict[str, str] = field(default_factory=dict)
+    read_params: dict[str, str] = field(default_factory=dict)
     """Keyword arguments used in the :meth:`~pandas.read_csv` call when reading
     the CSV file.
 
     """
-    tabulate_params: Dict[str, str] = field(
+    tabulate_params: dict[str, str] = field(
         default_factory=lambda: {'disable_numparse': True})
     """Keyword arguments used in the :meth:`~tabulate.tabulate` call when
     writing the table.  The default tells :mod:`tabulate` to not parse/format
@@ -165,18 +163,18 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     not using the missing value due to some bug I assume.
 
     """
-    blank_columns: List[int] = field(default_factory=list)
+    blank_columns: list[int] = field(default_factory=list)
     """A list of column indexes to set to the empty string (i.e. 0th to fixed
     the ``Unnamed: 0`` issues).
 
     """
-    bold_cells: List[Tuple[int, int]] = field(default_factory=list)
+    bold_cells: list[tuple[int, int]] = field(default_factory=list)
     """A list of row/column cells to bold."""
 
-    bold_max_columns: List[str] = field(default_factory=list)
+    bold_max_columns: list[str] = field(default_factory=list)
     """A list of column names that will have its max value bolded."""
 
-    capitalize_columns: Dict[str, bool] = field(default_factory=dict)
+    capitalize_columns: dict[str, bool] = field(default_factory=dict)
     """Capitalize either sentences (``False`` values) or every word (``True``
     values).  The keys are column names.
 
@@ -184,7 +182,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
     index_col_name: str = field(default=None)
     """If set, add an index column with the given name."""
 
-    variables: Dict[str, Union[Tuple[int, int], str]] = field(
+    variables: dict[str, tuple[int, int] | str] = field(
         default_factory=dict)
     """A mapping of variable names to a dataframe cell or Python code snipped
     that is evaluated with :func:`exec`.  In LaTeX, this is done by setting a
@@ -213,7 +211,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
         v = stages['unformatted'].iloc[2, 3]
 
     """
-    writes: List[str] = field(default_factory=lambda: ['table', 'variables'])
+    writes: list[str] = field(default_factory=lambda: ['table', 'variables'])
     """A list of what to output for this table.  Entries are ``table`` and
     ``varaibles``.
 
@@ -349,7 +347,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
         col: str
         for col in self.percent_column_names:
             df[col] = df[col].apply(lambda s: s.replace('%', '\\%'))
-        kwargs: Optional[Dict[str, Any]]
+        kwargs: dict[str, Any] | None
         for col, kwargs in self.format_thousands_column_names.items():
             kwargs = {} if kwargs is None else kwargs
             df[col] = df[col].apply(lambda x: self.format_thousand(x, **kwargs))
@@ -380,7 +378,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
 
     def _apply_df_column_modifies(self, df: pd.DataFrame) -> pd.DataFrame:
         col: str
-        repl: Dict[Any, Any]
+        repl: dict[Any, Any]
         for col, repl in self.column_value_replaces.items():
             df[col] = df[col].apply(lambda v: repl.get(v, v))
         df = df.drop(columns=self.column_removes)
@@ -402,9 +400,9 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
         return df
 
     def _apply_df_bold_cells(self, df: pd.DataFrame,
-                             cells: Sequence[Tuple[int, int]]):
+                             cells: Sequence[tuple[int, int]]):
         str_cols: bool = len(cells) > 0 and isinstance(cells[0][1], str)
-        cixs: Dict[str, int] = dict(zip(df.columns, it.count()))
+        cixs: dict[str, int] = dict(zip(df.columns, it.count()))
         r: int
         c: int
         for r, c in cells:
@@ -421,9 +419,9 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
             df[col] = df[col].apply(fn)
         return df
 
-    def _get_bold_columns(self, df: pd.DataFrame) -> Tuple[Tuple[int, int]]:
+    def _get_bold_columns(self, df: pd.DataFrame) -> tuple[tuple[int, int]]:
         if len(self.bold_max_columns) > 0:
-            cixs: List[str] = self.bold_max_columns
+            cixs: list[str] = self.bold_max_columns
             return tuple(zip(
                 map(lambda cix: df.index.get_loc(df[cix].idxmax()), cixs),
                 cixs))
@@ -444,7 +442,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
         self._formatted_dataframe.clear()
 
     @persisted('_formatted_dataframe_stages')
-    def _get_formatted_dataframe_stages(self) -> Dict[str, pd.DataFrame]:
+    def _get_formatted_dataframe_stages(self) -> dict[str, pd.DataFrame]:
         """Return named stages of the table formatting.  The entries returned:
 
           * ``unformatted``: before any formatting (i.e. number format) applied
@@ -453,12 +451,12 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
 
         """
         df: pd.DataFrame = self.dataframe
-        stages: Dict[str, pd.DataFrame] = {'nascent': df}
+        stages: dict[str, pd.DataFrame] = {'nascent': df}
         # Pandas 2.x dislikes mixed float with string dtypes
         df = df.astype(object)
         df = self._apply_df_eval(df, self.code_pre)
         stages['unformatted'] = df.copy()
-        bold_cols: Tuple[Tuple[int, int]] = self._get_bold_columns(df)
+        bold_cols: tuple[tuple[int, int]] = self._get_bold_columns(df)
         df = self._apply_df_number_format(df)
         df = self._apply_df_eval(df, self.code_post)
         stages['postformat'] = df.copy()
@@ -481,20 +479,20 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
         return self._get_formatted_dataframe_stages()['formatted']
 
     @abstractmethod
-    def _get_table_rows(self, df: pd.DataFrame) -> Iterable[List[Any]]:
+    def _get_table_rows(self, df: pd.DataFrame) -> Iterable[list[Any]]:
         """Return the rows/columns of the table given to :mod:``tabulate``."""
         pass
 
-    def _get_tabulate_params(self) -> Dict[str, Any]:
+    def _get_tabulate_params(self) -> dict[str, Any]:
         """A factory method that returns the argument to use in
         :mod:``tabulate``.
 
         """
-        params: Dict[str, Any] = dict(headers='firstrow')
+        params: dict[str, Any] = dict(headers='firstrow')
         params.update(self.tabulate_params)
         return params
 
-    def _get_command_params(self) -> Dict[str, str]:
+    def _get_command_params(self) -> dict[str, str]:
         """Create parameters prefixed as a nested :class:`~builtins.Dict` with
         name ``p`` to be substituted as values in the table template.  A
         ``p.argdef`` is also added that gives the commands number of arguments
@@ -502,10 +500,10 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
 
         """
         dparams: Sequence[Sequence[str]] = self.default_params  # metadata
-        oparams: Dict[str, str] = self.params  # user overridden
-        aparams: Dict[str, str] = {}  # argument params
+        oparams: dict[str, str] = self.params  # user overridden
+        aparams: dict[str, str] = {}  # argument params
         # to populate and return
-        params: Dict[str, str] = {
+        params: dict[str, str] = {
             'p': aparams,
             't': self.template_params}
         proto: str = ''
@@ -544,7 +542,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
 
     @abstractmethod
     def _write_table_content(self, depth: int, writer: TextIOBase,
-                             content: List[str]):
+                             content: list[str]):
         """Write the text of the table's rows and columns."""
         pass
 
@@ -568,16 +566,16 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
         :see: obj:`variables`
 
         """
-        variables: Dict[str, Union[Tuple[int, int], str]] = self.variables
-        stages: Dict[str, pd.DataFrame] = self._get_formatted_dataframe_stages()
+        variables: dict[str, tuple[int, int] | str] = self.variables
+        stages: dict[str, pd.DataFrame] = self._get_formatted_dataframe_stages()
         name: str
-        ctx: Union[Tuple[int, int], str]
+        ctx: tuple[int, int] | str
         for name, ctx in variables.items():
             v: Any = None
             if isinstance(ctx, str):
                 code: str = ctx
-                locs: Dict[str, Any] = locals()
-                s: Dict[str, pd.DataFrame] = stages
+                locs: dict[str, Any] = locals()
+                s: dict[str, pd.DataFrame] = stages
                 try:
                     exec(code, None, locs)
                 except Exception as e:
@@ -590,25 +588,25 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
                 v = stages['unformatted'].iloc[row, col]
             self._write_variable_content(name, v, depth, writer)
 
-    def _render_flat_table(self, params: Dict[str, Any]) -> str:
+    def _render_flat_table(self, params: dict[str, Any]) -> str:
         if logger.isEnabledFor(logging.TRACE):
             logger.trace(f'template: <<{self.template}>>')
         template: Template = Environment(loader=BaseLoader).from_string(
             self.template)
         return template.render(params)
 
-    def _apply_rendered_table(self, table: List[str], code: str):
+    def _apply_rendered_table(self, table: list[str], code: str):
         if code is not None:
             exec(code)
 
     def _write_table(self, depth: int = 0, writer: TextIOBase = sys.stdout):
         """Write the formatted table."""
         df: pd.DataFrame = self.formatted_dataframe
-        table_rows: Tuple[List[Any], ...] = tuple(self._get_table_rows(df))
-        table_params: Dict[str, Any] = self._get_tabulate_params()
-        tab_lines: List[str] = tabulate(table_rows, **table_params).split('\n')
-        cmd_params: Dict[str, str] = self._get_command_params()
-        template_params: Dict[str, Any] = dict(self.asdict())
+        table_rows: tuple[list[Any], ...] = tuple(self._get_table_rows(df))
+        table_params: dict[str, Any] = self._get_tabulate_params()
+        tab_lines: list[str] = tabulate(table_rows, **table_params).split('\n')
+        cmd_params: dict[str, str] = self._get_command_params()
+        template_params: dict[str, Any] = dict(self.asdict())
         self._apply_rendered_table(tab_lines, self.code_render)
         table_rows_flat = StringIO()
         self._write_table_content(1, table_rows_flat, tab_lines)
@@ -628,16 +626,16 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
                 meth: Callable = getattr(self, meth_name)
                 meth(depth, writer)
 
-    def _serialize_dict(self) -> Dict[str, Any]:
-        priorities: List[str] = 'type caption head path definition_file'.split()
-        dct: Dict[str, Any] = super().asflatdict()
+    def _serialize_dict(self) -> dict[str, Any]:
+        priorities: list[str] = 'type caption head path definition_file'.split()
+        dct: dict[str, Any] = super().asflatdict()
         def_inst: Table = self.__class__(
             path=None,
             name=None,
             template=self.template,
             default_params=self.default_params,
             caption=None)
-        dels: List[str] = []
+        dels: list[str] = []
         k: str
         v: Any
         for k, v in dct.items():
@@ -652,7 +650,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
         for k in dels:
             del dct[k]
         # preferred order (dicts officially keep order starting in 3.7)
-        odct: Dict[str, Any] = {}
+        odct: dict[str, Any] = {}
         for k in priorities:
             if k in dct:
                 odct[k] = dct.pop(k)
@@ -660,7 +658,7 @@ class Table(RenderableArtifact, metaclass=ABCMeta):
             odct[k] = dct[k]
         return odct
 
-    def asflatdict(self, *args, **kwargs) -> Dict[str, Any]:
+    def asflatdict(self, *args, **kwargs) -> dict[str, Any]:
         if kwargs.get('format') == 'serial':
             return self._serialize_dict()
         else:
@@ -744,14 +742,14 @@ class TableFactory(Dictable):
 
     def get_table_names(self) -> Iterable[str]:
         """Return names of tables used in :meth:``create``."""
-        def map_sec(sec: str) -> Optional[str]:
+        def map_sec(sec: str) -> str | None:
             m: re.Match = self.table_section_regex.match(sec)
             if m is not None:
                 return m.group(1)
         return filter(lambda s: s is not None,
                       map(map_sec, self.config_factory.config.sections))
 
-    def create(self, type: str = None, **params: Dict[str, Any]) -> Table:
+    def create(self, type: str = None, **params: dict[str, Any]) -> Table:
         """Create a table from the application configuration.
 
         :param type: the name used to find the table by section
@@ -780,9 +778,9 @@ class TableFactory(Dictable):
             logger.info(f'reading table definitions file {table_path}')
         with open(table_path) as f:
             content = f.read()
-        tdefs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
+        tdefs: dict[str, Any] = yaml.load(content, yaml.FullLoader)
         name: str
-        td: Dict[str, Any]
+        td: dict[str, Any]
         for name, td in tdefs.items():
             table_type: str = td.get(self._TYPE_NAME)
             if table_type is None:
@@ -792,7 +790,7 @@ class TableFactory(Dictable):
             del td[self._TYPE_NAME]
             td['definition_file'] = table_path
             sec: str = self._get_section_by_name(table_type)
-            template_params: Dict[str, Any] = td.pop('template_params', {})
+            template_params: dict[str, Any] = td.pop('template_params', {})
             try:
                 inst: Table = self.config_factory.new_instance(sec, **td)
                 inst.name = name
@@ -804,19 +802,19 @@ class TableFactory(Dictable):
                 raise LatexTableError(msg, name) from e
             yield inst
 
-    def _to_flatdict(self, table: Table) -> Dict[str, Any]:
+    def _to_flatdict(self, table: Table) -> dict[str, Any]:
         """Return a data structure usable for YAML or JSON output by flattening
         Python objects.
 
         """
         # using json to recursively convert OrderedDict to dicts
-        tab_def: Dict[str, Any] = table.asflatdict(format='serial')
+        tab_def: dict[str, Any] = table.asflatdict(format='serial')
         del tab_def['name']
         return {table.name: tab_def}
 
     def to_file(self, table: Table, table_path: Path):
         """Save ``table`` as a YAML file to ``table_path``."""
-        tab_def: Dict[str, Any] = self._to_flatdict(table)
+        tab_def: dict[str, Any] = self._to_flatdict(table)
         with open(table_path, 'w') as f:
             yaml.dump(
                 tab_def,

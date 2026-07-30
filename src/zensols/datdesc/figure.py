@@ -3,10 +3,8 @@
 """
 from __future__ import annotations
 __author__ = 'Paul Landes'
-from typing import (
-    Tuple, List, Dict, Set, Iterable, Any, Optional, Union,
-    Type, Callable, ClassVar
-)
+from typing import Any, ClassVar
+from collections.abc import Iterable, Callable
 from dataclasses import dataclass, field
 from abc import ABCMeta, abstractmethod
 import logging
@@ -52,10 +50,10 @@ class Plot(Dictable, metaclass=ABCMeta):
     column: int = field(default=0)
     """The column grid position of the plot."""
 
-    post_hooks: List[Callable] = field(default_factory=list)
+    post_hooks: list[Callable] = field(default_factory=list)
     """Methods to invoke after rendering."""
 
-    legend_params: Dict[str, Any] = field(default_factory=dict)
+    legend_params: dict[str, Any] = field(default_factory=dict)
     """Parameters given to :meth:`~matplotlib.pyplot.Axes.legend`."""
 
     code_pre_render: str = field(default=None)
@@ -86,7 +84,7 @@ class Plot(Dictable, metaclass=ABCMeta):
         for hook in self.post_hooks:
             hook(self, axes)
 
-    def _set_defaults(self, **attrs: Dict[str, Any]):
+    def _set_defaults(self, **attrs: dict[str, Any]):
         """Unset member attributes are set to ``attribs``."""
         attr: str
         for attr, val in attrs.items():
@@ -121,7 +119,7 @@ class Figure(RenderableArtifact):
     subplots (:class:`matplit.pyplot.Axes`).
 
     """
-    _DICTABLE_ATTRIBUTES: ClassVar[Set[str]] = {'path'}
+    _DICTABLE_ATTRIBUTES: ClassVar[set[str]] = {'path'}
 
     config_factory: ConfigFactory = field(default=None, repr=False)
     """The configuration factory used to create plots."""
@@ -140,10 +138,10 @@ class Figure(RenderableArtifact):
     padding: float = field(default=5.)
     """Tight layout padding."""
 
-    metadata: Dict[str, str] = field(default_factory=dict)
+    metadata: dict[str, str] = field(default_factory=dict)
     """Metadata added to the image when saved."""
 
-    plots: Tuple[Plot, ...] = field(default=())
+    plots: tuple[Plot, ...] = field(default=())
     """The plots managed by this object instance.  Use :meth:`add_plot` to add
     new plots.
 
@@ -157,7 +155,7 @@ class Figure(RenderableArtifact):
     image_file_norm: bool = field(default=True)
     """Whether to normalize the image output file name."""
 
-    seaborn: Dict[str, Any] = field(default_factory=dict)
+    seaborn: dict[str, Any] = field(default_factory=dict)
     """Seaborn (:mod:`seaborn`) rendering configuration.  It has the following
     optional keys:
 
@@ -165,11 +163,11 @@ class Figure(RenderableArtifact):
       * ``context``: parameters used with :func:`sns.set_context`
 
     """
-    subplot_params: Dict[str, Any] = field(default_factory=dict)
+    subplot_params: dict[str, Any] = field(default_factory=dict)
     """Additional parameters given to :func:`matplotlib.pyplot.subplots`.
 
     """
-    savefig_params: Dict[str, Any] = field(
+    savefig_params: dict[str, Any] = field(
         default_factory=lambda: {'bbox_inches': 'tight'})
     """Additional parameters given to :func:`matplotlib.figure.Figure.savefig`.
 
@@ -192,7 +190,7 @@ class Figure(RenderableArtifact):
         self.plots = (*self.plots, plot)
         self._reset()
 
-    def create(self, name: Union[str, Type[Plot]], **kwargs) -> Plot:
+    def create(self, name: str | type[Plot], **kwargs) -> Plot:
         """Create a plot using the arguments of :class:`.Plot`.
 
         :param name: the configuration section name of the plot
@@ -201,7 +199,7 @@ class Figure(RenderableArtifact):
 
         """
         plot: Plot
-        if isinstance(name, Type):
+        if isinstance(name, type):
             plot = name(**kwargs)
         else:
             plot = self.config_factory.new_instance(name, **kwargs)
@@ -214,7 +212,7 @@ class Figure(RenderableArtifact):
         time this is accessed.
 
         """
-        params: Dict[str, Any] = dict(
+        params: dict[str, Any] = dict(
             ncols=max(map(lambda p: p.column, self.plots)) + 1,
             nrows=max(map(lambda p: p.row, self.plots)) + 1,
             figsize=(self.width, self.height))
@@ -227,7 +225,7 @@ class Figure(RenderableArtifact):
             fig.suptitle(self.name, fontsize=self.title_font_size)
         return fig, axs
 
-    def _get_axes(self) -> Union[Axes, np.ndarray]:
+    def _get_axes(self) -> Axes | np.ndarray:
         return self._get_subplots()[1]
 
     def _get_figure(self) -> MatplotFigure:
@@ -276,20 +274,20 @@ class Figure(RenderableArtifact):
         import matplotlib
         matplotlib.use('agg')
 
-    def _get_image_metadata(self) -> Dict[str, Any]:
+    def _get_image_metadata(self) -> dict[str, Any]:
         """Factory method to add metadata to the file.  By default,
         :obj:`metadata` is added and ``Title`` with the contents of
         :obj:`name`.
 
         """
-        metadata: Dict[str, str] = {'Title': self.name}
+        metadata: dict[str, str] = {'Title': self.name}
         metadata.update(self.metadata)
         return metadata
 
     def _configure_seaborn(self):
         import seaborn as sns
-        style: Dict[str, Any] = self.seaborn.get('style')
-        context: Dict[str, Any] = self.seaborn.get('context')
+        style: dict[str, Any] = self.seaborn.get('style')
+        context: dict[str, Any] = self.seaborn.get('context')
         if style is not None:
             sns.set_style(**style)
         if context is not None:
@@ -301,7 +299,7 @@ class Figure(RenderableArtifact):
             self._set_matplotlib_offline()
             if len(self.seaborn) > 0:
                 self._configure_seaborn()
-            axes: Union[Axes, np.ndarray] = self._get_axes()
+            axes: Axes | np.ndarray = self._get_axes()
             fig: MatplotFigure = self._get_figure()
             locals()['fig'] = fig  # suppress warnings
             plot: Plot
@@ -373,7 +371,7 @@ class _FigureSerializer(Serializer):
         if isinstance(v, str):
             m: re.Pattern = self.DATAFRAME_REGEXP.match(v)
             if m is not None:
-                params: Dict[str, Any] = {}
+                params: dict[str, Any] = {}
                 pconfig, path = m.groups()
                 path = Path(path, **params)
                 if pconfig is not None:
@@ -464,14 +462,14 @@ class FigureFactory(Dictable):
 
     def get_plot_names(self) -> Iterable[str]:
         """Return names of plots used in :meth:``create``."""
-        def map_sec(sec: str) -> Optional[str]:
+        def map_sec(sec: str) -> str | None:
             m: re.Match = self.plot_section_regex.match(sec)
             if m is not None:
                 return m.group(1)
         return filter(lambda s: s is not None,
                       map(map_sec, self.config_factory.config.sections))
 
-    def create(self, type: str, **params: Dict[str, Any]) -> Plot:
+    def create(self, type: str, **params: dict[str, Any]) -> Plot:
         """Create a plot from the application configuration.
 
         :param type: the name used to find the plot by section
@@ -486,7 +484,7 @@ class FigureFactory(Dictable):
         sec: str = self._get_section_by_name(type)
         return self.config_factory.new_instance(sec, **params)
 
-    def _parse_plot(self, pdef: Dict[str, Any], raise_fn: Callable) -> Plot:
+    def _parse_plot(self, pdef: dict[str, Any], raise_fn: Callable) -> Plot:
         figure_type: str = pdef.pop(self._TYPE_NAME, None)
         code_pre: str = pdef.pop(self._CODE_PRE_NAME, None)
         code_post: str = pdef.pop(self._CODE_POST_NAME, None)
@@ -501,9 +499,9 @@ class FigureFactory(Dictable):
             exec(code_post)
         return plot
 
-    def _unserialize(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def _unserialize(self, data: dict[str, Any]) -> dict[str, Any]:
         def trav(node):
-            if isinstance(node, Dict):
+            if isinstance(node, dict):
                 for k, v in node.items():
                     trav(v)
                 repl = ser.populate_state(node, {})
@@ -523,11 +521,11 @@ class FigureFactory(Dictable):
         """
         with open(figure_path) as f:
             content = f.read()
-            defs: Dict[str, Any] = yaml.load(content, yaml.FullLoader)
+            defs: dict[str, Any] = yaml.load(content, yaml.FullLoader)
         self._unserialize(defs)
         return self._from_dict(defs, figure_path)
 
-    def from_dict(self, figure_config: Dict[str, Any]) -> Iterable[Figure]:
+    def from_dict(self, figure_config: dict[str, Any]) -> Iterable[Figure]:
         """Return figures parsed from nested :class:`builtins.dict` (see class
         documentation).
 
@@ -537,7 +535,7 @@ class FigureFactory(Dictable):
         self._unserialize(figure_config)
         return self._from_dict(figure_config)
 
-    def _from_dict(self, figure_config: Dict[str, Any],
+    def _from_dict(self, figure_config: dict[str, Any],
                    figure_path: Path = None) -> Iterable[Figure]:
         def raise_fn(msg: str):
             msg = f"{msg} in figure '{fig_name}' in file '{figure_path}'"
@@ -546,7 +544,7 @@ class FigureFactory(Dictable):
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'reading figure definitions file {figure_path}')
         fig_name: str
-        fdef: Dict[str, Any]
+        fdef: dict[str, Any]
         for fig_name, fdef in figure_config.items():
             pdefs: list[dict[str, Any]] = fdef.pop(self._PLOTS_NAME, None)
             fig: Figure = self.config_factory.new_instance(
@@ -554,12 +552,12 @@ class FigureFactory(Dictable):
                 **dict(fdef) | {'path': figure_path})
             if pdefs is None:
                 raise_fn(f"Plot definition '{self._PLOTS_NAME}' not found")
-            if not isinstance(pdefs, List):
+            if not isinstance(pdefs, list):
                 raise_fn(f"Invalid plot definition: '{pdefs}'")
             fig.name = fig_name
-            pdef: Dict[str, Any]
+            pdef: dict[str, Any]
             for pdef in pdefs:
-                if not isinstance(pdef, Dict):
+                if not isinstance(pdef, dict):
                     raise_fn(f"Invalid plot definition: '{pdefs}'")
                 plot: Plot = self._parse_plot(pdef, raise_fn)
                 fig.add_plot(plot)

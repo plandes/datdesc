@@ -5,9 +5,8 @@ only files that match ``*-table.yml`` are considered.
 
 """
 __author__ = 'Paul Landes'
-from typing import Iterable
 from dataclasses import dataclass, field
-from collections.abc import Callable
+from collections.abc import Iterable, Callable
 import logging
 from itertools import chain
 from pathlib import Path
