@@ -1,3 +1,4 @@
+
 """A simple object oriented plotting API.
 
 """
@@ -372,12 +373,13 @@ class Figure(RenderableLatexArtifact):
             self._set_matplotlib_offline()
             if len(self.seaborn) > 0:
                 self._configure_seaborn()
-            axes: Axes | np.ndarray = self._get_axes()
+            fig_axes: Axes | np.ndarray = self._get_axes()
             fig: MatplotFigure = self._get_figure()
             locals()['fig'] = fig  # suppress warnings
             try:
                 plot: Plot
                 for plot in self.plots:
+                    axes: Axes | np.ndarray = fig_axes
                     if plot.code_pre_render is not None:
                         exec(plot.code_pre_render)
                     if isinstance(axes, np.ndarray):
