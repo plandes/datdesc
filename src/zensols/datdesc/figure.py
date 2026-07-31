@@ -23,7 +23,7 @@ from zensols.persist import persisted, PersistedWork, FileTextUtil
 from zensols.config import (
     Serializer, Dictable, ConfigFactory, ImportConfigFactory, ImportIniConfig
 )
-from . import FigureError
+from .domain import FigureError
 from .render import Renderable
 from .renderlatex import RenderableLatexArtifact, RenderableLatexPackage
 
@@ -117,8 +117,79 @@ class Plot(Dictable, metaclass=ABCMeta):
 
 @dataclass
 class Figure(RenderableLatexArtifact):
-    """An object oriented class to manage :class:`matplit.figure.Figure` and
-    subplots (:class:`matplit.pyplot.Axes`).
+    """Manage a Matplotlib figure and its collection of plots.
+
+    A figure is the top-level rendering object for one or more :class:`.Plot`
+    instances.  Each plot is assigned a row and column and rendered on the
+    corresponding :class:`matplotlib.axes.Axes` created by
+    :func:`matplotlib.pyplot.subplots`.
+
+    The figure controls the overall image dimensions, subplot layout, optional
+    Seaborn styling, image metadata, and parameters used when saving the
+    resulting image.  Plots can be supplied at construction time, added with
+    :meth:`add_plot`, or created from configuration with
+    :class:`.FigureFactory`.
+
+    Plot definitions loaded by :class:`.FigureFactory` support several code
+    hooks.  These run at two different stages of the figure lifecycle.
+
+    ``code_pre``
+        Executed by :meth:`FigureFactory._parse_plot` while parsing the plot
+        definition, before the :class:`.Plot` instance is created.  The YAML
+        mapping is first wrapped in a :class:`~zensols.config.serial.Settings`
+        instance and made available as ``plot``.  The code can therefore
+        modify constructor parameters using attribute notation.  After the
+        hook executes, the settings are converted back to a dictionary and
+        passed to :meth:`FigureFactory.create`.
+
+    ``code_post``
+        Executed by :meth:`FigureFactory._parse_plot` immediately after the
+        :class:`.Plot` instance has been created.  Here ``plot`` refers to the
+        newly instantiated :class:`.Plot`, so the hook can modify the actual
+        plot object.
+
+    ``code_pre_render``
+        Stored on the :class:`.Plot` instance and executed by :meth:`_render`
+        immediately before :meth:`Plot.render`.  At this point the
+        :class:`.Figure`, Matplotlib figure, and axes have already been
+        created.  The execution context provides ``plot``, ``fig``, and
+        ``axes``.
+
+    ``code_post_render``
+        Stored on the :class:`.Plot` instance and executed by :meth:`_render`
+        immediately after :meth:`Plot.render`, with the same rendering
+        context.  This is useful for modifying Matplotlib objects after the
+        plot has populated its axes.
+
+    Thus, ``code_pre`` and ``code_post`` are configuration/instantiation hooks
+    handled by :class:`.FigureFactory`, whereas ``code_pre_render`` and
+    ``code_post_render`` are rendering hooks invoked later by this class.
+
+    For example:
+
+    .. code-block:: yaml
+
+        example_fig:
+          width: 6
+          height: 4
+          plots:
+            - type: bar
+              data: 'dataframe: data.csv'
+              code_pre: |
+                plot.y_axis_label = 'Score'
+              code_post: |
+                plot.title = 'Results'
+              code_post_render: |
+                axes.grid(False)
+
+    Rendering is lazy: the underlying :class:`matplotlib.figure.Figure` and
+    axes are created when first needed and reused until the figure is reset.
+    Calling :meth:`save` renders all managed plots and writes the image to
+    :obj:`path`.
+
+    In addition to image generation, this class is a
+    :class:`.RenderableLatexArtifact`, allowing the generated image to be
+    referenced by the LaTeX rendering infrastructure.
 
     """
     _DICTABLE_ATTRIBUTES: ClassVar[set[str]] = {'path'}
@@ -304,22 +375,25 @@ class Figure(RenderableLatexArtifact):
             axes: Axes | np.ndarray = self._get_axes()
             fig: MatplotFigure = self._get_figure()
             locals()['fig'] = fig  # suppress warnings
-            plot: Plot
-            for plot in self.plots:
-                ax: Axes = axes
-                if plot.code_pre_render is not None:
-                    exec(plot.code_pre_render)
-                if isinstance(ax, np.ndarray):
-                    if len(ax.shape) == 1:
-                        ix = plot.row if plot.row != 0 else plot.column
-                        ax = axes[ix]
-                    else:
-                        ax = axes[plot.row, plot.column]
-                assert ax is not None
-                plot.render(ax)
-                if plot.code_post_render is not None:
-                    exec(plot.code_post_render)
-            self._rendered = True
+            try:
+                plot: Plot
+                for plot in self.plots:
+                    if plot.code_pre_render is not None:
+                        exec(plot.code_pre_render)
+                    if isinstance(axes, np.ndarray):
+                        if len(axes.shape) == 1:
+                            ix = plot.row if plot.row != 0 else plot.column
+                            axes = axes[ix]
+                        else:
+                            axes = axes[plot.row, plot.column]
+                    assert axes is not None
+                    plot.render(axes)
+                    if plot.code_post_render is not None:
+                        exec(plot.code_post_render)
+                self._rendered = True
+            except Exception as e:
+                raise FigureError(f'Could not render: {e}',
+                                  self.name, self.definition_file) from e
 
     def save(self) -> Path:
         """Save the figure of subplot(s) to at location :obj:`path`.
@@ -495,13 +569,16 @@ class FigureFactory(Dictable):
         code_post: str = pdef.pop(self._CODE_POST_NAME, None)
         if figure_type is None:
             raise_fn(f"No '{self._TYPE_NAME}' given <{pdef}>")
-        if code_pre is not None:
-            plot = Settings(**pdef)
-            exec(code_pre)
-            pdef = plot.asdict()
-        plot = self.create(figure_type, **pdef)
-        if code_post is not None:
-            exec(code_post)
+        try:
+            if code_pre is not None:
+                plot = Settings(**pdef)
+                exec(code_pre)
+                pdef = plot.asdict()
+            plot = self.create(figure_type, **pdef)
+            if code_post is not None:
+                exec(code_post)
+        except Exception as e:
+            raise raise_fn(f'Could not render: {e}')
         return plot
 
     def _unserialize(self, data: dict[str, Any]) -> dict[str, Any]:
@@ -548,8 +625,7 @@ class FigureFactory(Dictable):
     def _from_dict(self, figure_config: dict[str, Any],
                    figure_path: Path = None) -> Iterable[Figure]:
         def raise_fn(msg: str):
-            msg = f"{msg} in figure '{fig_name}' in file '{figure_path}'"
-            raise FigureError(msg)
+            raise FigureError(msg, fig_name, figure_path)
 
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'reading figure definitions file {figure_path}')

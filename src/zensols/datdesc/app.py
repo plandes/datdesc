@@ -14,7 +14,9 @@ from io import StringIO
 from zensols.config import ConfigFactory
 from zensols.cli import ApplicationError
 from .render import Renderable, RenderableFactory
-from . import OutputFormat, Table, DataFrameDescriber, DataDescriber
+from . import (
+    DataDescriptionError, OutputFormat, Table, DataFrameDescriber, DataDescriber
+)
 
 logger = logging.getLogger(__name__)
 
@@ -117,12 +119,16 @@ class Application(object):
         for renderable in self._get_renderables(input_path, output_path, rts):
             rend_out_path: Path = self._map_table_out_path(
                 input_path, output_path, renderable)
-            if is_hyper(renderable):
-                hyper_renderable = self.renderable_factory('hyperparam')
-                hyper_renderable.path = renderable.path
-                hyper_renderable.render(rend_out_path, output_format)
-            else:
-                renderable.render(rend_out_path)
+            try:
+                if is_hyper(renderable):
+                    hyper_renderable = self.renderable_factory('hyperparam')
+                    hyper_renderable.path = renderable.path
+                    hyper_renderable.render(rend_out_path, output_format)
+                else:
+                    renderable.render(rend_out_path)
+            except DataDescriptionError as e:
+                raise ApplicationError(
+                    f"Could not render table '{input_path}': {e}") from e
 
     def generate_figures(self, input_path: Path, output_path: Path,
                          output_image_format: str = None,
@@ -155,7 +161,11 @@ class Application(object):
             renderable.image_format = output_image_format
             renderable.output_sty = do_output_sty
             renderable.sty_content = sty_cont
-            renderable.render(output_path)
+            try:
+                renderable.render(output_path)
+            except DataDescriptionError as e:
+                raise ApplicationError(
+                    f"Could not render figure '{input_path}': {e}") from e
 
         if sty_cont is not None:
             from zensols.util import stdout

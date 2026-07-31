@@ -27,9 +27,12 @@ class FigureError(DataDescriptionError):
     """Thrown for any application level error related to creating figures.
 
     """
-    def __init__(self, reason: str, figure: str = None):
+    def __init__(self, reason: str, figure: str = None,
+                 definition_file: str = None):
         if figure is not None:
-            reason = f'{reason} for figure {figure}'
+            reason = f"{reason} for figure '{figure}'"
+        if definition_file is not None:
+            reason = f"{reason} in file '{definition_file}'"
         super().__init__(reason)
         self.figure = figure
 

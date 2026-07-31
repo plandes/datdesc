@@ -36,8 +36,74 @@ _round: Callable = round
 
 @dataclass
 class Table(RenderableLatexArtifact, metaclass=ABCMeta):
-    """Generates a Zensols styled Latex table from a CSV file.
+    """Generate and render a formatted table from tabular data.
 
+    A table manages the transformation of a dataframe into a rendered artifact,
+    typically a LaTeX table.  The source dataframe passes through several
+    processing stages before being rendered with :mod:`tabulate` and the
+    configured table template.
+
+    The dataframe processing stages are:
+
+    ``nascent``
+        The original dataframe before any table-specific processing.
+
+    ``unformatted``
+        The dataframe after :obj:`code_pre` has executed, but before numeric
+        formatting is applied.
+
+    ``postformat``
+        The dataframe after numeric formatting and :obj:`code_post` have been
+        applied.
+
+    ``formatted``
+        The final dataframe after structural and presentation formatting,
+        including column manipulation, capitalization, font formatting, and
+        :obj:`code_format`.  This dataframe is used to generate the table.
+
+    Several Python code hooks allow customization at specific stages of the
+    processing pipeline:
+
+    ``code_pre``
+        Executed before numeric or presentation formatting.  The local variable
+        ``df`` contains the dataframe and may be modified or replaced.
+
+    ``code_post``
+        Executed after numeric formatting, including rounding, percentages,
+        thousands separators, and scientific notation, but before the final
+        structural and presentation formatting steps.
+
+    ``code_format``
+        Executed after all built-in dataframe formatting has completed.  This
+        is the final opportunity to modify ``df`` before it is passed to
+        :mod:`tabulate`.
+
+    ``code_render``
+        Executed after :mod:`tabulate` has rendered the dataframe to text but
+        before the surrounding table template is rendered.  The local variable
+        ``table`` contains the rendered table lines and may be modified in
+        place.  This is useful for output-specific changes such as inserting
+        LaTeX ``\\multicolumn`` commands.
+
+    For example:
+
+    .. code-block:: yaml
+
+       results:
+         path: results.csv
+         round_column_names:
+           score: 2
+         code_pre: |
+           df = df[df['enabled']]
+         code_post: |
+           df['score'] = df['score'].astype(str)
+
+    Table variables may also reference values from intermediate processing
+    stages through :obj:`variables`, allowing generated commands or rendered
+    values to use either raw or formatted dataframe values.
+    Subclasses provide output-specific behavior such as scientific-number
+    formatting, row extraction for :mod:`tabulate`, and rendering of table and
+    variable content.
     """
     _DICTABLE_ATTRIBUTES: ClassVar[set[str]] = {'columns'}
     _TABLE_ATTRIBUTES_EXCLUDES: ClassVar[set[str]] = {'columns'}
