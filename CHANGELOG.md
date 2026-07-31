@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - A base class `RenderableArtifact` created by `Renderable`.
 - Figure output adds Latex sty files.
 
+### Changed
+- Add a trailing percent (`%`) to fix the LaTeX warning *Delete this space to
+  maintain correct pagereferences*.
+
 
 ## [1.4.8] - 2026-06-30
 ### Changed

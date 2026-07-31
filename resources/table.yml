@@ -36,27 +36,23 @@ datdesc_table_one_column:
       {{ p.size }}
       {% if t.caption_position == 'top' -%}
       {% if head is not none -%}
-      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }%
       \label{tab:{{ name }}}
-      {% else -%}
-      {% if caption is not none and (caption|length > 0) -%}
-      \caption{ {{-caption-}} }
+      {% elif caption is not none and (caption|length > 0) -%}
+      \caption{ {{-caption-}} }%
       \label{tab:{{ name }}}
-      {% endif -%}
       {% endif -%}
       {% endif -%}
       \begin{ {{-t.tabular-}} }{{ t.tabular_args }}{ {{-columns-}} }
     {{ table }}
-      \end{ {{-t.tabular-}} }
+      \end{ {{-t.tabular-}} }{{ '%' if (head is none and (caption is none or (caption|length == 0))) else '' }}
       {% if t.caption_position == 'bottom' -%}
       {% if head is not none -%}
-      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }%
       \label{tab:{{ name }}}
-      {% else -%}
-      {% if caption is not none and (caption|length > 0) -%}
-      \caption{ {{-caption-}} }
+      {% elif caption is not none and (caption|length > 0) -%}
+      \caption{ {{-caption-}} }%
       \label{tab:{{ name }}}
-      {% endif -%}
       {% endif -%}
       {% endif -%}
       \end{table}}
@@ -81,13 +77,11 @@ datdesc_table_two_column:
       {{ p.size }}
       \begin{ {{-t.tabular-}} }{{ t.tabular_args }}{ {{-columns-}} }
     {{ table }}
-      \end{ {{-t.tabular-}} }
+      \end{ {{-t.tabular-}} }{{ '%' if head is none and (caption is none or (caption|length == 0)) else '' }}
       {% if head is not none -%}
-      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
-      {% else -%}
-      {% if caption is not none and (caption|length > 0) -%}
-      \caption{ {{-caption-}} }
-      {% endif -%}
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }%
+      {% elif caption is not none and (caption|length > 0) -%}
+      \caption{ {{-caption-}} }%
       {% endif -%}
       \label{tab:{{ name }}}
       \end{table*}}
@@ -110,15 +104,11 @@ datdesc_table_one_column_slack:
       {{ p.size }}
       \begin{tabularx}{ {{-p.width-}} }{ {{-columns-}} }
     {{ table }}
-      \end{tabularx}
+      \end{tabularx}{{ '%' if head is none and (caption is none or (caption|length == 0)) else '' }}
       {% if head is not none -%}
-      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
-      {% else -%}
-      {% if caption is not none and (caption|length > 0) -%}
-      {% if caption is not none and (caption|length > 0) -%}
-      \caption{ {{-caption-}} }
-      {% endif -%}
-      {% endif -%}
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }%
+      {% elif caption is not none and (caption|length > 0) -%}
+      \caption{ {{-caption-}} }%
       {% endif -%}
       \label{tab:{{ name }}}
       \end{table}}
@@ -141,13 +131,11 @@ datdesc_table_two_column_slack:
       {{ p.size }}
       \begin{tabularx}{ {{-p.width-}} }{ {{-columns-}} }
     {{ table }}
-      \end{tabularx}
+      \end{tabularx}{{ '%' if head is none and (caption is none or (caption|length == 0)) else '' }}
       {% if head is not none -%}
-      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }
-      {% else -%}
-      {% if caption is not none and (caption|length > 0) -%}
-      \caption{ {{-caption-}} }
-      {% endif -%}
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }%
+      {% elif caption is not none and (caption|length > 0) -%}
+      \caption{ {{-caption-}} }%
       {% endif -%}
       \label{tab:{{ name }}}
       \end{table*}}
