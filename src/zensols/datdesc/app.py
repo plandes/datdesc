@@ -10,6 +10,7 @@ from collections.abc import Iterable, Callable
 import logging
 from itertools import chain
 from pathlib import Path
+from io import StringIO
 from zensols.config import ConfigFactory
 from zensols.cli import ApplicationError
 from .render import Renderable, RenderableFactory
@@ -63,6 +64,7 @@ class Application(object):
             raise ApplicationError(
                 'Both parameters must both be either files or directories, ' +
                 f"got: '{input_path}', and '{output_path}'")
+
         rends: Iterable[Renderable] = self.renderable_factory(input_path)
         if rend_type is not None:
             is_type: Callable = self._is_one_of(rend_type)
@@ -110,6 +112,7 @@ class Application(object):
             RenderableHyperparamSet,
             RenderableDataFrameDescriber}
         is_hyper: Callable = self._is_one_of(RenderableHyperparamSet)
+
         renderable: Renderable
         for renderable in self._get_renderables(input_path, output_path, rts):
             rend_out_path: Path = self._map_table_out_path(
@@ -123,7 +126,7 @@ class Application(object):
 
     def generate_figures(self, input_path: Path, output_path: Path,
                          output_image_format: str = None,
-                         output_sty: bool = False):
+                         output_sty: str = None):
         """Generate figures.
 
         :param input_path: YAML definitions or JSON serialized file
@@ -132,15 +135,36 @@ class Application(object):
 
         :param output_image_format: the output format (defaults to ``svg``)
 
-        :param output_sty: whether to generate command ``.sty`` files
+        :param output_sty: name of ``.sty`` output file, ``-`` for source names,
+                           default to no output
 
         """
         from .figure import RenderableFigure as RType
+
+        sty_cont: StringIO = None
+        do_output_sty: str | Path = {
+            None: False,
+            '-': True,
+        }.get(output_sty, False)
+
+        if not do_output_sty and output_sty is not None and len(output_sty) > 0:
+            sty_cont = StringIO()
+
         renderable: RType
         for renderable in self._get_renderables(input_path, output_path, RType):
             renderable.image_format = output_image_format
-            renderable.output_sty = output_sty
+            renderable.output_sty = do_output_sty
+            renderable.sty_content = sty_cont
             renderable.render(output_path)
+
+        if sty_cont is not None:
+            from zensols.util import stdout
+            from .renderlatex import RenderableLatexPackage
+            out_file: Path = output_path / f'{output_sty}.sty'
+            with stdout(out_file, extension='sty', logger=logger) as fout:
+                pkg = RenderableLatexPackage((), output_sty, '{date} Figures')
+                pkg.write(writer=fout)
+                fout.write(sty_cont.getvalue())
 
     def list_figures(self, input_path: Path):
         """List figures.
@@ -154,6 +178,7 @@ class Application(object):
         """
         from .figure import RenderableFigure as RType
         logging.getLogger('zensols.datdesc').setLevel(logging.WARNING)
+
         renderable: RType
         for renderable in self._get_renderables(input_path, None, RType):
             for fig in renderable.get_figures():

@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from abc import ABCMeta, abstractmethod
 import logging
 from pathlib import Path
-from io import StringIO
+from io import StringIO, TextIOBase
 import re
 import yaml
 import numpy as np
@@ -587,6 +587,9 @@ class RenderableFigure(Renderable):
     output_sty: bool = field(default=False)
     """whether to generate command ``.sty`` files."""
 
+    sty_content: TextIOBase = field(default=None)
+    """The data sink for all ``sty`` written if provided."""
+
     def get_figures(self) -> Iterable[Figure]:
         """Get figures configured in file :obj:`path`."""
         fac: FigureFactory = self.factory
@@ -599,8 +602,8 @@ class RenderableFigure(Renderable):
 
     def _write_sty(self, output: Path, figures: tuple[Figure, ...],
                    package_name: str):
-        paths: tuple[Path, ...] = tuple(map(lambda f: f.path, figures))
         out_file: Path = output.parent / output.stem
+        paths: tuple[Path, ...] = tuple(map(lambda f: f.path, figures))
         fig: Figure
         for fig in figures:
             if output.parent == fig.path.parent:
@@ -644,4 +647,7 @@ class RenderableFigure(Renderable):
             elif len(suffix) > 1:
                 fig.image_format = suffix[1:]
             output_files.append(fig.save())
+            if self.sty_content is not None:
+                fig.write(writer=self.sty_content)
+                self.sty_content.write('\n')
         return tuple(output_files)
