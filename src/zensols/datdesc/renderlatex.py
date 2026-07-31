@@ -36,6 +36,10 @@ class RenderableLatexArtifact(RenderableArtifact):
     substituted by name in the template and ``default`` is the default if not
     given in :obj:`params`.
 
+    For any that have no default, which is a singleton paramenter name,
+    arguments are created for the function that must be supplied to the
+    function.
+
     """
     params: dict[str, str] = field(default_factory=dict)
     """Parameters used in the template that override of the
