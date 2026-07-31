@@ -1,4 +1,4 @@
-irisBarCaptionFig:
+irisBarCaptionHeadFig:
   image_dir: 'path: target'
   seaborn:
     style:

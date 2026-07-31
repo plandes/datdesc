@@ -2,12 +2,12 @@
 \ProvidesPackage{iris-bar-caption-head-figure}[{{DATE}} Figures]
 
 % single column figure
-% usage: \irisBarCaptionFig[<placement>]{<width>}
-\newcommand{\irisBarCaptionFigHead}{Dataset}
-\newcommand{\irisBarCaptionFig}[1][h]{%
+% usage: \irisBarCaptionHeadFig[<placement>]{<width>}
+\newcommand{\irisBarCaptionHeadFigHead}{Dataset}
+\newcommand{\irisBarCaptionHeadFig}[1][h]{%
   \begin{figure}[#1]
   \centering
-  \includegraphics[width=\textwidth]{irisBarCaptionFig.svg}
+  \includegraphics[width=\textwidth]{irisBarCaptionHeadFig.svg}
   \caption[Dataset]{\textbf{Dataset.} Iris dataset splits by name.}%
-  \label{fig:irisBarCaptionFig}
+  \label{fig:irisBarCaptionHeadFig}
   \end{figure}}
