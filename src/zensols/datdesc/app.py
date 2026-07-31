@@ -164,7 +164,8 @@ class Application(object):
             with stdout(out_file, extension='sty', logger=logger) as fout:
                 pkg = RenderableLatexPackage((), output_sty, '{date} Figures')
                 pkg.write(writer=fout)
-                fout.write(sty_cont.getvalue())
+                fout.write(sty_cont.getvalue().rstrip())
+                fout.write('\n')
 
     def list_figures(self, input_path: Path):
         """List figures.
