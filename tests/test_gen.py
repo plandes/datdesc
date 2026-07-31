@@ -61,7 +61,7 @@ class TestApplication(unittest.TestCase):
         for conf_file in in_dir.iterdir():
             print(f'testing {conf_file}')
             out_file: Path = self.out_dir / f'{conf_file.stem}.sty'
-            gold_file: Path = in_dir.parent / 'gold' / f'{conf_file.stem}.sty'
+            gold_file: Path = in_dir.parent / 'gold' / 'table' / f'{conf_file.stem}.sty'
             logger.info(f'compare: {out_file}, {gold_file}')
             self._text_compare(out_file, gold_file)
 
@@ -85,7 +85,7 @@ class TestApplication(unittest.TestCase):
         in_dir: Path = Path('test-resources/hyperparam')
         name: str = 'svm-hyperparam'
         out_file: Path = self.out_dir / f'{name}.sty'
-        gold_file: Path = in_dir.parent / 'gold' / f'{name}.sty'
+        gold_file: Path = in_dir.parent / 'gold' / 'table' / f'{name}.sty'
         self.harness.execute(f'table {in_dir} {self.out_dir} --level=warn')
         self._text_compare(out_file, gold_file)
 
@@ -97,7 +97,7 @@ class TestApplication(unittest.TestCase):
         for conf_file in conf_files:
             print(f'testing {conf_file}')
             out_file: Path = self.out_dir / f'{conf_file.stem}.sty'
-            gold_file: Path = in_dir.parent / 'gold' / f'{conf_file.stem}.sty'
+            gold_file: Path = in_dir.parent / 'gold' / 'fig' / f'{conf_file.stem}.sty'
             logger.info(f'compare: {out_file}, {gold_file}')
             self._text_compare(out_file, gold_file)
 
@@ -106,6 +106,6 @@ class TestApplication(unittest.TestCase):
         img_out_file: Path = self.out_dir / f'{in_file.stem}.png'
 
         out_file: Path = self.out_dir / f'{in_file.stem}.sty'
-        gold_file: Path = in_file.parent.parent / 'gold' / f'{in_file.stem}-single.sty'
+        gold_file: Path = in_file.parent.parent / 'gold' / 'fig' / f'{in_file.stem}-single.sty'
         self.harness.execute(f'figure {in_file} {img_out_file} --level=warn')
         self._text_compare(out_file, gold_file)

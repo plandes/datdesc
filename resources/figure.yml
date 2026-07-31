@@ -14,7 +14,6 @@ datdesc_figure_factory:
 datdesc_figure:
   class_name: zensols.datdesc.figure.Figure
   name: 'Untitled'
-  caption: ''
   default_params:
     - [placement, 'h']
     - [width, '\textwidth']

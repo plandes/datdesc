@@ -29,9 +29,6 @@ class RenderableArtifact(PersistableContainer, Dictable, metaclass=ABCMeta):
     path: Path | str = field()
     """The file that has the data used to populate this artifiact."""
 
-    caption: str = field()
-    """The human readable string used to the caption in the figure."""
-
     template: str = field()
     """The figure template, which lives in the application configuration
     ``obj.yml``.
@@ -39,6 +36,9 @@ class RenderableArtifact(PersistableContainer, Dictable, metaclass=ABCMeta):
     """
     template_params: dict[str, str] = field(default_factory=dict)
     """Parameters used in the template."""
+
+    caption: str = field(default='')
+    """The human readable string used to the caption in the figure."""
 
     definition_file: Path = field(default=None)
     """The YAML file from which this instance was created."""
