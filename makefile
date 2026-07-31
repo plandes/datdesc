@@ -28,5 +28,5 @@ testint:
 			  for i in * ; do \
 				sed -i 's@$(dte)@{{DATE}}@' $$i ; \
 				truncate -s -1 $$i ; \
-				diff $$i ../../test-resources/gold/$$i ; \
+				diff $$i ../../test-resources/gold/table/$$i ; \
 			  done )
