@@ -91,7 +91,7 @@ class TestApplication(unittest.TestCase):
 
     def test_figure(self):
         in_dir: Path = Path('test-resources/fig')
-        self.harness.execute(f'figure {in_dir} {self.out_dir} --level=warn')
+        self.harness.execute(f'figure {in_dir} {self.out_dir} -s --level=warn')
         conf_files: Iterable[Path] = filter(
             lambda p: p.name.endswith('figure.yml'), in_dir.iterdir())
         for conf_file in conf_files:
@@ -107,5 +107,5 @@ class TestApplication(unittest.TestCase):
 
         out_file: Path = self.out_dir / f'{in_file.stem}.sty'
         gold_file: Path = in_file.parent.parent / 'gold' / 'fig' / f'{in_file.stem}-single.sty'
-        self.harness.execute(f'figure {in_file} {img_out_file} --level=warn')
+        self.harness.execute(f'figure {in_file} {img_out_file} -s --level=warn')
         self._text_compare(out_file, gold_file)

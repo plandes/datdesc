@@ -584,6 +584,9 @@ class RenderableFigure(Renderable):
     image_format: str = field(default=None)
     """The default image file output format."""
 
+    output_sty: bool = field(default=False)
+    """whether to generate command ``.sty`` files."""
+
     def get_figures(self) -> Iterable[Figure]:
         """Get figures configured in file :obj:`path`."""
         fac: FigureFactory = self.factory
@@ -630,10 +633,12 @@ class RenderableFigure(Renderable):
             fig.image_file_norm = False
             if output.is_dir():
                 fig.image_dir = output
-                self._write_sty(output / package_name, (fig,), package_name)
+                if self.output_sty:
+                    self._write_sty(output / package_name, (fig,), package_name)
             else:
                 fig.path = output
-                self._write_sty(output, (fig,), package_name)
+                if self.output_sty:
+                    self._write_sty(output, (fig,), package_name)
             if self.image_format is not None:
                 fig.image_format = self.image_format
             elif len(suffix) > 1:

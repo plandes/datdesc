@@ -122,7 +122,8 @@ class Application(object):
                 renderable.render(rend_out_path)
 
     def generate_figures(self, input_path: Path, output_path: Path,
-                         output_image_format: str = None):
+                         output_image_format: str = None,
+                         output_sty: bool = False):
         """Generate figures.
 
         :param input_path: YAML definitions or JSON serialized file
@@ -131,11 +132,14 @@ class Application(object):
 
         :param output_image_format: the output format (defaults to ``svg``)
 
+        :param output_sty: whether to generate command ``.sty`` files
+
         """
         from .figure import RenderableFigure as RType
         renderable: RType
         for renderable in self._get_renderables(input_path, output_path, RType):
             renderable.image_format = output_image_format
+            renderable.output_sty = output_sty
             renderable.render(output_path)
 
     def list_figures(self, input_path: Path):
