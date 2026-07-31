@@ -691,7 +691,7 @@ class RenderableHyperparamSet(Renderable):
 
     def _write_hyper_table(self, hset: HyperparamSet, table_file: Path,
                            f: TextIOBase):
-        from .latex import CsvToLatexTable
+        from .renderlatex import RenderableLatexPackage
         from .table import Table
 
         def map_table(dd: DataFrameDescriber, hp: HyperparamModel) -> Table:
@@ -704,7 +704,10 @@ class RenderableHyperparamSet(Renderable):
         tables: tuple[Table, ...] = tuple(
             map(lambda x: map_table(*x),
                 zip(hset.create_describer().describers, hset.models.values())))
-        tab = CsvToLatexTable(tables, table_file.stem)
+        tab = RenderableLatexPackage(
+            artifacts=tables,
+            name=table_file.stem,
+            description='{date} Tables')
         tab.write(writer=f)
 
     def render(self, output: Path,

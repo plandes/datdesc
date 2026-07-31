@@ -76,5 +76,5 @@ class PrototypeApplication(object):
 
     def proto(self):
         """Prototype test."""
-        self._create_figure_example('bar')
+        self._create_figure_example('bar-caption')
         #self._create_example()

@@ -3,19 +3,17 @@
 """
 __author__ = 'Paul Landes'
 from typing import Any
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-import sys
 import logging
 import itertools as it
-from itertools import chain
-from datetime import datetime
 from pathlib import Path
 from io import TextIOBase
 import pandas as pd
 from zensols.util import stdout
-from zensols.config import Writable
-from . import LatexTableError, TableFactory, Renderable, Table
+from .render import Renderable
+from .renderlatex import RenderableLatexPackage
+from .table import LatexTableError, TableFactory, Table
 
 logger = logging.getLogger(__name__)
 
@@ -126,47 +124,6 @@ class SlackTable(LatexTable):
 
 
 @dataclass
-class CsvToLatexTable(Writable):
-    """Generate a Latex table from a CSV file.
-
-    """
-    tables: Sequence[Table] = field()
-    """A list of table instances to create Latex table definitions."""
-
-    package_name: str = field()
-    """The name Latex .sty package."""
-
-    def _write_header(self, depth: int, writer: TextIOBase):
-        date = datetime.now().strftime('%Y/%m/%d')
-        writer.write("""\\NeedsTeXFormat{LaTeX2e}
-\\ProvidesPackage{%(package_name)s}[%(date)s Tables]
-
-""" % {'date': date, 'package_name': self.package_name})
-        uses: set[str] = set(chain.from_iterable(
-            map(lambda t: t.uses, self.tables)))
-        for use in sorted(uses):
-            writer.write(f'\\usepackage{{{use}}}\n')
-        if len(uses) > 0:
-            writer.write('\n')
-
-    def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
-        """Write the Latex table to the writer given in the initializer.
-
-        """
-        tlen: int = len(self.tables)
-        self._write_header(depth, writer)
-        for i, table in enumerate(self.tables):
-            try:
-                table.write(depth, writer)
-            except Exception as e:
-                msg: str = f"could not format table '{table.name}': {e}"
-                self._write_line(f'% erorr: {msg}', depth, writer)
-                logger.error(msg, e)
-            if i < tlen:
-                writer.write('\n')
-
-
-@dataclass
 class RenderableLatexTable(Renderable):
     """A renderable for table definitions in yaml files.  The output is a latex
     ``.sty`` file with the output table as a command (see :obj:`table_factory`).
@@ -192,7 +149,10 @@ class RenderableLatexTable(Renderable):
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'{self.path} -> {output}, pkg={package_name}')
         with stdout(output, extension='sty', logger=logger) as f:
-            tab = CsvToLatexTable(tables, package_name)
+            tab = RenderableLatexPackage(
+                artifacts=tables,
+                name=package_name,
+                description='{date} Tables')
             tab.write(writer=f)
         if hasattr(f, 'name'):
             output = Path(f.name)

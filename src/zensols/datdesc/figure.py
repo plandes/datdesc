@@ -17,14 +17,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import Axes
 from matplotlib.figure import Figure as MatplotFigure
-from zensols.util import Failure
+from zensols.util import stdout, Failure
 from zensols.config import Settings
 from zensols.persist import persisted, PersistedWork, FileTextUtil
 from zensols.config import (
     Serializer, Dictable, ConfigFactory, ImportConfigFactory, ImportIniConfig
 )
 from . import FigureError
-from .render import RenderableArtifact, Renderable
+from .render import Renderable
+from .renderlatex import RenderableLatexArtifact, RenderableLatexPackage
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +116,7 @@ class Plot(Dictable, metaclass=ABCMeta):
 
 
 @dataclass
-class Figure(RenderableArtifact):
+class Figure(RenderableLatexArtifact):
     """An object oriented class to manage :class:`matplit.figure.Figure` and
     subplots (:class:`matplit.pyplot.Axes`).
 
@@ -524,6 +525,11 @@ class FigureFactory(Dictable):
             content = f.read()
             defs: dict[str, Any] = yaml.load(content, yaml.FullLoader)
         self._unserialize(defs)
+        for fdef in defs.values():
+            # used for latex package name
+            fdef['definition_file'] = figure_path
+            # needed for instantiation; later calculated by Figure
+            fdef['path'] = None
         return self._from_dict(defs, figure_path)
 
     def from_dict(self, figure_config: dict[str, Any]) -> Iterable[Figure]:
@@ -549,8 +555,7 @@ class FigureFactory(Dictable):
         for fig_name, fdef in figure_config.items():
             pdefs: list[dict[str, Any]] = fdef.pop(self._PLOTS_NAME, None)
             fig: Figure = self.config_factory.new_instance(
-                self._FIGURE_SEC_NAME,
-                **dict(fdef) | {'path': figure_path})
+                self._FIGURE_SEC_NAME, **fdef)
             if pdefs is None:
                 raise_fn(f"Plot definition '{self._PLOTS_NAME}' not found")
             if not isinstance(pdefs, list):
@@ -576,6 +581,9 @@ class RenderableFigure(Renderable):
     files with :meth:`from_file`.
 
     """
+    image_format: str = field(default=None)
+    """The default image file output format."""
+
     def get_figures(self) -> Iterable[Figure]:
         """Get figures configured in file :obj:`path`."""
         fac: FigureFactory = self.factory
@@ -586,10 +594,29 @@ class RenderableFigure(Renderable):
     def get_artifacts(self) -> Iterable[Any]:
         return self.get_figures()
 
-    def render(self, output: Path, image_format: str = None) -> \
-            tuple[Path, ...]:
+    def _write_sty(self, output: Path, figures: tuple[Figure, ...],
+                   package_name: str):
+        paths: tuple[Path, ...] = tuple(map(lambda f: f.path, figures))
+        out_file: Path = output.parent / output.stem
+        fig: Figure
+        for fig in figures:
+            if output.parent == fig.path.parent:
+                fig.path = Path(fig.path.name)
+        try:
+            with stdout(out_file, extension='sty', logger=logger) as f:
+                tab = RenderableLatexPackage(
+                    artifacts=figures,
+                    name=package_name,
+                    description='{date} Figures')
+                tab.write(writer=f)
+        finally:
+            path: Path
+            for fig, path in zip(figures, paths):
+                fig.path = path
+
+    def render(self, output: Path) -> tuple[Path, ...]:
         output_files: list[Path] = []
-        figures: tuple[Path] = tuple(self.get_figures())
+        figures: tuple[Path, ...] = tuple(self.get_figures())
         n_figs: int = len(figures)
         if n_figs == 0:
             raise FigureError(f'No figures found: {self.path}')
@@ -599,14 +626,16 @@ class RenderableFigure(Renderable):
         fig: Figure
         for fig in figures:
             suffix: str = output.suffix
+            package_name: str = fig.package_name
             fig.image_file_norm = False
             if output.is_dir():
                 fig.image_dir = output
+                self._write_sty(output / package_name, (fig,), package_name)
             else:
-                fig.image_dir = output.parent
-                fig.name = output.stem
-            if image_format is not None:
-                fig.image_format = image_format
+                fig.path = output
+                self._write_sty(output, (fig,), package_name)
+            if self.image_format is not None:
+                fig.image_format = self.image_format
             elif len(suffix) > 1:
                 fig.image_format = suffix[1:]
             output_files.append(fig.save())

@@ -1,0 +1,11 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{code-figure}[{{DATE}} Figures]
+
+% single column figure
+% usage: \codeFig[<placement>]{<width>}
+\newcommand{\codeFig}[1][h]{%
+  \begin{figure}[#1]
+  \centering
+  \includegraphics[width=\textwidth]{codeFig.svg}%
+  \label{fig:codeFig}
+  \end{figure}}

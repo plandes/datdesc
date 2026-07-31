@@ -1,0 +1,11 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{iris-radar-figure}[{{DATE}} Figures]
+
+% single column figure
+% usage: \irisRadarFig[<placement>]{<width>}
+\newcommand{\irisRadarFig}[1][h]{%
+  \begin{figure}[#1]
+  \centering
+  \includegraphics[width=\textwidth]{irisRadarFig.svg}%
+  \label{fig:irisRadarFig}
+  \end{figure}}

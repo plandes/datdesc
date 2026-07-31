@@ -42,27 +42,13 @@ class Table(RenderableLatexArtifact, metaclass=ABCMeta):
     _DICTABLE_ATTRIBUTES: ClassVar[set[str]] = {'columns'}
     _TABLE_ATTRIBUTES_EXCLUDES: ClassVar[set[str]] = {'columns'}
 
-    _FILE_NAME_REGEX: ClassVar[re.Pattern] = re.compile(r'(.+)\.yml')
-    """Used to narrow down to a :obj:`package_name`."""
-
     writes: list[str] = field(default_factory=lambda: ['template', 'variables'])
     """A list of what to output for this table.  Entries are ``table`` and
     ``varaibles``.
 
     """
-    head: str = field(default=None)
-    """The header to use for the table, which is used as the text in the list of
-    tables and made bold in the table.
-
-    """
     type: str = field(default=None)
     """The type of table (i.e. ``one_column``)."""
-
-    definition_file: Path = field(default=None)
-    """The YAML file from which this instance was created."""
-
-    uses: list[str] = field(default_factory=list)
-    """Comma separated list of packages to use."""
 
     hlines: Sequence[int] = field(default_factory=set)
     """Indexes of rows to put horizontal line breaks."""
@@ -225,24 +211,12 @@ class Table(RenderableLatexArtifact, metaclass=ABCMeta):
     """
     def __post_init__(self):
         super().__post_init__()
-        if isinstance(self.uses, str):
-            self.uses = re.split(r'\s*,\s*', self.uses)
         if isinstance(self.hlines, (tuple, list)):
             self.hlines = set(self.hlines)
         if isinstance(self.double_hlines, (tuple, list)):
             self.double_hlines = set(self.double_hlines)
         self._formatted_dataframe = PersistedWork(
             '_formatted_dataframe', self, transient=True)
-
-    @property
-    def package_name(self) -> str:
-        """Return the package name for the table in ``table_path``."""
-        fname = self.definition_file.name
-        m = self._FILE_NAME_REGEX.match(fname)
-        if m is None:
-            raise LatexTableError(
-                f'does not appear to be a YAML file: {fname}', self.name)
-        return m.group(1)
 
     @property
     def columns(self) -> str:
@@ -534,7 +508,7 @@ class Table(RenderableLatexArtifact, metaclass=ABCMeta):
         table_params: dict[str, Any] = self._get_tabulate_params()
         tab_lines: list[str] = tabulate(table_rows, **table_params).split('\n')
         cmd_params: dict[str, str] = self._get_command_params()
-        template_params: dict[str, Any] = dict(self.asdict())
+        template_params: dict[str, Any] = self._get_template_params()
         self._apply_rendered_table(tab_lines, self.code_render)
         table_rows_flat = StringIO()
         self._write_table_content(1, table_rows_flat, tab_lines)

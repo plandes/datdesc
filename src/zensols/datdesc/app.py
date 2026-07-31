@@ -135,7 +135,8 @@ class Application(object):
         from .figure import RenderableFigure as RType
         renderable: RType
         for renderable in self._get_renderables(input_path, output_path, RType):
-            renderable.render(output_path, image_format=output_image_format)
+            renderable.image_format = output_image_format
+            renderable.render(output_path)
 
     def list_figures(self, input_path: Path):
         """List figures.

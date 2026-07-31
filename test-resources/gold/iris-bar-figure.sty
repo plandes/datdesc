@@ -1,0 +1,11 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{iris-bar-figure}[{{DATE}} Figures]
+
+% single column figure
+% usage: \irisBarFig[<placement>]{<width>}
+\newcommand{\irisBarFig}[1][h]{%
+  \begin{figure}[#1]
+  \centering
+  \includegraphics[width=\textwidth]{irisBarFig.svg}%
+  \label{fig:irisBarFig}
+  \end{figure}}

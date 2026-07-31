@@ -1,0 +1,12 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{iris-bar-caption-figure}[{{DATE}} Figures]
+
+% single column figure
+% usage: \irisBarCaptionFig[<placement>]{<width>}
+\newcommand{\irisBarCaptionFig}[1][h]{%
+  \begin{figure}[#1]
+  \centering
+  \includegraphics[width=\textwidth]{irisBarCaptionFig.svg}
+  \caption{Iris dataset splits by name.}%
+  \label{fig:irisBarCaptionFig}
+  \end{figure}}

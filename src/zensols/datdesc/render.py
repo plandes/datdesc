@@ -40,6 +40,14 @@ class RenderableArtifact(PersistableContainer, Dictable, metaclass=ABCMeta):
     template_params: dict[str, str] = field(default_factory=dict)
     """Parameters used in the template."""
 
+    definition_file: Path = field(default=None)
+    """The YAML file from which this instance was created."""
+
+    head: str = field(default=None)
+    """The header to use for the table, which is used as the text in the list of
+    tables and made bold in the table.
+
+    """
     writes: list[str] = field(default_factory=lambda: ['template'])
     """A list of what to output for this artifact.  Each must be a method in the
     subclass and the default only renders the template.  This is configurable so
@@ -80,8 +88,11 @@ class RenderableArtifact(PersistableContainer, Dictable, metaclass=ABCMeta):
             self.template)
         return template.render(params)
 
+    def _get_template_params(self) -> dict[str, Any]:
+        return dict(self.asdict())
+
     def _write_template(self, depth: int, writer: TextIOBase):
-        template_params: dict[str, Any] = dict(self.asdict())
+        template_params: dict[str, Any] = self._get_template_params()
         rendered: str = self._render_template(template_params)
         self._write_block(rendered, depth, writer)
 

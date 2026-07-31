@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 import sys
 import logging
 import unittest
@@ -10,13 +11,14 @@ from zensols.datdesc import ApplicationFactory
 
 if 0:
     logging.basicConfig(level=logging.WARNING)
+    logging.getLogger(__name__).setLevel(logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 
 
 class TestApplication(unittest.TestCase):
     # set to 'w' to write tests
-    DEBUG: bool = 0
+    DEBUG: bool = False
 
     def setUp(self):
         self.maxDiff = sys.maxsize
@@ -33,19 +35,22 @@ class TestApplication(unittest.TestCase):
 
     def _text_compare(self, out_file: Path, gold_file: Path):
         self.assertTrue(out_file.is_file(), f'no out file: {out_file}')
-        self.assertTrue(gold_file.is_file(), f'no gold file: {gold_file}')
+        if self.DEBUG != 'w':
+            self.assertTrue(gold_file.is_file(), f'no gold file: {gold_file}')
         with open(out_file) as f:
             out: str = f.read().strip()
         if self.DEBUG is True:
             print(out)
             return
-        with open(gold_file) as f:
-            gold: str = f.read().strip()
-        today: str = self._today_date()
-        gold = gold.replace('{{DATE}}', today)
-        if self.DEBUG == 'w' and gold != out:
+        if self.DEBUG == 'w':
             with open(gold_file, 'w') as f:
                 f.write(out)
+            gold = out
+        else:
+            with open(gold_file) as f:
+                gold: str = f.read().strip()
+        today: str = self._today_date()
+        gold = gold.replace('{{DATE}}', today)
         self.assertEqual(gold, out, f'\n\ndiff in file {out_file}')
 
     def test_table(self):
@@ -82,4 +87,25 @@ class TestApplication(unittest.TestCase):
         out_file: Path = self.out_dir / f'{name}.sty'
         gold_file: Path = in_dir.parent / 'gold' / f'{name}.sty'
         self.harness.execute(f'table {in_dir} {self.out_dir} --level=warn')
+        self._text_compare(out_file, gold_file)
+
+    def test_figure(self):
+        in_dir: Path = Path('test-resources/fig')
+        self.harness.execute(f'figure {in_dir} {self.out_dir} --level=warn')
+        conf_files: Iterable[Path] = filter(
+            lambda p: p.name.endswith('figure.yml'), in_dir.iterdir())
+        for conf_file in conf_files:
+            print(f'testing {conf_file}')
+            out_file: Path = self.out_dir / f'{conf_file.stem}.sty'
+            gold_file: Path = in_dir.parent / 'gold' / f'{conf_file.stem}.sty'
+            logger.info(f'compare: {out_file}, {gold_file}')
+            self._text_compare(out_file, gold_file)
+
+    def test_single_figure(self):
+        in_file: Path = Path('test-resources/fig/iris-bar-figure.yml')
+        img_out_file: Path = self.out_dir / f'{in_file.stem}.png'
+
+        out_file: Path = self.out_dir / f'{in_file.stem}.sty'
+        gold_file: Path = in_file.parent.parent / 'gold' / f'{in_file.stem}-single.sty'
+        self.harness.execute(f'figure {in_file} {img_out_file} --level=warn')
         self._text_compare(out_file, gold_file)

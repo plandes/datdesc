@@ -1,0 +1,11 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{iris-point-figure}[{{DATE}} Figures]
+
+% single column figure
+% usage: \irisPointFig[<placement>]{<width>}
+\newcommand{\irisPointFig}[1][h]{%
+  \begin{figure}[#1]
+  \centering
+  \includegraphics[width=\textwidth]{irisPointFig.svg}%
+  \label{fig:irisPointFig}
+  \end{figure}}
