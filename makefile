@@ -23,7 +23,7 @@ testint:
 			$(eval dte=$(shell date +'%Y/%m/%d'))
 			@mkdir -p target/lat
 			@$(MAKE) pyinvoke PY_INVOKE_ARG="-e testcur" \
-				ARG="table test-resources/config target/lat"
+				ARG="table test-resources/table target/lat"
 			@( cd target/lat ; \
 			  for i in * ; do \
 				sed -i 's@$(dte)@{{DATE}}@' $$i ; \

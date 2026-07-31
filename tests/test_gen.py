@@ -54,7 +54,7 @@ class TestApplication(unittest.TestCase):
         self.assertEqual(gold, out, f'\n\ndiff in file {out_file}')
 
     def test_table(self):
-        in_dir: Path = Path('test-resources/config')
+        in_dir: Path = Path('test-resources/table')
         self.harness.execute(f'table {in_dir} {self.out_dir} --level=warn')
         print('\ntesting data table generation')
         conf_file: Path
