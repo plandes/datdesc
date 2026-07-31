@@ -397,15 +397,18 @@ class FigureFactory(Dictable):
     """The singleton instance when not created from a configuration factory."""
 
     _TYPE_NAME: ClassVar[str] = 'type'
-    """The field in the figure that indicates the type of figure.  This is used
-    to select the template used to generate the figure.
+    """The field in the figure that indicates the type of figure or plot.  This
+    is used to select the template used to create object instances.
 
     """
+    _DEFAULT_FIGURE_TYPE: ClassVar[str] = 'one_column'
+    """The default figure type when none is give."""
+
     _SECTION_PREFIX: ClassVar[str] = 'datdesc_plot_'
     """The section name prefix for plot templates."""
 
-    _FIGURE_SEC_NAME: ClassVar[str] = 'datdesc_figure'
-    """The section name prefix for plot templates."""
+    _FIGURE_SEC_PREFIX: ClassVar[str] = 'datdesc_figure_'
+    """The section name prefix for figure templates."""
 
     _PLOTS_NAME: ClassVar[str] = 'plots'
     """The name of the key of the plots in figure definitions."""
@@ -554,8 +557,9 @@ class FigureFactory(Dictable):
         fdef: dict[str, Any]
         for fig_name, fdef in figure_config.items():
             pdefs: list[dict[str, Any]] = fdef.pop(self._PLOTS_NAME, None)
-            fig: Figure = self.config_factory.new_instance(
-                self._FIGURE_SEC_NAME, **fdef)
+            fig_type: str = fdef.pop(self._TYPE_NAME, self._DEFAULT_FIGURE_TYPE)
+            sec: str = self._FIGURE_SEC_PREFIX + fig_type
+            fig: Figure = self.config_factory.new_instance(sec, **fdef)
             if pdefs is None:
                 raise_fn(f"Plot definition '{self._PLOTS_NAME}' not found")
             if not isinstance(pdefs, list):
@@ -606,8 +610,7 @@ class RenderableFigure(Renderable):
         paths: tuple[Path, ...] = tuple(map(lambda f: f.path, figures))
         fig: Figure
         for fig in figures:
-            if output.parent == fig.path.parent:
-                fig.path = Path(fig.path.name)
+            fig.path = Path(fig.path.name)
         try:
             with stdout(out_file, extension='sty', logger=logger) as f:
                 tab = RenderableLatexPackage(

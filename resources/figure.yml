@@ -11,12 +11,12 @@ datdesc_figure_factory:
   plot_section_regex: >-
     eval({'import': ['re']}): re.compile('^datdesc_plot_((?!factory).+)')
 
-datdesc_figure:
+datdesc_figure_one_column:
   class_name: zensols.datdesc.figure.Figure
   name: 'Untitled'
   default_params:
     - [placement, 'h']
-    - [width, '\textwidth']
+    - [width, '\columnwidth']
   template: |-
     % single column figure
     % usage: {{ usage }}
@@ -35,6 +35,33 @@ datdesc_figure:
       \label{fig:{{ name }}}
       \end{figure}}
 
+datdesc_figure_two_column:
+  class_name: zensols.datdesc.figure.Figure
+  name: 'Untitled'
+  default_params:
+    - [placement, 'h']
+    - [width, '\textwidth']
+  template: |-
+    % two column figure
+    % usage: {{ usage }}
+    {% if head is not none  -%}
+    \newcommand{\{{-name-}}Head}{ {{-head-}} }
+    {% endif -%}
+    \newcommand{\ {{-name-}} }{{- p.argdef -}}{% raw %}{%{% endraw  %}
+      \begin{figure*}[ {{-p.placement-}} ]
+      \centering
+      \includegraphics[width={{-p.width-}}]{ {{-path-}} }{{ '%' if head is none and (caption is none or (caption|length == 0)) else '' }}
+      {% if head is not none -%}
+      \caption[{{ head }}]{\textbf{ {{-head-}} .} {{caption-}} }%
+      {% elif caption is not none and (caption|length > 0) -%}
+      \caption{ {{-caption-}} }%
+      {% endif -%}
+      \label{fig:{{ name }}}
+      \end{figure*}}
+
+
+## Plots
+#
 datdesc_plot_code:
   class_name: zensols.datdesc.plots.CodePlot
 
