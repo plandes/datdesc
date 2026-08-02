@@ -1,4 +1,3 @@
-
 """A simple object oriented plotting API.
 
 """
