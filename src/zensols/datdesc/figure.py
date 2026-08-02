@@ -644,6 +644,8 @@ class FigureFactory(Dictable):
             if not isinstance(pdefs, list):
                 raise_fn(f"Invalid plot definition: '{pdefs}'")
             fig.name = fig_name
+            # don't file-normalize the name given by the config
+            fig.image_file_norm = False
             pdef: dict[str, Any]
             for pdef in pdefs:
                 if not isinstance(pdef, dict):
@@ -655,7 +657,11 @@ class FigureFactory(Dictable):
 
 @dataclass
 class RenderableFigureLatexPackage(RenderableLatexPackage):
+    """A figure package that makes figure paths relative to :obj:`sty_file`.
+
+    """
     sty_file: Path = field(default=None)
+    """The sty file to write; used to make fig paths relative."""
 
     def _write_artifact(self, artifact: RenderableLatexArtifact,
                         depth: int, writer: TextIOBase):
