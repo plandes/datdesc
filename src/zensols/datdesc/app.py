@@ -153,6 +153,8 @@ class Application(object):
             '-': True,
         }.get(output_sty, False)
 
+        if output_image_format is None:
+            output_image_format = 'svg'
         if not do_output_sty and output_sty is not None and len(output_sty) > 0:
             sty_cont = StringIO()
 
