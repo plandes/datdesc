@@ -8,7 +8,6 @@ from collections.abc import Iterable, Callable
 from dataclasses import dataclass, field
 from abc import ABCMeta, abstractmethod
 import logging
-import sys
 from pathlib import Path
 from io import StringIO, TextIOBase
 import re
