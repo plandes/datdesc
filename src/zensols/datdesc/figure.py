@@ -9,6 +9,7 @@ from collections.abc import Iterable, Callable
 from dataclasses import dataclass, field
 from abc import ABCMeta, abstractmethod
 import logging
+import sys
 from pathlib import Path
 from io import StringIO, TextIOBase
 import re
@@ -653,6 +654,25 @@ class FigureFactory(Dictable):
 
 
 @dataclass
+class RenderableFigureLatexPackage(RenderableLatexPackage):
+    sty_file: Path = field(default=None)
+
+    def _write_artifact(self, artifact: RenderableLatexArtifact,
+                        depth: int, writer: TextIOBase):
+        assert isinstance(artifact, Figure)
+        fig: Figure = artifact
+        org_path: Path = fig.path
+        if fig.path.parent.is_relative_to(self.sty_file.parent):
+            rel_dir: Path = fig.path.parent.relative_to(self.sty_file.parent)
+            rel_path: Path = rel_dir / fig.path.name
+            fig.path = Path(rel_path)
+        try:
+            fig.write(depth, writer)
+        finally:
+            fig.path = org_path
+
+
+@dataclass
 class RenderableFigure(Renderable):
     """A renderable for figures.  The output is either a directory where all
     figures will be written, or a file.
@@ -669,9 +689,6 @@ class RenderableFigure(Renderable):
     output_sty: bool = field(default=False)
     """whether to generate command ``.sty`` files."""
 
-    sty_content: TextIOBase = field(default=None)
-    """The data sink for all ``sty`` written if provided."""
-
     def get_figures(self) -> Iterable[Figure]:
         """Get figures configured in file :obj:`path`."""
         fac: FigureFactory = self.factory
@@ -682,24 +699,19 @@ class RenderableFigure(Renderable):
     def get_artifacts(self) -> Iterable[Any]:
         return self.get_figures()
 
-    def _write_sty(self, output: Path, figures: tuple[Figure, ...],
-                   package_name: str):
-        out_file: Path = output.parent / output.stem
-        paths: tuple[Path, ...] = tuple(map(lambda f: f.path, figures))
-        fig: Figure
-        for fig in figures:
-            fig.path = Path(fig.path.name)
-        try:
-            with stdout(out_file, extension='sty', logger=logger) as f:
-                tab = RenderableLatexPackage(
-                    artifacts=figures,
-                    name=package_name,
-                    description='{date} Figures')
-                tab.write(writer=f)
-        finally:
-            path: Path
-            for fig, path in zip(figures, paths):
-                fig.path = path
+    @staticmethod
+    def write_sty(output: Path, figures: tuple[Figure, ...],
+                  package_name: str = None):
+        sty_file: Path = output.parent / f'{output.stem}.sty'
+        if package_name is None:
+            package_name = output.stem
+        with stdout(sty_file, logger=logger) as f:
+            tab = RenderableFigureLatexPackage(
+                artifacts=figures,
+                name=package_name,
+                description='{date} Figures',
+                sty_file=sty_file)
+            tab.write(writer=f)
 
     def render(self, output: Path) -> tuple[Path, ...]:
         output_files: list[Path] = []
@@ -718,17 +730,14 @@ class RenderableFigure(Renderable):
             if output.is_dir():
                 fig.image_dir = output
                 if self.output_sty:
-                    self._write_sty(output / package_name, (fig,), package_name)
+                    self.write_sty(output / package_name, (fig,), package_name)
             else:
                 fig.path = output
                 if self.output_sty:
-                    self._write_sty(output, (fig,), package_name)
+                    self.write_sty(output, (fig,), package_name)
             if self.image_format is not None:
                 fig.image_format = self.image_format
             elif len(suffix) > 1:
                 fig.image_format = suffix[1:]
             output_files.append(fig.save())
-            if self.sty_content is not None:
-                fig.write(writer=self.sty_content)
-                self.sty_content.write('\n')
         return tuple(output_files)

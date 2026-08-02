@@ -126,7 +126,7 @@ class RenderableLatexPackage(Dictable):
     name: str = field()
     """The name Latex .sty package."""
 
-    description: str = '{date} Artifacts'
+    description: str = field(default='{date} Artifacts')
     """The package description."""
 
     def _write_header(self, depth: int, writer: TextIOBase):
@@ -144,17 +144,22 @@ class RenderableLatexPackage(Dictable):
         if len(uses) > 0:
             writer.write('\n')
 
+    def _write_artifact(self, artifact: RenderableLatexArtifact,
+                        depth: int, writer: TextIOBase):
+        artifact.write(depth, writer)
+
     def write(self, depth: int = 0, writer: TextIOBase = sys.stdout):
         """Write the Latex table to the writer given in the initializer.
 
         """
         art_len: int = len(self.artifacts)
         self._write_header(depth, writer)
-        for i, table in enumerate(self.artifacts):
+        for i, artifact in enumerate(self.artifacts):
             try:
-                table.write(depth, writer)
+                #artifact.write(depth, writer)
+                self._write_artifact(artifact, depth, writer)
             except Exception as e:
-                msg: str = f"could not format table '{table.name}': {e}"
+                msg: str = f"could not format '{artifact.name}': {e}"
                 self._write_line(f'% erorr: {msg}', depth, writer)
                 logger.error(msg, e)
             if i < art_len:

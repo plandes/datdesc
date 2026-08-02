@@ -145,39 +145,38 @@ class Application(object):
                            default to no output
 
         """
-        from .figure import RenderableFigure as RType
+        from .figure import Figure, RenderableFigure
 
-        sty_cont: StringIO = None
+        # sty_cont: StringIO = None
+        figs: list[Figure] = None
         do_output_sty: str | Path = {
             None: False,
             '-': True,
         }.get(output_sty, False)
+        is_sty_file: bool = output_sty is not None and len(output_sty) > 0
+        renderables: Iterable[RenderableFigure] = self._get_renderables(
+            input_path, output_path, RenderableFigure)
 
         if output_image_format is None:
             output_image_format = 'svg'
-        if not do_output_sty and output_sty is not None and len(output_sty) > 0:
-            sty_cont = StringIO()
+        if not do_output_sty and is_sty_file:
+            figs = []
 
-        renderable: RType
-        for renderable in self._get_renderables(input_path, output_path, RType):
+        renderable: RenderableFigure
+        for renderable in renderables:
             renderable.image_format = output_image_format
             renderable.output_sty = do_output_sty
-            renderable.sty_content = sty_cont
             try:
                 renderable.render(output_path)
             except DataDescriptionError as e:
                 raise ApplicationError(
                     f"Could not render figure '{input_path}': {e}") from e
+            if figs is not None:
+                figs.extend(renderable.get_figures())
 
-        if sty_cont is not None:
-            from zensols.util import stdout
-            from .renderlatex import RenderableLatexPackage
-            out_file: Path = output_path / f'{output_sty}.sty'
-            with stdout(out_file, extension='sty', logger=logger) as fout:
-                pkg = RenderableLatexPackage((), output_sty, '{date} Figures')
-                pkg.write(writer=fout)
-                fout.write(sty_cont.getvalue().rstrip())
-                fout.write('\n')
+        if figs is not None:
+            sty_path: Path = output_path / output_sty
+            RenderableFigure.write_sty(sty_path, tuple(figs))
 
     def list_figures(self, input_path: Path):
         """List figures.
