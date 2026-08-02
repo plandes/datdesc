@@ -698,6 +698,8 @@ class RenderableFigure(Renderable):
         fac: FigureFactory = self.factory
         fig: Figure
         for fig in fac.from_file(self.path):
+            if self.image_format is not None:
+                fig.image_format = self.image_format
             yield fig
 
     def get_artifacts(self) -> Iterable[Any]:
@@ -730,7 +732,8 @@ class RenderableFigure(Renderable):
         for fig in figures:
             suffix: str = output.suffix
             package_name: str = fig.package_name
-            fig.image_file_norm = False
+            if self.image_format is None and len(suffix) > 1:
+                fig.image_format = suffix[1:]
             if output.is_dir():
                 fig.image_dir = output
                 if self.output_sty:
@@ -739,9 +742,5 @@ class RenderableFigure(Renderable):
                 fig.path = output
                 if self.output_sty:
                     self.write_sty(output, (fig,), package_name)
-            if self.image_format is not None:
-                fig.image_format = self.image_format
-            elif len(suffix) > 1:
-                fig.image_format = suffix[1:]
             output_files.append(fig.save())
         return tuple(output_files)
