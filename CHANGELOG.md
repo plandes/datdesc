@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.9] - 2026-08-09
 ### Added
 - Value formatting for bar plots.
 - A base class `RenderableArtifact` created by `Renderable`.
-- Figure output adds Latex sty files.
+- Figure output optionally generates LaTeX sty files.
 
 ### Changed
 - Add a trailing percent (`%`) to fix the LaTeX warning *Delete this space to
@@ -317,7 +318,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.8...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.9...HEAD
+[1.4.9]: https://github.com/plandes/datdesc/compare/v1.4.8...v1.4.9
 [1.4.8]: https://github.com/plandes/datdesc/compare/v1.4.7...v1.4.8
 [1.4.7]: https://github.com/plandes/datdesc/compare/v1.4.6...v1.4.7
 [1.4.6]: https://github.com/plandes/datdesc/compare/v1.4.5...v1.4.6
