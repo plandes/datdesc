@@ -346,7 +346,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
                 df = df.merge(obj.df, left_index=True, right_index=True)
             else:
                 df = df.merge(obj.df, on=on)
-        return objs[0].derive(
+        return self.derive(
             df=df,
             meta=pd.concat(metas))
 

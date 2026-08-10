@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.11] - 2026-08-10
+### Changed
+- Bug fix with recent `DataFrameDescriber.merge`.
+
+
 ## [1.4.10] - 2026-08-10
 ### Added
 - Create `DataFrameDescriber` from an iterable of `dataclasses.dataclass`.
@@ -324,7 +329,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.10...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.11...HEAD
+[1.4.11]: https://github.com/plandes/datdesc/compare/v1.4.10...v1.4.11
 [1.4.10]: https://github.com/plandes/datdesc/compare/v1.4.9...v1.4.10
 [1.4.9]: https://github.com/plandes/datdesc/compare/v1.4.8...v1.4.9
 [1.4.8]: https://github.com/plandes/datdesc/compare/v1.4.7...v1.4.8
