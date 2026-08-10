@@ -4,7 +4,6 @@ import unittest
 from pathlib import Path
 from zensols.config import Dictable
 from zensols.dataclasses.inspect import DataclassMetadata
-from zensols.datdesc import DataFrameDescriber
 from zensols.datdesc.dfstash import DataclassStash, PersistableError
 from util import TestUtil
 

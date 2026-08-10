@@ -247,21 +247,12 @@ class DataclassStash(DataFrameStash):
         cls: type = self.metadata.class_type
         return cls(name, *row)
 
-    @staticmethod
-    def _to_c_const(name: type | str) -> str:
-        if isinstance(name, type):
-            name = name.__name__
-        return re.sub(
-            r'(?<!^)(?=[A-Z][a-z])|(?<=[a-z0-9])(?=[A-Z])',
-            '_',
-            name,
-        ).lower()
-
     def get_describer(self) -> DataFrameDescriber:
+        """Get a data describer representation of the current data."""
         meta: tuple[tuple[str, str], ...] = tuple(map(
             lambda f: (f.name, f.doc.text), self.metadata.fields_by_order))
         return DataFrameDescriber(
-            name=self._to_c_const(self.metadata.class_type),
+            name=DataFrameDescriber.class_to_name(self.metadata.class_type),
             desc=None if self.metadata.doc is None else self.metadata.doc.text,
             df=self._dataframe,
             meta=meta)

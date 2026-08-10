@@ -8,6 +8,7 @@ from collections.abc import Sequence, Iterable, Mapping
 from dataclasses import dataclass, field
 import logging
 import sys
+import re
 from frozendict import frozendict
 import itertools as it
 import textwrap as tw
@@ -21,6 +22,7 @@ from openpyxl.workbook import Workbook
 from tabulate import tabulate
 from zensols.config import Dictable
 from zensols.persist import PersistableContainer, persisted, FileTextUtil
+from zensols.dataclasses.inspect import DataclassMetadata, ClassField
 from .render import Renderable
 from . import DataDescriptionError, Table, TableFactory
 
@@ -35,6 +37,8 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     """
     _PERSITABLE_PROPERTIES: ClassVar[set[str]] = {'_meta_val'}
     _TABLE_FORMAT: ClassVar[str] = '{name}Tab'
+    _NAME_REGEX: ClassVar[re.Pattern] = re.compile(
+        r'(?<!^)(?=[A-Z][a-z])|(?<=[a-z0-9])(?=[A-Z])')
 
     name: str = field()
     """The description of the data this describer holds."""
@@ -313,6 +317,39 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             meta=tuple(meta),
             index_meta=index_meta)
 
+    def merge(self, objs: Iterable[DataFrameDescriber],
+              on: str | list[str] | None = None) -> DataFrameDescriber:
+        """Merge using the same semantics as :meth:`pandas.DataFrame.merge`.
+        Only the column metadata and columns are merged.  The remaining data
+        (i.e. :obj:`name`, :obj:`desc`, :obj:`index_meta`) are taken from this
+        instance.
+
+        :param objs: dataframes to merge to this
+
+        :param on: column used to merge; if ``None``, the indexes are used
+
+        :return: a new describer with ``objs`` merged
+
+        """
+        df: pd.DataFrame = self.df
+        metas: list[pd.DataFrame] = [self.meta]
+        cols: set[str] = set(self.meta.index.to_list())
+        obj: DataFrameDescriber
+        for obj in objs:
+            meta: pd.DataFrame = obj.meta
+            overlap: set[str] = cols & set(meta.index.to_list())
+            if len(overlap) > 0:
+                raise DataDescriptionError(
+                    f'Merge with duplicate columns not supported: {overlap}')
+            metas.append(obj.meta)
+            if on is None:
+                df = df.merge(obj.df, left_index=True, right_index=True)
+            else:
+                df = df.merge(obj.df, on=on)
+        return objs[0].derive(
+            df=df,
+            meta=pd.concat(metas))
+
     def save_csv(self, output_dir: Path = Path('.')) -> Path:
         """Save as a CSV file using :obj:`csv_path`."""
         out_file: Path = output_dir / self.csv_path
@@ -405,6 +442,48 @@ class DataFrameDescriber(PersistableContainer, Dictable):
             desc=table.caption,
             meta=meta,
             table_kwargs=kws)
+
+    @classmethod
+    def class_to_name(cls: type, name: type | str,
+                      replace_char: str = '-') -> str:
+        """"""
+        if isinstance(name, type):
+            name = name.__name__
+        return re.sub(cls._NAME_REGEX, replace_char, name).lower()
+
+    @classmethod
+    def from_dataclasses(cls: type, data: Sequence[Any],
+                         meta: DataclassMetadata = None,
+                         field_names: Sequence[str] = None) -> \
+            DataFrameDescriber:
+        """Create a new instance from dataclasses.
+
+        :param data: at least one ``@dataclass`` object from :mod:`dataclasses`
+
+        :param meta: dataclass metadata, or if ``None`` created from ``data[0]``
+
+        :param field_names: dataclass fields to copy, or all if not given
+
+        :return: a new instance containing ``data``
+
+        """
+        rows: list[tuple[Any, ...]] = []
+        meta = DataclassMetadata(type(data[0])) if meta is None else meta
+        field_names: tuple[str, ...] = tuple(
+            map(lambda f: f.name, meta.fields_by_order)) \
+            if field_names is None else field_names
+        fields: dict[str, ClassField] = meta.fields
+        dfd_meta: tuple[tuple[str, str], ...] = tuple(map(
+            lambda n: (n, fields[n].doc.text), field_names))
+
+        obj: Any
+        for obj in data:
+            rows.append(tuple(map(lambda n: getattr(obj, n), field_names)))
+        return DataFrameDescriber(
+            name=cls.class_to_name(meta.class_type),
+            desc=None if meta.doc is None else meta.doc.text,
+            df=pd.DataFrame(rows, columns=[t[0] for t in dfd_meta]),
+            meta=dfd_meta)
 
     def format_table(self):
         """Replace (in place) dataframe :obj:`df` with the formatted table

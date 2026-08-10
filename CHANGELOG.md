@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.10] - 2026-08-10
+### Added
+- Create `DataFrameDescriber` from an iterable of `dataclasses.dataclass`.
+- Merge instances of `DataFrameDescriber`.
+
+
 ## [1.4.9] - 2026-08-09
 ### Added
 - Value formatting for bar plots.
@@ -318,7 +324,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.9...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.10...HEAD
+[1.4.10]: https://github.com/plandes/datdesc/compare/v1.4.9...v1.4.10
 [1.4.9]: https://github.com/plandes/datdesc/compare/v1.4.8...v1.4.9
 [1.4.8]: https://github.com/plandes/datdesc/compare/v1.4.7...v1.4.8
 [1.4.7]: https://github.com/plandes/datdesc/compare/v1.4.6...v1.4.7
