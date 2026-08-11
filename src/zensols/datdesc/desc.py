@@ -470,7 +470,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
         rows: list[tuple[Any, ...]] = []
         meta = DataclassMetadata(type(data[0])) if meta is None else meta
         member_names: tuple[str, ...] = tuple(
-            map(lambda f: f.name, meta.members_by_order)) \
+            map(lambda f: f.name, meta)) \
             if member_names is None else member_names
         dfd_meta: tuple[tuple[str, str], ...] = tuple(map(
             lambda n: (n, meta[n].doc.text), member_names))

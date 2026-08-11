@@ -91,15 +91,15 @@ columns:
     def test_create_column_subset(self):
         dfd = DataFrameDescriber.from_dataclasses(
             self.data,
-            field_names='name age'.split())
+            member_names='name age'.split())
         self._assert_column_subset(dfd)
 
     def test_merge(self):
         dfd1 = DataFrameDescriber.from_dataclasses(
             self.data,
-            field_names='name age'.split())
+            member_names='name age'.split())
         dfd2 = DataFrameDescriber.from_dataclasses(
             self.data,
-            field_names=['cool'])
+            member_names=['cool'])
         dfd = dfd1.merge((dfd2,))
         self._assert_all_col(dfd)
