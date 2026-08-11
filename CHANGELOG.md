@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+## [1.4.12] - 2026-08-10
+### Changed
+- Upgrade [zensols.util] to v1.16.16.
+- `DataFrameDescriber` factory method uses new methods provided in dataclass
+  metadata.
+
+
 ## [1.4.11] - 2026-08-10
 ### Changed
 - Bug fix with recent `DataFrameDescriber.merge`.
@@ -329,7 +336,8 @@ Downstream moderate risk update release.
 
 
 <!-- links -->
-[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.11...HEAD
+[Unreleased]: https://github.com/plandes/datdesc/compare/v1.4.12...HEAD
+[1.4.12]: https://github.com/plandes/datdesc/compare/v1.4.11...v1.4.12
 [1.4.11]: https://github.com/plandes/datdesc/compare/v1.4.10...v1.4.11
 [1.4.10]: https://github.com/plandes/datdesc/compare/v1.4.9...v1.4.10
 [1.4.9]: https://github.com/plandes/datdesc/compare/v1.4.8...v1.4.9

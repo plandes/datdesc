@@ -22,7 +22,7 @@ from openpyxl.workbook import Workbook
 from tabulate import tabulate
 from zensols.config import Dictable
 from zensols.persist import PersistableContainer, persisted, FileTextUtil
-from zensols.dataclasses.inspect import DataclassMetadata, ClassField
+from zensols.dataclasses.inspect import DataclassMetadata, ClassMember
 from .render import Renderable
 from . import DataDescriptionError, Table, TableFactory
 
@@ -454,7 +454,7 @@ class DataFrameDescriber(PersistableContainer, Dictable):
     @classmethod
     def from_dataclasses(cls: type, data: Sequence[Any],
                          meta: DataclassMetadata = None,
-                         field_names: Sequence[str] = None) -> \
+                         member_names: Sequence[str] = None) -> \
             DataFrameDescriber:
         """Create a new instance from dataclasses.
 
@@ -462,23 +462,22 @@ class DataFrameDescriber(PersistableContainer, Dictable):
 
         :param meta: dataclass metadata, or if ``None`` created from ``data[0]``
 
-        :param field_names: dataclass fields to copy, or all if not given
+        :param member_names: dataclass members to copy, or all if not given
 
         :return: a new instance containing ``data``
 
         """
         rows: list[tuple[Any, ...]] = []
         meta = DataclassMetadata(type(data[0])) if meta is None else meta
-        field_names: tuple[str, ...] = tuple(
-            map(lambda f: f.name, meta.fields_by_order)) \
-            if field_names is None else field_names
-        fields: dict[str, ClassField] = meta.fields
+        member_names: tuple[str, ...] = tuple(
+            map(lambda f: f.name, meta.members_by_order)) \
+            if member_names is None else member_names
         dfd_meta: tuple[tuple[str, str], ...] = tuple(map(
-            lambda n: (n, fields[n].doc.text), field_names))
+            lambda n: (n, meta[n].doc.text), member_names))
 
         obj: Any
         for obj in data:
-            rows.append(tuple(map(lambda n: getattr(obj, n), field_names)))
+            rows.append(tuple(map(lambda n: getattr(obj, n), member_names)))
         return DataFrameDescriber(
             name=cls.class_to_name(meta.class_type),
             desc=None if meta.doc is None else meta.doc.text,
