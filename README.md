@@ -208,6 +208,6 @@ Copyright (c) 2023 - 2026 Paul Landes
 [Zensols parsing rules]: https://plandes.github.io/util/doc/config.html#parsing
 [Render program]: https://github.com/plandes/rend
 
-[Table]: api/zensols.datdesc.html#zensols.datdesc.table.Table
-[Figure]: api/zensols.datdesc.html#zensols.datdesc.figure.Figure
-[Plot]: api/zensols.datdesc.html#zensols.datdesc.figure.Plot
+[Table]: https://plandes.github.io/datdesc/api/zensols.datdesc.html#zensols.datdesc.table.Table
+[Figure]: https://plandes.github.io/datdesc/index.html#api/zensols.datdesc.html#zensols.datdesc.figure.Figure
+[Plot]: https://plandes.github.io/datdesc/api/zensols.datdesc.html#zensols.datdesc.figure.Plot
